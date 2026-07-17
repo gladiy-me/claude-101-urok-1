@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Личный кабинет</title>
+<title>Claude 101 — Урок 1</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -11,189 +11,136 @@
     --card: var(--tg-theme-secondary-bg-color, #17212b);
     --text: var(--tg-theme-text-color, #f2f4f6);
     --muted: var(--tg-theme-hint-color, #708499);
-    --accent: #f0b90b;
-    --accent-dim: rgba(240, 185, 11, .14);
-    --danger: #e05c4b;
+    --accent: #d97757;
+    --accent-dim: rgba(217, 119, 87, .14);
     --ok: #35c76f;
-    --ring-track: rgba(255, 255, 255, .07);
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { background: var(--bg); color: var(--text);
-    font: 15px/1.45 -apple-system, "SF Pro Text", Roboto, "Segoe UI", sans-serif;
+    font: 15px/1.5 -apple-system, "SF Pro Text", Roboto, "Segoe UI", sans-serif;
     -webkit-tap-highlight-color: transparent; }
-  .wrap { max-width: 420px; margin: 0 auto; padding: 18px 16px 28px; }
+  .wrap { max-width: 460px; margin: 0 auto; padding: 20px 16px 32px; }
 
-  /* ---- шапка ---- */
-  .head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
-  .ava { width: 42px; height: 42px; border-radius: 12px; flex: none;
+  .kicker { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 6px; }
+  h1 { font-size: 24px; line-height: 1.2; margin-bottom: 6px; }
+  .hello { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+
+  .progress { display: flex; gap: 6px; margin-bottom: 24px; }
+  .progress span { height: 4px; flex: 1; border-radius: 2px; background: rgba(255,255,255,.08); }
+  .progress span.done { background: var(--accent); }
+
+  .card { background: var(--card); border-radius: 16px; padding: 18px 16px; margin-bottom: 14px; }
+  .card h2 { font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .num { width: 24px; height: 24px; border-radius: 8px; flex: none;
     background: var(--accent-dim); color: var(--accent);
-    display: grid; place-items: center; font: 700 17px/1 var(--mono); }
-  .who { min-width: 0; }
-  .who .name { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .who .login { font: 12px var(--mono); color: var(--muted); }
-  .pill { margin-left: auto; flex: none; font-size: 12px; font-weight: 600;
-    padding: 5px 11px; border-radius: 99px; }
-  .pill.on  { color: var(--ok); background: rgba(53, 199, 111, .12); }
-  .pill.off { color: var(--danger); background: rgba(224, 92, 75, .12); }
+    display: grid; place-items: center; font: 700 13px var(--mono); }
+  .card p { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card b { color: var(--text); font-weight: 600; }
 
-  /* ---- кольцо-таймер (фирменный элемент) ---- */
-  .gauge { position: relative; width: 248px; height: 248px; margin: 0 auto 8px; }
-  .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .gauge circle { fill: none; stroke-width: 9; stroke-linecap: round; }
-  .track { stroke: var(--ring-track); }
-  .bar { stroke: var(--accent); transition: stroke-dashoffset .9s cubic-bezier(.4, 0, .2, 1); }
-  .bar.expired { stroke: var(--ring-track); }
-  .gauge .center { position: absolute; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 3px; text-align: center; }
-  .days { font: 700 52px/1 var(--mono); letter-spacing: -2px; font-variant-numeric: tabular-nums; }
-  .days small { font-size: 17px; letter-spacing: 0; color: var(--muted); font-weight: 500; margin-left: 4px; }
-  .hms { font: 500 16px var(--mono); color: var(--accent); font-variant-numeric: tabular-nums; }
-  .hms.expired { color: var(--muted); }
-  .until { font-size: 12px; color: var(--muted); }
+  .ex { background: rgba(255,255,255,.04); border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0; padding: 10px 12px; margin: 10px 0;
+    font: 13px/1.5 var(--mono); color: var(--text); }
 
-  .caption { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0;
+    cursor: pointer; user-select: none; }
+  .check + .check { border-top: 1px solid rgba(255,255,255,.06); }
+  .box { width: 22px; height: 22px; border-radius: 7px; flex: none; margin-top: 1px;
+    border: 2px solid var(--muted); display: grid; place-items: center;
+    color: transparent; font-size: 13px; transition: all .15s; }
+  .check.on .box { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .check .t { font-size: 14px; }
+  .check.on .t { color: var(--muted); text-decoration: line-through; }
 
-  /* ---- продление ---- */
-  .sect { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--muted); margin: 0 2px 10px; }
-  .paygrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
-  .paybtn { border: 0; border-radius: 14px; background: var(--card); color: var(--text);
-    padding: 14px 12px; text-align: left; font: inherit; cursor: pointer;
-    display: flex; flex-direction: column; gap: 3px; }
-  .paybtn:active { transform: scale(.97); }
-  .paybtn .m { font-weight: 650; font-size: 14px; }
-  .paybtn .p { font: 12px var(--mono); color: var(--muted); }
-  .paybtn.hot { background: var(--accent-dim); outline: 1px solid rgba(240, 185, 11, .35); }
-  .paybtn.hot .p { color: var(--accent); }
-  .paybtn[disabled] { opacity: .45; }
+  .done-msg { display: none; text-align: center; padding: 16px;
+    color: var(--ok); font-weight: 600; }
+  .done-msg.show { display: block; }
 
-  /* ---- инфо ---- */
-  .meta { background: var(--card); border-radius: 14px; padding: 14px 16px;
-    display: flex; flex-direction: column; gap: 9px; font-size: 13px; }
-  .meta .row { display: flex; justify-content: space-between; gap: 12px; }
-  .meta .k { color: var(--muted); }
-  .meta a { color: var(--accent); text-decoration: none; }
-
-  .err { text-align: center; color: var(--danger); padding: 40px 20px; }
-  .loading { text-align: center; color: var(--muted); padding: 60px 0; font: 14px var(--mono); }
-  @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+  .foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 20px; }
+  .foot b { color: var(--accent); }
 </style>
 </head>
 <body>
-<div class="wrap" id="app"><div class="loading">загрузка…</div></div>
+<div class="wrap">
+  <div class="kicker">Claude 101 · Урок 1 из 5</div>
+  <h1>Знакомство с Claude</h1>
+  <div class="hello" id="hello">Привет! Начнём обучение.</div>
+
+  <div class="progress">
+    <span class="done"></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">1</span>Что такое Claude</h2>
+    <p><b>Claude</b> — это ИИ-ассистент от компании Anthropic. Он умеет отвечать на вопросы,
+    писать и объяснять тексты, разбирать документы, писать код и решать задачи по шагам.</p>
+    <p>Главное отличие от поисковика: Claude ведёт <b>диалог</b> — можно задавать уточняющие
+    вопросы, просить переделать ответ, спорить и копать глубже.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span>Где им пользоваться</h2>
+    <p>• <b>claude.ai</b> — в браузере, бесплатно после регистрации.</p>
+    <p>• <b>Мобильное приложение</b> — Claude для iOS и Android.</p>
+    <p>• <b>Claude Code</b> — для программистов, работает в терминале.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>Первый промпт</h2>
+    <p>Промпт — это твой запрос к Claude. Правило простое: <b>чем конкретнее — тем лучше ответ</b>.</p>
+    <div class="ex">❌ Расскажи про еду</div>
+    <div class="ex">✅ Составь меню ужина на 2 человек из курицы, риса и овощей — с рецептом на 30 минут</div>
+    <p>Укажи роль, задачу, формат и ограничения — и Claude ответит именно так, как тебе нужно.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span>Практика</h2>
+    <p>Отметь, что выполнил:</p>
+    <div class="check" data-k="a"><span class="box">✓</span><span class="t">Открыл claude.ai и зарегистрировался</span></div>
+    <div class="check" data-k="b"><span class="box">✓</span><span class="t">Задал Claude любой вопрос</span></div>
+    <div class="check" data-k="c"><span class="box">✓</span><span class="t">Попросил переделать ответ («короче», «проще», «с примерами»)</span></div>
+    <div class="check" data-k="d"><span class="box">✓</span><span class="t">Написал конкретный промпт по формуле из пункта 3</span></div>
+    <div class="done-msg" id="doneMsg">🎉 Урок 1 пройден! Жди урок 2 в боте.</div>
+  </div>
+
+  <div class="foot">Бот-гид по обучению · <b>Claude 101</b></div>
+</div>
 
 <script>
 const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 
-const CIRC = 2 * Math.PI * 114; // r=114
-let state = null, tick = null;
-
-// Демо-режим: данные не запрашиваются с сервера, а подставляются локально.
-async function api(path, body) {
-  if (path === "/api/me") {
-    return {
-      active: true,
-      until: new Date(Date.now() + 23 * 86400000 + 7 * 3600000).toISOString(),
-      tariff: { days: 30, rub: 499, usdt: 5, stars: 250 },
-      support: "@support",
-    };
-  }
-  throw new Error("demo");
+const u = tg.initDataUnsafe?.user;
+if (u?.first_name) {
+  document.getElementById("hello").textContent =
+    "Привет, " + u.first_name + "! Начнём обучение.";
 }
 
-function fmt(n) { return String(n).padStart(2, "0"); }
+const KEY = "claude101_lesson1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
 
-function render() {
-  const u = tg.initDataUnsafe?.user || {};
-  const name = [u.first_name, u.last_name].filter(Boolean).join(" ") || "Пользователь";
-  const initial = (u.first_name || "?")[0].toUpperCase();
-  const active = state.active;
-  const untilDate = active ? new Date(state.until) : null;
-
-  document.getElementById("app").innerHTML = `
-    <div class="head">
-      <div class="ava">${initial}</div>
-      <div class="who">
-        <div class="name">${name}</div>
-        <div class="login">id ${u.id || "—"}</div>
-      </div>
-      <div class="pill ${active ? "on" : "off"}">${active ? "Активна" : "Нет подписки"}</div>
-    </div>
-
-    <div class="gauge">
-      <svg viewBox="0 0 248 248">
-        <circle class="track" cx="124" cy="124" r="114"></circle>
-        <circle class="bar ${active ? "" : "expired"}" cx="124" cy="124" r="114"
-          stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" id="bar"></circle>
-      </svg>
-      <div class="center">
-        <div class="days" id="days">—</div>
-        <div class="hms ${active ? "" : "expired"}" id="hms">${active ? "" : "доступ закрыт"}</div>
-        <div class="until">${active ? "до " + untilDate.toLocaleDateString("ru-RU") : "оформите подписку"}</div>
-      </div>
-    </div>
-    <div class="caption">${active ? "осталось до конца подписки" : "оплата — и одноразовый инвайт придёт в чат с ботом"}</div>
-
-    <div class="sect">${active ? "Продлить" : "Оформить"} · ${state.tariff.days} дней</div>
-    <div class="paygrid">
-      <button class="paybtn hot" data-m="crypto"><span class="m">Криптовалюта</span><span class="p">${state.tariff.usdt} USDT · −5%</span></button>
-      <button class="paybtn" data-m="sbp"><span class="m">СБП</span><span class="p">${state.tariff.rub} ₽</span></button>
-      <button class="paybtn" data-m="cryptobot"><span class="m">Crypto Bot</span><span class="p">${state.tariff.usdt} USDT</span></button>
-      <button class="paybtn" data-m="stars"><span class="m">TG Звёзды</span><span class="p">${state.tariff.stars} ⭐</span></button>
-    </div>
-
-    <div class="meta">
-      <div class="row"><span class="k">Тариф</span><span>${state.tariff.rub} ₽ / ${state.tariff.days} дней</span></div>
-      <div class="row"><span class="k">Поддержка</span><a href="https://t.me/${state.support.replace("@","")}">${state.support}</a></div>
-    </div>`;
-
-  document.querySelectorAll(".paybtn").forEach(b => b.addEventListener("click", () => pay(b)));
-
-  if (active) startTicker(untilDate);
-  requestAnimationFrame(() => setRing());
+function refresh() {
+  let all = true;
+  document.querySelectorAll(".check").forEach(el => {
+    const on = !!state[el.dataset.k];
+    el.classList.toggle("on", on);
+    if (!on) all = false;
+  });
+  document.getElementById("doneMsg").classList.toggle("show", all);
+  if (all && tg.HapticFeedback) { try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {} }
 }
 
-function setRing() {
-  if (!state.active) return;
-  const total = state.tariff.days * 86400000;
-  const left = Math.max(0, new Date(state.until) - Date.now());
-  const frac = Math.min(1, left / total);
-  document.getElementById("bar").style.strokeDashoffset = CIRC * (1 - frac);
-}
-
-function startTicker(until) {
-  clearInterval(tick);
-  const step = () => {
-    let ms = until - Date.now();
-    if (ms <= 0) { clearInterval(tick); load(); return; }
-    const d = Math.floor(ms / 86400000);
-    const h = Math.floor(ms / 3600000) % 24;
-    const m = Math.floor(ms / 60000) % 60;
-    const s = Math.floor(ms / 1000) % 60;
-    document.getElementById("days").innerHTML = d + "<small>дн</small>";
-    document.getElementById("hms").textContent = `${fmt(h)}:${fmt(m)}:${fmt(s)}`;
-  };
-  step();
-  tick = setInterval(step, 1000);
-}
-
-async function pay(btn) {
-  const msg = "Демо-режим: оплата не подключена.";
-  if (tg.showAlert) { try { tg.showAlert(msg); } catch (e) { alert(msg); } } else { alert(msg); }
-}
-
-async function load() {
-  try {
-    state = await api("/api/me");
-    render();
-  } catch (e) {
-    document.getElementById("app").innerHTML =
-      `<div class="err">Не удалось загрузить данные.<br>Откройте кабинет заново из бота.</div>`;
-  }
-}
-load();
+document.querySelectorAll(".check").forEach(el => {
+  el.addEventListener("click", () => {
+    state[el.dataset.k] = !state[el.dataset.k];
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    refresh();
+  });
+});
+refresh();
 </script>
 </body>
 </html>
