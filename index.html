@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Claude 101 — Урок 1</title>
+<title>Claude 101 — курс</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -14,98 +14,117 @@
     --accent: #d97757;
     --accent-dim: rgba(217, 119, 87, .14);
     --ok: #35c76f;
+    --ok-dim: rgba(53, 199, 111, .12);
+    --bad: #e05c4b;
+    --bad-dim: rgba(224, 92, 75, .12);
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { background: var(--bg); color: var(--text);
-    font: 15px/1.5 -apple-system, "SF Pro Text", Roboto, "Segoe UI", sans-serif;
+    font: 15px/1.55 -apple-system, "SF Pro Text", Roboto, "Segoe UI", sans-serif;
     -webkit-tap-highlight-color: transparent; }
-  .wrap { max-width: 460px; margin: 0 auto; padding: 20px 16px 32px; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 40px; }
 
   .kicker { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase;
     color: var(--accent); margin-bottom: 6px; }
   h1 { font-size: 24px; line-height: 1.2; margin-bottom: 6px; }
-  .hello { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+  .hello { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
 
-  .progress { display: flex; gap: 6px; margin-bottom: 24px; }
-  .progress span { height: 4px; flex: 1; border-radius: 2px; background: rgba(255,255,255,.08); }
-  .progress span.done { background: var(--accent); }
+  /* список уроков */
+  .lesson-item { background: var(--card); border-radius: 16px; padding: 15px 16px;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 13px; cursor: pointer;
+    border: 1px solid transparent; }
+  .lesson-item:active { transform: scale(.98); }
+  .lesson-item.done { border-color: rgba(53, 199, 111, .3); }
+  .ln { width: 38px; height: 38px; border-radius: 12px; flex: none;
+    background: var(--accent-dim); color: var(--accent);
+    display: grid; place-items: center; font: 700 16px var(--mono); }
+  .lesson-item.done .ln { background: var(--ok-dim); color: var(--ok); }
+  .li-t { flex: 1; min-width: 0; }
+  .li-t .name { font-weight: 600; font-size: 15px; }
+  .li-t .sub { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+  .chev { color: var(--muted); flex: none; }
 
+  .totalbar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08);
+    overflow: hidden; margin: 4px 0 18px; }
+  .totalbar i { display: block; height: 100%; background: var(--accent);
+    border-radius: 3px; transition: width .5s; }
+
+  /* экран урока */
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--accent);
+    font-size: 14px; font-weight: 600; margin-bottom: 14px; cursor: pointer; user-select: none; }
   .card { background: var(--card); border-radius: 16px; padding: 18px 16px; margin-bottom: 14px; }
-  .card h2 { font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-  .num { width: 24px; height: 24px; border-radius: 8px; flex: none;
+  .card h2 { font-size: 16.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 9px; }
+  .num { width: 26px; height: 26px; border-radius: 9px; flex: none;
     background: var(--accent-dim); color: var(--accent);
     display: grid; place-items: center; font: 700 13px var(--mono); }
-  .card p { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+  .card p { color: var(--muted); font-size: 14px; margin-bottom: 9px; }
   .card p:last-child { margin-bottom: 0; }
   .card b { color: var(--text); font-weight: 600; }
+  .card ul { margin: 0 0 9px 18px; color: var(--muted); font-size: 14px; }
+  .card li { margin-bottom: 5px; }
 
   .ex { background: rgba(255,255,255,.04); border-left: 3px solid var(--accent);
     border-radius: 0 10px 10px 0; padding: 10px 12px; margin: 10px 0;
-    font: 13px/1.5 var(--mono); color: var(--text); }
+    font: 13px/1.5 var(--mono); }
+  .ex.good { border-left-color: var(--ok); }
+  .ex.bad { border-left-color: var(--bad); }
+  .tip { background: var(--accent-dim); border-radius: 12px; padding: 11px 13px;
+    font-size: 13.5px; margin: 10px 0; }
+  .tip b { color: var(--accent); }
 
-  .check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0;
-    cursor: pointer; user-select: none; }
-  .check + .check { border-top: 1px solid rgba(255,255,255,.06); }
-  .box { width: 22px; height: 22px; border-radius: 7px; flex: none; margin-top: 1px;
-    border: 2px solid var(--muted); display: grid; place-items: center;
-    color: transparent; font-size: 13px; transition: all .15s; }
-  .check.on .box { background: var(--ok); border-color: var(--ok); color: #fff; }
-  .check .t { font-size: 14px; }
-  .check.on .t { color: var(--muted); text-decoration: line-through; }
+  /* квиз */
+  .q { margin-bottom: 16px; }
+  .q .qq { font-weight: 600; font-size: 14.5px; margin-bottom: 9px; }
+  .opt { background: rgba(255,255,255,.05); border-radius: 11px; padding: 11px 13px;
+    font-size: 14px; margin-bottom: 7px; cursor: pointer; user-select: none;
+    border: 1px solid transparent; }
+  .opt:active { transform: scale(.98); }
+  .opt.right { background: var(--ok-dim); border-color: var(--ok); }
+  .opt.wrong { background: var(--bad-dim); border-color: var(--bad); }
+  .expl { display: none; font-size: 13px; color: var(--muted);
+    padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,.04); }
+  .expl.show { display: block; }
 
-  .done-msg { display: none; text-align: center; padding: 16px;
-    color: var(--ok); font-weight: 600; }
-  .done-msg.show { display: block; }
+  .finish { width: 100%; border: 0; border-radius: 14px; padding: 14px;
+    font: 600 15px inherit; font-family: inherit; cursor: pointer;
+    background: var(--accent); color: #fff; margin-top: 4px; }
+  .finish[disabled] { opacity: .4; }
+  .finish.done { background: var(--ok-dim); color: var(--ok); }
 
-  .foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 20px; }
+  .foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 22px; }
   .foot b { color: var(--accent); }
+  .hidden { display: none; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="kicker">Claude 101 · Урок 1 из 5</div>
-  <h1>Знакомство с Claude</h1>
-  <div class="hello" id="hello">Привет! Начнём обучение.</div>
 
-  <div class="progress">
-    <span class="done"></span><span></span><span></span><span></span><span></span>
+  <!-- ГЛАВНЫЙ ЭКРАН -->
+  <div id="home">
+    <div class="kicker">Claude 101 · курс для начинающих</div>
+    <h1>Научись работать с ИИ</h1>
+    <div class="hello" id="hello">5 уроков — от первого запроса до уверенного пользователя.</div>
+    <div class="totalbar"><i id="totalbar" style="width:0%"></i></div>
+    <div id="lessonList"></div>
+    <div class="foot">Бот-гид по обучению · <b>Claude 101</b></div>
   </div>
 
-  <div class="card">
-    <h2><span class="num">1</span>Что такое Claude</h2>
-    <p><b>Claude</b> — это ИИ-ассистент от компании Anthropic. Он умеет отвечать на вопросы,
-    писать и объяснять тексты, разбирать документы, писать код и решать задачи по шагам.</p>
-    <p>Главное отличие от поисковика: Claude ведёт <b>диалог</b> — можно задавать уточняющие
-    вопросы, просить переделать ответ, спорить и копать глубже.</p>
+  <!-- ЭКРАН УРОКА -->
+  <div id="lesson" class="hidden">
+    <div class="back" id="backBtn">← Все уроки</div>
+    <div class="kicker" id="lKicker"></div>
+    <h1 id="lTitle"></h1>
+    <div class="hello" id="lSub"></div>
+    <div id="lBody"></div>
+    <div class="card">
+      <h2><span class="num">?</span>Проверь себя</h2>
+      <div id="lQuiz"></div>
+      <button class="finish" id="finishBtn">Завершить урок</button>
+    </div>
+    <div class="foot">Урок <span id="lNum"></span> из 5 · <b>Claude 101</b></div>
   </div>
 
-  <div class="card">
-    <h2><span class="num">2</span>Где им пользоваться</h2>
-    <p>• <b>claude.ai</b> — в браузере, бесплатно после регистрации.</p>
-    <p>• <b>Мобильное приложение</b> — Claude для iOS и Android.</p>
-    <p>• <b>Claude Code</b> — для программистов, работает в терминале.</p>
-  </div>
-
-  <div class="card">
-    <h2><span class="num">3</span>Первый промпт</h2>
-    <p>Промпт — это твой запрос к Claude. Правило простое: <b>чем конкретнее — тем лучше ответ</b>.</p>
-    <div class="ex">❌ Расскажи про еду</div>
-    <div class="ex">✅ Составь меню ужина на 2 человек из курицы, риса и овощей — с рецептом на 30 минут</div>
-    <p>Укажи роль, задачу, формат и ограничения — и Claude ответит именно так, как тебе нужно.</p>
-  </div>
-
-  <div class="card">
-    <h2><span class="num">4</span>Практика</h2>
-    <p>Отметь, что выполнил:</p>
-    <div class="check" data-k="a"><span class="box">✓</span><span class="t">Открыл claude.ai и зарегистрировался</span></div>
-    <div class="check" data-k="b"><span class="box">✓</span><span class="t">Задал Claude любой вопрос</span></div>
-    <div class="check" data-k="c"><span class="box">✓</span><span class="t">Попросил переделать ответ («короче», «проще», «с примерами»)</span></div>
-    <div class="check" data-k="d"><span class="box">✓</span><span class="t">Написал конкретный промпт по формуле из пункта 3</span></div>
-    <div class="done-msg" id="doneMsg">🎉 Урок 1 пройден! Жди урок 2 в боте.</div>
-  </div>
-
-  <div class="foot">Бот-гид по обучению · <b>Claude 101</b></div>
 </div>
 
 <script>
@@ -115,32 +134,327 @@ tg.ready(); tg.expand();
 const u = tg.initDataUnsafe?.user;
 if (u?.first_name) {
   document.getElementById("hello").textContent =
-    "Привет, " + u.first_name + "! Начнём обучение.";
+    "Привет, " + u.first_name + "! 5 уроков — от первого запроса до уверенного пользователя.";
 }
 
-const KEY = "claude101_lesson1";
-let state = {};
-try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+/* ================= КОНТЕНТ ================= */
+const LESSONS = [
+{
+  title: "Знакомство с Claude",
+  sub: "Что это такое и как сделать первый запрос",
+  body: `
+  <div class="card"><h2><span class="num">1</span>Что такое Claude</h2>
+    <p><b>Claude</b> — ИИ-ассистент от компании Anthropic. Он читает и пишет тексты, объясняет сложное простыми словами, разбирает документы, помогает с работой, учёбой и кодом.</p>
+    <p>Главное отличие от поисковика: Claude ведёт <b>диалог</b>. Google выдаёт ссылки — Claude даёт готовый ответ, который можно уточнять, переделывать и обсуждать.</p>
+    <p>А ещё он честно скажет «не знаю» или «я не уверен» — и это нормально: ИИ не всезнающий, это инструмент.</p>
+  </div>
+  <div class="card"><h2><span class="num">2</span>Где им пользоваться</h2>
+    <ul>
+      <li><b>claude.ai</b> — сайт, работает в любом браузере. Есть бесплатный тариф.</li>
+      <li><b>Приложение Claude</b> — для iPhone и Android, можно диктовать голосом.</li>
+      <li><b>Claude Code</b> — версия для программистов в терминале.</li>
+    </ul>
+    <p>Для старта достаточно сайта: зайди на claude.ai, зарегистрируйся через Google — и можно писать.</p>
+  </div>
+  <div class="card"><h2><span class="num">3</span>Первый запрос (промпт)</h2>
+    <p><b>Промпт</b> — это твоё сообщение для ИИ. Правило №1: <b>чем конкретнее вопрос — тем полезнее ответ</b>.</p>
+    <div class="ex bad">❌ Расскажи про еду</div>
+    <div class="ex good">✅ Составь меню ужина на двоих из курицы, риса и овощей. Время готовки — до 30 минут, с пошаговым рецептом</div>
+    <p>Во втором случае Claude знает: что готовим, из чего, для кого, сколько времени и в каком виде дать ответ.</p>
+  </div>
+  <div class="card"><h2><span class="num">4</span>Это диалог, а не одноразовый вопрос</h2>
+    <p>Ответ не обязан быть финальным. Не понравилось — так и скажи:</p>
+    <div class="ex">— Слишком длинно, сократи в 2 раза<br>— Объясни проще, как для ребёнка<br>— Добавь примеры<br>— А теперь то же самое, но в шутливом тоне</div>
+    <div class="tip">💡 <b>Совет ученика:</b> не бойся «глупых» вопросов. Claude не осуждает, не устаёт и может объяснить одно и то же десятью способами.</div>
+  </div>`,
+  quiz: [
+    { q: "Чем Claude отличается от поисковика?", a: [
+      ["Он ищет быстрее", 0, "Дело не в скорости — дело в формате: диалог вместо списка ссылок."],
+      ["Он ведёт диалог и даёт готовые ответы", 1, "Верно! Можно уточнять, спорить и просить переделать."],
+      ["Он всегда знает правильный ответ", 0, "Нет — ИИ может ошибаться, об этом будет отдельный урок."]
+    ]},
+    { q: "Какой промпт даст более полезный ответ?", a: [
+      ["«Расскажи про спорт»", 0, "Слишком общий — ответ будет обо всём и ни о чём."],
+      ["«Составь план тренировок дома на 3 дня в неделю для новичка без инвентаря»", 1, "Да! Есть цель, условия и формат — Claude ответит точно."]
+    ]},
+    { q: "Ответ получился слишком сложным. Что делать?", a: [
+      ["Начать новый чат и надеяться на лучшее", 0, "Не нужно — просто продолжи диалог."],
+      ["Написать «объясни проще, с примерами»", 1, "Именно! Уточнение в диалоге — главный инструмент."]
+    ]}
+  ]
+},
+{
+  title: "Искусство промпта",
+  sub: "Формула запроса, которая работает всегда",
+  body: `
+  <div class="card"><h2><span class="num">1</span>Формула РЗКФ</h2>
+    <p>Сильный промпт состоит из четырёх частей:</p>
+    <ul>
+      <li><b>Роль</b> — кем должен быть Claude: «Ты опытный юрист…»</li>
+      <li><b>Задача</b> — что сделать: «…проверь этот договор аренды…»</li>
+      <li><b>Контекст</b> — что важно знать: «…я снимаю квартиру впервые…»</li>
+      <li><b>Формат</b> — как оформить ответ: «…дай список рисков по пунктам».</li>
+    </ul>
+    <div class="ex good">Ты опытный HR-специалист. Улучши моё резюме для вакансии менеджера по продажам. Мне 25 лет, опыт — 2 года в рознице. Дай готовый текст + 3 совета, что подтянуть.</div>
+  </div>
+  <div class="card"><h2><span class="num">2</span>Покажи образец</h2>
+    <p>Если нужен ответ в определённом стиле — покажи пример. Это называется «промпт с образцом», и это один из самых мощных приёмов:</p>
+    <div class="ex">Напиши описание товара в таком стиле:<br>«Кружка-неваляшка — падает, но не сдаётся. Как ты по понедельникам».<br><br>Товары: плед с рукавами, настольная лампа</div>
+    <p>Claude поймает интонацию из примера и продолжит в том же духе.</p>
+  </div>
+  <div class="card"><h2><span class="num">3</span>Одна задача за раз</h2>
+    <p>Частая ошибка новичка — свалить всё в один запрос:</p>
+    <div class="ex bad">❌ Напиши бизнес-план, логотип, название, слоган и посчитай налоги</div>
+    <p>Лучше по шагам: сначала название, обсудили → потом слоган → потом план. Каждый шаг опирается на предыдущий, и результат выходит сильно лучше.</p>
+  </div>
+  <div class="card"><h2><span class="num">4</span>Итерации — твоя суперсила</h2>
+    <p>Первый ответ — черновик. Дожимай:</p>
+    <div class="ex">— Дай 3 разных варианта<br>— Вариант 2 хорош, но сделай динамичнее<br>— Теперь сократи до одного абзаца<br>— Какие слабые места в этом тексте?</div>
+    <div class="tip">💡 <b>Совет ученика:</b> попроси Claude покритиковать собственный ответ: «Найди 3 слабых места в том, что ты написал». Работает удивительно хорошо.</div>
+  </div>`,
+  quiz: [
+    { q: "Из чего состоит формула сильного промпта?", a: [
+      ["Роль, задача, контекст, формат", 1, "Верно! РЗКФ — база, которая улучшает почти любой запрос."],
+      ["Вопрос, ответ, спасибо", 0, "Вежливость приятна, но на качество ответа влияет структура запроса."]
+    ]},
+    { q: "Нужен текст в особом стиле. Как проще всего этого добиться?", a: [
+      ["Долго описывать стиль словами", 0, "Можно, но есть способ надёжнее."],
+      ["Показать пример текста в нужном стиле", 1, "Да! Образец работает лучше любых описаний."]
+    ]},
+    { q: "Что не так с промптом «сделай сразу всё: план, текст, расчёты и дизайн»?", a: [
+      ["Слишком много задач сразу — каждая выйдет поверхностной", 1, "Именно. Дели на шаги — получишь глубину."],
+      ["Claude обидится", 0, "Не обидится :) Но качество каждой части будет ниже."]
+    ]}
+  ]
+},
+{
+  title: "Тексты и документы",
+  sub: "Сократить, переписать, проверить, перевести",
+  body: `
+  <div class="card"><h2><span class="num">1</span>Сжать длинное</h2>
+    <p>Вставь любой длинный текст — статью, письмо, договор — и попроси:</p>
+    <div class="ex">Перескажи главное в 5 пунктах. Отдельно отметь, есть ли в договоре пункты, невыгодные для арендатора</div>
+    <p>Так можно «читать» многостраничные документы за минуту. На claude.ai файл можно просто прикрепить скрепкой — PDF, Word, даже фото текста.</p>
+  </div>
+  <div class="card"><h2><span class="num">2</span>Сменить тон</h2>
+    <p>Один и тот же текст — под разные ситуации:</p>
+    <div class="ex">Перепиши это сообщение деловым тоном для начальника<br><br>А теперь дружелюбно — для коллеги<br><br>А теперь так, чтобы вежливо отказать, но сохранить отношения</div>
+    <div class="tip">💡 <b>Совет ученика:</b> неудобные сообщения (отказ, просьба о повышении, претензия) — лучший сценарий для Claude. Он найдёт слова, которые ты ищешь полчаса.</div>
+  </div>
+  <div class="card"><h2><span class="num">3</span>Улучшить своё</h2>
+    <p>Напиши как умеешь, потом отдай на доработку:</p>
+    <div class="ex">Вот мой текст. Исправь ошибки, убери канцелярит и сделай легче для чтения. Список изменений — отдельно, я хочу учиться</div>
+    <p>Фраза «объясни, что ты поменял и почему» превращает Claude из редактора в репетитора.</p>
+  </div>
+  <div class="card"><h2><span class="num">4</span>Перевод с человеческого на человеческий</h2>
+    <p>Claude переводит между языками — но интереснее «перевод сложности»:</p>
+    <div class="ex">Объясни этот пункт кредитного договора простыми словами. Что я на самом деле обязуюсь делать?<br><br>Переведи это письмо на английский, тон — вежливо-деловой, я пишу в поддержку авиакомпании</div>
+  </div>`,
+  quiz: [
+    { q: "Как быстро понять суть длинного договора?", a: [
+      ["Прочитать целиком со словарём", 0, "Можно, но есть путь быстрее — а юристу показать всё равно стоит."],
+      ["Прикрепить файл и попросить пересказ + список рисков", 1, "Да! Минута — и у тебя выжимка с подводными камнями."]
+    ]},
+    { q: "Какая фраза превращает Claude из редактора в учителя?", a: [
+      ["«Сделай красиво»", 0, "Слишком расплывчато."],
+      ["«Объясни, что ты изменил и почему»", 1, "Верно — так ты учишься на своих же текстах."]
+    ]},
+    { q: "Можно ли дать Claude фото документа?", a: [
+      ["Да, он умеет читать текст с изображений", 1, "Верно! Скрепка на claude.ai принимает PDF, Word и фото."],
+      ["Нет, только печатный текст", 0, "Умеет! Прикрепи фото — Claude прочитает."]
+    ]}
+  ]
+},
+{
+  title: "Claude в работе и жизни",
+  sub: "Планы, идеи, учёба и немного магии",
+  body: `
+  <div class="card"><h2><span class="num">1</span>Личный планировщик</h2>
+    <div class="ex">Спланируй поездку в Стамбул на 4 дня: бюджет средний, люблю еду и историю, не люблю шопинг. Таблица по дням: утро / день / вечер</div>
+    <p>Так же планируются: меню на неделю (с учётом того, что есть в холодильнике), переезд, ремонт, подготовка к экзамену, запуск проекта.</p>
+  </div>
+  <div class="card"><h2><span class="num">2</span>Генератор идей</h2>
+    <p>Правило мозгового штурма: сначала количество, потом качество.</p>
+    <div class="ex">Дай 15 идей подарка для папы, которому 60 лет и у которого «всё есть». Бюджет до 10 тысяч<br><br>Идеи 3 и 7 интересные — разверни подробнее</div>
+    <p>Проси заведомо много вариантов — среди 15 всегда найдётся пара стоящих, а «дай одну идею» почти всегда даёт банальность.</p>
+  </div>
+  <div class="card"><h2><span class="num">3</span>Личный репетитор</h2>
+    <p>Мой любимый сценарий как ученика. Claude может не просто объяснять, а <b>проверять тебя</b>:</p>
+    <div class="ex">Объясни, что такое инфляция, на примере цен на шаурму<br><br>А теперь задай мне 5 вопросов по этой теме и проверь мои ответы. Не подсказывай, пока я не отвечу!</div>
+    <div class="tip">💡 <b>Совет ученика:</b> фраза «задавай вопросы по одному и жди моего ответа» превращает чат в настоящий экзамен. Учить так — намного эффективнее, чем перечитывать.</div>
+  </div>
+  <div class="card"><h2><span class="num">4</span>Программирование без программиста</h2>
+    <p>Не умеешь кодить — не важно. Опиши результат:</p>
+    <div class="ex">Сделай страницу-приглашение на день рождения: тёмный фон, конфетти, таймер обратного отсчёта до 15 августа. Один файл HTML</div>
+    <p>Claude напишет готовый файл — останется сохранить и открыть в браузере. Кстати, страница, которую ты сейчас читаешь, сделана именно так.</p>
+  </div>`,
+  quiz: [
+    { q: "Почему при штурме идей лучше просить сразу 15 вариантов, а не 1?", a: [
+      ["Среди многих вариантов легче найти нестандартные", 1, "Верно! Первые идеи всегда банальны, интересное начинается дальше."],
+      ["Чтобы Claude работал усерднее", 0, "Дело не в усердии — дело в разбросе вариантов."]
+    ]},
+    { q: "Как превратить Claude в репетитора, а не в шпаргалку?", a: [
+      ["Попросить задавать вопросы и проверять твои ответы", 1, "Да! Активное вспоминание — самый эффективный способ учить."],
+      ["Просто читать его объяснения", 0, "Чтение — пассивно. Проверка знаний работает лучше."]
+    ]},
+    { q: "Можно ли получить работающую веб-страницу, не умея программировать?", a: [
+      ["Да — описать словами, что нужно, и получить готовый файл", 1, "Верно! Эта страница — живое доказательство."],
+      ["Нет, без курсов не обойтись", 0, "Уже можно! Описание результата — это и есть новый способ «кодить»."]
+    ]}
+  ]
+},
+{
+  title: "Продвинутый уровень",
+  sub: "Ошибки ИИ, безопасность и приёмы профи",
+  body: `
+  <div class="card"><h2><span class="num">1</span>ИИ ошибается. Уверенно.</h2>
+    <p>Самое важное знание курса: ИИ может <b>выдумывать факты</b> — даты, цифры, цитаты, названия книг — и звучать при этом абсолютно уверенно. Это называют «галлюцинациями».</p>
+    <ul>
+      <li>Факты, деньги, здоровье, законы — <b>проверяй в источниках</b>.</li>
+      <li>Спроси: «Насколько ты уверен? Что из этого стоит перепроверить?»</li>
+      <li>Для свежих событий проси поискать в интернете — базовые знания модели могли устареть.</li>
+    </ul>
+    <div class="tip">⚠️ <b>Правило:</b> Claude — блестящий помощник и черновик, но последнее слово в важных решениях — за человеком и первоисточниками.</div>
+  </div>
+  <div class="card"><h2><span class="num">2</span>Приватность</h2>
+    <p>Относись к чату как к разговору с внимательным, но посторонним консультантом:</p>
+    <ul>
+      <li>Не отправляй пароли, коды из СМС, полные данные карт.</li>
+      <li>В рабочих документах убирай то, что под NDA.</li>
+      <li>Персональные данные других людей — тоже не для чата.</li>
+    </ul>
+  </div>
+  <div class="card"><h2><span class="num">3</span>Гигиена диалога</h2>
+    <p>Пара приёмов, которые сильно влияют на качество:</p>
+    <ul>
+      <li><b>Новая тема — новый чат.</b> В длинном диалоге ИИ начинает путаться в старых деталях.</li>
+      <li><b>Резюме перед продолжением:</b> «Кратко повтори, о чём мы договорились» — и продолжай от резюме.</li>
+      <li><b>Не понравилось — переформулируй</b>, а не повторяй тот же вопрос: изменится запрос — изменится ответ.</li>
+    </ul>
+  </div>
+  <div class="card"><h2><span class="num">4</span>Что дальше</h2>
+    <p>Ты прошёл базу! Дальше — только практика. Домашнее задание на неделю:</p>
+    <ul>
+      <li>Каждый день решай через Claude одну реальную задачу — письмо, план, идею, объяснение.</li>
+      <li>Один раз попроси его проверить твои знания в чём угодно.</li>
+      <li>Один раз попроси сделать что-то, что кажется «слишком сложным». Удивишься.</li>
+    </ul>
+    <div class="tip">🎓 <b>Финальный совет:</b> лучший промпт-инженер — не тот, кто знает секретные фразы, а тот, кто ясно понимает, чего хочет. Claude лишь усиливает ясность твоей мысли.</div>
+  </div>`,
+  quiz: [
+    { q: "Что такое «галлюцинация» ИИ?", a: [
+      ["Когда ИИ уверенно выдумывает несуществующие факты", 1, "Верно. Поэтому важное — всегда проверяем."],
+      ["Когда ИИ отказывается отвечать", 0, "Отказ — это не галлюцинация. Галлюцинация — выдуманный факт с уверенным тоном."]
+    ]},
+    { q: "Что из этого НЕ стоит отправлять в чат?", a: [
+      ["Пароли и коды из СМС", 1, "Верно, это личные секреты — они не для чатов, любых."],
+      ["Черновик поздравления бабушке", 0, "Это как раз отличная задача для Claude :)"]
+    ]},
+    { q: "Диалог стал длинным, Claude путается. Что делать?", a: [
+      ["Начать новый чат, кратко описав контекст заново", 1, "Да! Свежий чат + короткое резюме = снова точные ответы."],
+      ["Писать ЗАГЛАВНЫМИ, чтобы он сосредоточился", 0, "Капс не помогает :) Помогает новый чат с резюме."]
+    ]}
+  ]
+}
+];
 
-function refresh() {
-  let all = true;
-  document.querySelectorAll(".check").forEach(el => {
-    const on = !!state[el.dataset.k];
-    el.classList.toggle("on", on);
-    if (!on) all = false;
-  });
-  document.getElementById("doneMsg").classList.toggle("show", all);
-  if (all && tg.HapticFeedback) { try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {} }
+/* ================= ЛОГИКА ================= */
+const KEY = "claude101_progress";
+let progress = {};
+try { progress = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} }
+
+const $ = id => document.getElementById(id);
+let current = null;
+
+function renderHome() {
+  $("home").classList.remove("hidden");
+  $("lesson").classList.add("hidden");
+  window.scrollTo(0, 0);
+  const doneCount = LESSONS.filter((_, i) => progress[i]).length;
+  $("totalbar").style.width = (doneCount / LESSONS.length * 100) + "%";
+  $("lessonList").innerHTML = LESSONS.map((l, i) => `
+    <div class="lesson-item ${progress[i] ? "done" : ""}" data-i="${i}">
+      <div class="ln">${progress[i] ? "✓" : i + 1}</div>
+      <div class="li-t">
+        <div class="name">${l.title}</div>
+        <div class="sub">${l.sub}</div>
+      </div>
+      <div class="chev">›</div>
+    </div>`).join("");
+  document.querySelectorAll(".lesson-item").forEach(el =>
+    el.addEventListener("click", () => openLesson(+el.dataset.i)));
 }
 
-document.querySelectorAll(".check").forEach(el => {
-  el.addEventListener("click", () => {
-    state[el.dataset.k] = !state[el.dataset.k];
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
-    refresh();
+function openLesson(i) {
+  current = i;
+  const l = LESSONS[i];
+  $("home").classList.add("hidden");
+  $("lesson").classList.remove("hidden");
+  window.scrollTo(0, 0);
+  $("lKicker").textContent = "Claude 101 · Урок " + (i + 1) + " из 5";
+  $("lTitle").textContent = l.title;
+  $("lSub").textContent = l.sub;
+  $("lNum").textContent = i + 1;
+  $("lBody").innerHTML = l.body;
+
+  $("lQuiz").innerHTML = l.quiz.map((q, qi) => `
+    <div class="q" data-qi="${qi}">
+      <div class="qq">${qi + 1}. ${q.q}</div>
+      ${q.a.map((a, ai) => `<div class="opt" data-ai="${ai}">${a[0]}</div>`).join("")}
+      <div class="expl"></div>
+    </div>`).join("");
+
+  const answered = new Set();
+  document.querySelectorAll("#lQuiz .q").forEach(qEl => {
+    const qi = +qEl.dataset.qi;
+    qEl.querySelectorAll(".opt").forEach(optEl => {
+      optEl.addEventListener("click", () => {
+        if (answered.has(qi)) return;
+        answered.add(qi);
+        const ai = +optEl.dataset.ai;
+        const [ , correct, expl ] = LESSONS[i].quiz[qi].a[ai];
+        optEl.classList.add(correct ? "right" : "wrong");
+        if (!correct) {
+          qEl.querySelectorAll(".opt").forEach(o => {
+            if (LESSONS[i].quiz[qi].a[+o.dataset.ai][1]) o.classList.add("right");
+          });
+        }
+        const explEl = qEl.querySelector(".expl");
+        explEl.textContent = expl;
+        explEl.classList.add("show");
+        if (tg.HapticFeedback) { try {
+          tg.HapticFeedback.notificationOccurred(correct ? "success" : "error");
+        } catch (e) {} }
+        updateFinish(answered.size === LESSONS[i].quiz.length);
+      });
+    });
   });
+  updateFinish(false);
+}
+
+function updateFinish(enabled) {
+  const btn = $("finishBtn");
+  if (progress[current]) {
+    btn.disabled = false; btn.classList.add("done");
+    btn.textContent = "✓ Урок пройден — вернуться к списку";
+  } else {
+    btn.classList.remove("done");
+    btn.disabled = !enabled;
+    btn.textContent = enabled ? "Завершить урок 🎉" : "Ответь на вопросы, чтобы завершить";
+  }
+}
+
+$("finishBtn").addEventListener("click", () => {
+  if (!progress[current]) {
+    progress[current] = true; save();
+    if (tg.HapticFeedback) { try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {} }
+  }
+  renderHome();
 });
-refresh();
+$("backBtn").addEventListener("click", renderHome);
+
+renderHome();
 </script>
 </body>
 </html>
