@@ -90,14 +90,17 @@ tg.ready(); tg.expand();
 const CIRC = 2 * Math.PI * 114; // r=114
 let state = null, tick = null;
 
+// Демо-режим: данные не запрашиваются с сервера, а подставляются локально.
 async function api(path, body) {
-  const r = await fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Init-Data": tg.initData },
-    body: JSON.stringify(body || {}),
-  });
-  if (!r.ok) throw new Error("api " + r.status);
-  return r.json();
+  if (path === "/api/me") {
+    return {
+      active: true,
+      until: new Date(Date.now() + 23 * 86400000 + 7 * 3600000).toISOString(),
+      tariff: { days: 30, rub: 499, usdt: 5, stars: 250 },
+      support: "@support",
+    };
+  }
+  throw new Error("demo");
 }
 
 function fmt(n) { return String(n).padStart(2, "0"); }
@@ -177,20 +180,8 @@ function startTicker(until) {
 }
 
 async function pay(btn) {
-  btn.disabled = true;
-  try {
-    const res = await api("/api/pay", { method: btn.dataset.m });
-    if (res.type === "stars") {
-      tg.openInvoice(res.url, (status) => { if (status === "paid") setTimeout(load, 1500); });
-    } else if (res.type === "telegram") {
-      tg.openTelegramLink(res.url);
-    } else {
-      tg.openLink(res.url);
-    }
-  } catch (e) {
-    tg.showAlert("Не удалось создать платёж. Попробуйте позже или напишите в поддержку.");
-  }
-  btn.disabled = false;
+  const msg = "Демо-режим: оплата не подключена.";
+  if (tg.showAlert) { try { tg.showAlert(msg); } catch (e) { alert(msg); } } else { alert(msg); }
 }
 
 async function load() {
