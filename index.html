@@ -155,18 +155,36 @@
     border: 1px solid var(--clay); }
 
   /* сертификат */
-  .cert { background: var(--card); border: 1px solid var(--clay);
-    outline: 4px solid var(--clay-soft);
-    border-radius: 18px; padding: 34px 24px; text-align: center;
-    box-shadow: var(--shadow); margin-bottom: 16px; }
-  .cert .csp { width: 44px; height: 44px; margin: 0 auto 14px; }
+  .cert { position: relative; background: var(--card);
+    border: 2px solid var(--clay); border-radius: 18px;
+    padding: 42px 26px 28px; text-align: center;
+    box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .cert::before { content: ""; position: absolute; inset: 9px;
+    border: 1px solid var(--clay-soft); border-radius: 11px; pointer-events: none; }
+  .cert::after { content: ""; position: absolute; left: 0; right: 0; top: 0;
+    height: 6px; background: var(--clay); }
+  .cert .csp { width: 48px; height: 48px; margin: 0 auto 16px; }
   .cert .csp svg { width: 100%; height: 100%; }
-  .cert .ct { font: 600 13px var(--mono); letter-spacing: .22em;
-    text-transform: uppercase; color: var(--clay); margin-bottom: 14px; }
-  .cert .cname { font: 600 27px/1.2 var(--display); margin-bottom: 10px; }
-  .cert .ctext { color: var(--muted); font-size: 14px; max-width: 34ch; margin: 0 auto 16px; }
-  .cert .cdate { font: 500 12px var(--mono); color: var(--muted);
-    border-top: 1px solid var(--line); padding-top: 14px; letter-spacing: .06em; }
+  .cert .ct { font: 600 14px var(--mono); letter-spacing: .3em;
+    text-transform: uppercase; color: var(--clay); margin-bottom: 4px; }
+  .cert .csub { font: 500 10.5px var(--mono); letter-spacing: .18em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .cert .rule { display: flex; align-items: center; gap: 12px;
+    color: var(--clay); margin: 0 12px 18px; }
+  .cert .rule::before, .cert .rule::after { content: ""; flex: 1;
+    height: 1px; background: var(--line); }
+  .cert .cname { font: 600 30px/1.15 var(--display); letter-spacing: -.01em;
+    margin-bottom: 14px; text-wrap: balance; }
+  .cert .ctext { color: var(--muted); font-size: 14px; max-width: 36ch;
+    margin: 0 auto 14px; }
+  .cert .ctext b { color: var(--ink); }
+  .cert .cscore { display: inline-block; font: 600 13px var(--mono);
+    color: var(--clay); background: var(--clay-soft);
+    border-radius: 99px; padding: 7px 16px; margin-bottom: 20px;
+    letter-spacing: .04em; }
+  .cert .cdate { font: 500 11.5px var(--mono); color: var(--muted);
+    border-top: 1px solid var(--line); padding-top: 14px;
+    letter-spacing: .08em; margin: 0 12px; }
 
   .foot { text-align: center; color: var(--muted); font-size: 12px;
     margin-top: 28px; font-family: var(--mono); }
@@ -218,6 +236,17 @@
     <div class="foot"><b>Claude 101</b></div>
   </div>
 
+  <!-- ОПРОС -->
+  <div id="survey" class="view hidden">
+    <div class="eyebrow">Почти готово · два вопроса о курсе</div>
+    <h1>Тест сдан! 🎉</h1>
+    <p class="lede">Остался последний шаг: ответь на два вопроса о курсе — и забирай сертификат.</p>
+    <div class="card"><div id="sQuiz"></div>
+      <button class="finish" id="surveyBtn" disabled>Ответь на оба вопроса</button>
+    </div>
+    <div class="foot"><b>Claude 101</b></div>
+  </div>
+
   <!-- СЕРТИФИКАТ -->
   <div id="cert" class="view hidden">
     <div class="back" id="backBtn3" role="button" tabindex="0">← К программе курса</div>
@@ -226,8 +255,11 @@
         <path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z"
           fill="var(--clay)"/></svg></div>
       <div class="ct">Сертификат</div>
+      <div class="csub">о прохождении курса</div>
       <div class="cname" id="certName">Студент курса</div>
-      <div class="ctext">успешно прошёл курс «Claude 101 — твой гид по нейросетям»: 14 уроков и финальный тест</div>
+      <div class="rule">✳</div>
+      <div class="ctext">успешно прошёл(ла) курс<br><b>«Claude 101 — твой гид по нейросетям»</b><br>14 уроков и финальный тест</div>
+      <div class="cscore" id="certScore"></div>
       <div class="cdate" id="certDate"></div>
     </div>
     <div class="foot">бот-гид по обучению · <b>Claude 101</b></div>
@@ -466,38 +498,65 @@ const MODULES = [
 
 /* ================= ФИНАЛЬНЫЙ ТЕСТ ================= */
 const FINAL_QUIZ = [
-  { q: "Чем Claude принципиально отличается от поисковика?", a: [
-    ["Ведёт диалог и даёт готовые ответы, которые можно уточнять", 1, "Верно — диалог вместо списка ссылок."],
-    ["Ищет информацию быстрее", 0, "Дело не в скорости, а в формате работы."]]},
-  { q: "Из чего состоит формула сильного промпта?", a: [
-    ["Роль, задача, контекст, формат", 1, "РЗКФ — база, улучшающая почти любой запрос."],
-    ["Приветствие, вопрос, благодарность", 0, "Вежливость приятна, но структура важнее."]]},
-  { q: "Нужен текст в особом стиле. Самый надёжный способ?", a: [
-    ["Показать пример текста в нужном стиле", 1, "Образец работает лучше любых описаний."],
-    ["Написать «сделай красиво»", 0, "Слишком расплывчато."]]},
-  { q: "Что не так с запросом «сделай сразу всё: план, текст, расчёты, дизайн»?", a: [
-    ["Много задач сразу — каждая выйдет поверхностной", 1, "Дели на шаги — получишь глубину."],
-    ["Такой запрос запрещён", 0, "Не запрещён — просто результат будет хуже."]]},
-  { q: "Для чего нужны Проекты на claude.ai?", a: [
-    ["Отдельное пространство с файлами и инструкциями под одну тему", 1, "Да — Claude помнит контекст темы без повторных объяснений."],
-    ["Для хранения паролей", 0, "Пароли вообще не для чатов с ИИ."]]},
-  { q: "Что такое артефакт?", a: [
-    ["Готовая вещь в отдельном окне: документ, страница, приложение", 1, "Верно — его можно смотреть, править и скачивать."],
-    ["Ошибка в ответе ИИ", 0, "Ошибка — это галлюцинация. Артефакт — это результат-изделие."]]},
-  { q: "Когда стоит просить Claude поискать в интернете?", a: [
-    ["Когда нужны свежие данные: новости, цены, события", 1, "Да — базовые знания модели могли устареть."],
-    ["Всегда, для любого вопроса", 0, "Для вечных знаний поиск не обязателен."]]},
-  { q: "Что такое «галлюцинация» ИИ?", a: [
-    ["Уверенно выдуманный несуществующий факт", 1, "Именно поэтому важное проверяем в источниках."],
-    ["Отказ отвечать на вопрос", 0, "Отказ — не галлюцинация. Галлюцинация — выдумка с уверенным тоном."]]},
-  { q: "Что из этого НЕЛЬЗЯ отправлять в чат с ИИ?", a: [
-    ["Пароли и коды из СМС", 1, "Верно — секреты не для чатов, любых."],
-    ["Черновик поздравления бабушке", 0, "Это как раз отличная задача для Claude."]]},
-  { q: "Диалог стал длинным, Claude путается. Что делать?", a: [
-    ["Начать новый чат, кратко описав контекст", 1, "Свежий чат + резюме = снова точные ответы."],
-    ["Писать ЗАГЛАВНЫМИ БУКВАМИ", 0, "Капс не помогает. Помогает новый чат с резюме."]]},
+  { q: "Что лучше всего описывает возможности Claude?", a: [
+    ["Claude — ИИ-ассистент: помогает с текстами, исследованиями, кодом и решением задач", 1, "Верно! Claude — универсальный помощник, а не узкий инструмент."],
+    ["Claude — голосовой ассистент для умного дома", 0, "Нет, это не про колонки и лампочки."],
+    ["Claude — чат-бот для клиентской поддержки", 0, "Поддержка — лишь один из тысяч сценариев."],
+    ["Claude — поисковик, который ищет информацию в интернете", 0, "Поиск он умеет, но суть — диалог и решение задач."]]},
+  { q: "Из каких трёх элементов состоит эффективный промпт?", a: [
+    ["Вступление, основная часть, заключение", 0, "Это про школьное сочинение :)"],
+    ["Задать контекст, определить задачу, указать правила", 1, "Да! Контекст + задача + правила (формат, ограничения) = сильный промпт."],
+    ["Вопрос, ответ, уточнение", 0, "Это структура диалога, а не одного промпта."],
+    ["Подлежащее, сказуемое, дополнение", 0, "Грамматика тут ни при чём."]]},
+  { q: "Ответ Claude получился слишком общим. Что попробовать?", a: [
+    ["Переключиться на другую модель", 0, "Дело чаще не в модели, а в запросе."],
+    ["Попросить Claude поискать в интернете", 0, "Поиск не сделает запрос конкретнее."],
+    ["Добавить деталей: аудитория, роль, ограничения", 1, "Именно! Чем конкретнее запрос — тем полезнее ответ."],
+    ["Начать новый чат и задать тот же вопрос", 0, "Тот же запрос даст такой же общий ответ."]]},
+  { q: "Что происходит, когда база знаний проекта подходит к пределу контекста?", a: [
+    ["Claude перестаёт принимать новые файлы", 0, "Нет, загрузка не блокируется."],
+    ["Старые файлы автоматически удаляются", 0, "Ничего не удаляется."],
+    ["Нужно создать новый проект", 0, "Не нужно — всё продолжает работать."],
+    ["Claude незаметно включает режим RAG и расширяет ёмкость проекта до 10 раз", 1, "Верно! Claude сам начинает искать по файлам вместо чтения всего сразу."]]},
+  { q: "Что можно делать с опубликованным артефактом?", a: [
+    ["Поделиться ссылкой с кем угодно — и другие смогут «ремикшировать» его у себя", 1, "Да! Опубликованный артефакт можно открыть по ссылке и переделать в своём чате."],
+    ["Только смотреть — взаимодействие невозможно", 0, "Можно и взаимодействовать, и переделывать."],
+    ["Он автоматически публикуется в соцсетях", 0, "Ничего никуда само не публикуется."],
+    ["Он навсегда блокируется и не может быть изменён", 0, "Наоборот — его можно развивать дальше."]]},
+  { q: "В чём главное отличие проектов от навыков?", a: [
+    ["Проекты бесплатны, а навыки — платные", 0, "Дело не в оплате."],
+    ["Проекты хранят знания, а навыки выполняют задачи", 1, "Верно! Проект — это «что Claude знает», навык — «что Claude умеет делать»."],
+    ["Проекты для команд, навыки для одиночек", 0, "И то и другое доступно всем."],
+    ["Проекты работают офлайн, навыкам нужен интернет", 0, "Оба работают одинаково."]]},
+  { q: "К каким данным Claude получает доступ через коннекторы?", a: [
+    ["Только к данным за последние 30 дней", 0, "Ограничения по датам нет."],
+    ["Ко всем данным подключённого сервиса", 0, "Нет — это было бы небезопасно."],
+    ["Только к данным, к которым есть доступ у тебя самого", 1, "Верно! Claude видит ровно то, что видишь ты — не больше."],
+    ["Только к документам, отправленным в Anthropic", 0, "Ничего специально отправлять не нужно."]]},
+  { q: "Кто выполняет первичную настройку, чтобы команда могла пользоваться корпоративным поиском?", a: [
+    ["Служба поддержки Anthropic", 0, "Нет, это делается на стороне организации."],
+    ["Каждый пользователь сам", 0, "Пользователям настраивать ничего не нужно."],
+    ["Служба ИТ-безопасности", 0, "Близко, но роль другая."],
+    ["Владелец организации (администратор)", 1, "Верно! Сначала настройку выполняет владелец (Owner) организации."]]},
+  { q: "Какая задача — хороший кандидат для режима исследования (Research)?", a: [
+    ["Комплексный анализ рынка", 1, "Да! Research создан для глубоких многосторонних исследований с источниками."],
+    ["Переформатировать PDF-файл", 0, "Для этого хватит обычного чата."],
+    ["Придумать кодовые названия продуктов", 0, "Мозговой штурм — задача обычного чата."],
+    ["Вычитка юридического документа", 0, "Это разбор одного документа, исследование не нужно."]]},
+  { q: "Какой продукт Claude лучше всего подходит для работы с незнакомой кодовой базой и автоматизации разработки?", a: [
+    ["Claude в Chrome", 0, "Это про работу в браузере."],
+    ["Claude Code", 1, "Верно! Claude Code живёт в терминале и сам ходит по коду проекта."],
+    ["@Claude", 0, "Это про упоминания в рабочих чатах."],
+    ["Claude для Excel", 0, "Это про таблицы."]]},
 ];
 const PASS_SCORE = 8;
+
+const SURVEY = [
+  { q: "Насколько тебе понравилось содержание курса?",
+    a: ["Совсем не понравилось", "Скорее не понравилось", "Нейтрально", "Понравилось", "Очень понравилось"] },
+  { q: "Насколько вероятно, что ты порекомендуешь курс другу или коллеге?",
+    a: ["Точно нет", "Вряд ли", "Не уверен(а)", "Скорее да", "Обязательно порекомендую"] },
+];
 
 /* ================= ЛОГИКА ================= */
 const KEY = "claude101_v2";
@@ -514,7 +573,7 @@ function doneCount() {
   return ALL.filter(l => store[l.id]).length + (store.testPassed ? 1 : 0);
 }
 function show(id) {
-  ["home","lesson","test","cert"].forEach(v => $(v).classList.add("hidden"));
+  ["home","lesson","test","survey","cert"].forEach(v => $(v).classList.add("hidden"));
   const el = $(id); el.classList.remove("hidden");
   el.classList.remove("view"); void el.offsetWidth; el.classList.add("view");
   window.scrollTo(0, 0);
@@ -624,9 +683,41 @@ function renderTest() {
           btn.disabled = false;
           btn.textContent = passed ? "🎓 Получить сертификат" : "Попробовать ещё раз";
           btn.onclick = () => {
-            if (passed) { store.testPassed = true; save(); renderCert(); }
-            else renderTest();
+            if (passed) {
+              store.testPassed = true; store.testScore = score; save();
+              renderSurvey();
+            } else renderTest();
           };
+        }
+      };
+      optEl.addEventListener("click", pick);
+      optEl.addEventListener("keydown", e => { if (e.key === "Enter") pick(); });
+    });
+  });
+}
+
+function renderSurvey() {
+  show("survey");
+  const answers = {};
+  $("sQuiz").innerHTML = SURVEY.map((q, qi) => `
+    <div class="q" data-qi="${qi}">
+      <div class="qq">${qi + 1}. ${q.q}</div>
+      ${q.a.map((a, ai) => `<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a}</div>`).join("")}
+    </div>`).join("");
+  const btn = $("surveyBtn");
+  btn.disabled = true;
+  btn.textContent = "Ответь на оба вопроса";
+  document.querySelectorAll("#sQuiz .q").forEach(qEl => {
+    const qi = +qEl.dataset.qi;
+    qEl.querySelectorAll(".opt").forEach(optEl => {
+      const pick = () => {
+        qEl.querySelectorAll(".opt").forEach(o => o.classList.remove("right"));
+        optEl.classList.add("right");
+        answers[qi] = +optEl.dataset.ai;
+        if (Object.keys(answers).length === SURVEY.length) {
+          btn.disabled = false;
+          btn.textContent = "🎓 Получить сертификат";
+          btn.onclick = () => { store.survey = answers; save(); renderCert(); };
         }
       };
       optEl.addEventListener("click", pick);
@@ -638,6 +729,8 @@ function renderTest() {
 function renderCert() {
   show("cert");
   $("certName").textContent = (u && [u.first_name, u.last_name].filter(Boolean).join(" ")) || "Студент курса";
+  const sc = store.testScore ?? FINAL_QUIZ.length;
+  $("certScore").textContent = "✳ верных ответов: " + sc + " из " + FINAL_QUIZ.length + " ✳";
   const d = new Date();
   $("certDate").textContent = d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }) + " · @glgidbot";
 }
