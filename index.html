@@ -187,7 +187,7 @@
     </div>
     <div class="eyebrow">Claude 101 · твой гид по нейросетям</div>
     <h1>Научись говорить с&nbsp;искусственным интеллектом</h1>
-    <p class="lede" id="hello">5 модулей, 14 уроков — от первого запроса до сертификата.</p>
+    <p class="lede" id="hello">5 модулей, 13 уроков и финальный тест — от первого запроса до сертификата.</p>
     <div class="progress" id="progressBar" aria-hidden="true"></div>
     <div class="progress-label" id="progressLabel"></div>
     <div id="moduleList"></div>
@@ -227,7 +227,7 @@
           fill="var(--clay)"/></svg></div>
       <div class="ct">Сертификат</div>
       <div class="cname" id="certName">Студент курса</div>
-      <div class="ctext">успешно прошёл курс «Claude 101 — твой гид по нейросетям»: 14 уроков и финальный тест</div>
+      <div class="ctext">успешно прошёл курс «Claude 101 — твой гид по нейросетям»: 13 уроков и финальный тест</div>
       <div class="cdate" id="certDate"></div>
     </div>
     <div class="foot">бот-гид по обучению · <b>Claude 101</b></div>
@@ -248,7 +248,7 @@ try {
 const u = tg.initDataUnsafe?.user;
 if (u?.first_name) {
   document.getElementById("hello").textContent =
-    u.first_name + ", впереди 5 модулей и 14 уроков — от первого запроса до сертификата.";
+    u.first_name + ", впереди 5 модулей, 13 уроков и финальный тест — от первого запроса до сертификата.";
 }
 
 /* ================= ПРОГРАММА КУРСА ================= */
