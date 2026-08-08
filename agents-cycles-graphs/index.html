@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Агенты, циклы и графы · курс</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf8f4;
+    --card: #ffffff;
+    --ink: #26241f;
+    --muted: #7c776c;
+    --line: #e8e3d9;
+    --clay: #c65d3b;
+    --clay-soft: #f3e3db;
+    --sage: #5f7d54;
+    --sage-soft: #e6ecdf;
+    --bad: #b5402c;
+    --bad-soft: #f4ddd7;
+    --bubble: #f0ebe1;
+    --shadow: 0 1px 2px rgba(38,36,31,.05), 0 6px 24px rgba(38,36,31,.06);
+    --display: "Spectral", Georgia, serif;
+    --body: "Golos Text", -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#211f1c; --card:#2b2925; --ink:#f0ede5; --muted:#9d968a;
+      --line:#3a3731; --clay:#e08960; --clay-soft:#453329; --sage:#97b385;
+      --sage-soft:#313a2c; --bad:#de6a4f; --bad-soft:#46302a; --bubble:#35322c;
+      --shadow:0 1px 2px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.25); }
+  }
+  :root[data-theme="dark"] { --paper:#211f1c; --card:#2b2925; --ink:#f0ede5; --muted:#9d968a;
+    --line:#3a3731; --clay:#e08960; --clay-soft:#453329; --sage:#97b385;
+    --sage-soft:#313a2c; --bad:#de6a4f; --bad-soft:#46302a; --bubble:#35322c;
+    --shadow:0 1px 2px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.25); }
+  :root[data-theme="light"] { --paper:#faf8f4; --card:#fff; --ink:#26241f; --muted:#7c776c;
+    --line:#e8e3d9; --clay:#c65d3b; --clay-soft:#f3e3db; --sage:#5f7d54;
+    --sage-soft:#e6ecdf; --bad:#b5402c; --bad-soft:#f4ddd7; --bubble:#f0ebe1;
+    --shadow:0 1px 2px rgba(38,36,31,.05),0 6px 24px rgba(38,36,31,.06); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:var(--paper); color:var(--ink); font:400 15.5px/1.6 var(--body);
+    -webkit-tap-highlight-color:transparent; }
+  .wrap { max-width:480px; margin:0 auto; padding:26px 18px 44px; }
+  .eyebrow { font:500 11.5px/1 var(--mono); letter-spacing:.18em; text-transform:uppercase;
+    color:var(--clay); margin-bottom:10px; }
+  h1 { font:600 28px/1.15 var(--display); letter-spacing:-.01em; text-wrap:balance; margin-bottom:8px; }
+  .lede { color:var(--muted); font-size:15px; margin-bottom:22px; max-width:42ch; }
+  .spark { display:inline-block; width:34px; height:34px; margin-bottom:14px; }
+  .spark svg { width:100%; height:100%; display:block; }
+  @media (prefers-reduced-motion:no-preference) {
+    .spark svg { animation:spin 40s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .view { animation:rise .35s ease both; }
+    @keyframes rise { from { opacity:0; transform:translateY(8px); } }
+  }
+  .progress { display:flex; gap:4px; margin-bottom:6px; }
+  .progress span { height:4px; flex:1; border-radius:2px; background:var(--line); }
+  .progress span.done { background:var(--clay); }
+  .progress-label { font:500 11.5px var(--mono); color:var(--muted); letter-spacing:.08em; margin-bottom:24px; }
+  .module { margin-bottom:22px; }
+  .module-title { font:600 13px var(--body); letter-spacing:.04em; text-transform:uppercase;
+    color:var(--muted); margin:0 2px 10px; }
+  .toc { display:flex; flex-direction:column; gap:8px; }
+  .lesson-item { background:var(--card); border:1px solid var(--line); border-radius:13px;
+    padding:13px 14px; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px;
+    cursor:pointer; transition:transform .12s ease; width:100%; text-align:left; color:var(--ink);
+    font:inherit; }
+  .lesson-item:active { transform:scale(.98); }
+  .st { width:22px; height:22px; border-radius:50%; flex:none; border:2px solid var(--line);
+    display:grid; place-items:center; color:transparent; font-size:12px; }
+  .lesson-item.done .st { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .lesson-item.final .st { border-color:var(--clay); }
+  .li-t { flex:1; min-width:0; font:500 14.5px/1.35 var(--body); }
+  .li-sub { font-size:12px; color:var(--muted); font-weight:400; margin-top:1px; }
+  .back { display:inline-flex; align-items:center; gap:7px; color:var(--clay); font:500 14px var(--body);
+    margin-bottom:20px; cursor:pointer; user-select:none; background:transparent; border:0; padding:0;
+    text-align:left; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px 18px;
+    margin-bottom:14px; box-shadow:var(--shadow); }
+  .card h2 { font:600 19px/1.3 var(--display); margin-bottom:10px; display:flex; align-items:baseline; gap:10px; }
+  .num { font:600 15px var(--mono); color:var(--clay); flex:none; }
+  .card p { color:var(--muted); font-size:14.5px; margin-bottom:10px; }
+  .card p:last-child { margin-bottom:0; }
+  .card b { color:var(--ink); font-weight:600; }
+  .card ul { margin:0 0 10px 18px; color:var(--muted); font-size:14.5px; }
+  .card li { margin-bottom:6px; }
+  .card li::marker { color:var(--clay); }
+  .ex { position:relative; background:var(--bubble); color:var(--ink); border-radius:16px 16px 4px 16px;
+    padding:12px 14px; margin:12px 0 12px 24px; font:400 13px/1.55 var(--mono); }
+  .ex::before { content:"промпт"; position:absolute; top:-8px; right:12px; font:500 9.5px var(--mono);
+    letter-spacing:.12em; text-transform:uppercase; color:var(--muted); background:var(--card); padding:1px 7px;
+    border-radius:99px; border:1px solid var(--line); }
+  .ex.good { background:var(--sage-soft); }
+  .ex.good::before { content:"✓ сильный промпт"; color:var(--sage); }
+  .ex.bad { background:var(--bad-soft); }
+  .ex.bad::before { content:"✕ слабый промпт"; color:var(--bad); }
+  .tip { display:flex; gap:10px; background:var(--clay-soft); border-radius:14px; padding:13px 14px;
+    font-size:13.5px; margin:12px 0 0; color:var(--ink); }
+  .diagram { background:var(--bubble); border:1px solid var(--line); border-radius:14px; padding:14px;
+    margin:12px 0; color:var(--ink); font:500 13px/1.65 var(--mono); white-space:pre-wrap; }
+  .glossary { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:17px 18px;
+    margin:0 0 22px; box-shadow:var(--shadow); }
+  .glossary h2 { font:600 18px/1.3 var(--display); margin-bottom:8px; }
+  .glossary p { color:var(--muted); font-size:14px; margin-bottom:10px; }
+  .glossary p:last-child { margin-bottom:0; }
+  .glossary b { color:var(--ink); }
+  .tip b { color:var(--clay); }
+  .q { margin-bottom:18px; }
+  .q .qq { font:600 15px/1.4 var(--body); margin-bottom:10px; }
+  .opt { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+    font-size:14px; margin-bottom:8px; cursor:pointer; user-select:none; transition:transform .1s ease; }
+  .opt:active { transform:scale(.98); }
+  .opt.right { background:var(--sage-soft); border-color:var(--sage); }
+  .opt.wrong { background:var(--bad-soft); border-color:var(--bad); }
+  .expl { display:none; font-size:13px; color:var(--muted); padding:9px 13px; border-left:2px solid var(--clay); }
+  .expl.show { display:block; }
+  .score { font:600 16px var(--display); text-align:center; padding:8px 0 2px; }
+  .finish { width:100%; border:0; border-radius:13px; padding:15px; font:600 15px var(--body);
+    cursor:pointer; background:var(--clay); color:#fff; margin-top:6px; transition:opacity .15s; }
+  .finish:focus-visible, .opt:focus-visible, .lesson-item:focus-visible { outline:2px solid var(--clay); outline-offset:2px; }
+  .finish[disabled] { opacity:.35; cursor:default; }
+  .finish.done { background:var(--sage-soft); color:var(--sage); }
+  .cert { position:relative; background:var(--card); border:2px solid var(--clay); border-radius:18px;
+    padding:42px 26px 28px; text-align:center; box-shadow:var(--shadow); margin-bottom:16px; overflow:hidden; }
+  .cert::before { content:""; position:absolute; inset:9px; border:1px solid var(--clay-soft); border-radius:11px; pointer-events:none; }
+  .cert::after { content:""; position:absolute; left:0; right:0; top:0; height:6px; background:var(--clay); }
+  .cert .csp { width:48px; height:48px; margin:0 auto 16px; }
+  .cert .csp svg { width:100%; height:100%; }
+  .cert .ct { font:600 14px var(--mono); letter-spacing:.3em; text-transform:uppercase; color:var(--clay); margin-bottom:4px; }
+  .cert .csub { font:500 10.5px var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
+  .cert .rule { display:flex; align-items:center; gap:12px; color:var(--clay); margin:0 12px 18px; }
+  .cert .rule::before, .cert .rule::after { content:""; flex:1; height:1px; background:var(--line); }
+  .cert .cname { font:600 30px/1.15 var(--display); letter-spacing:-.01em; margin-bottom:14px; text-wrap:balance; }
+  .cert .ctext { color:var(--muted); font-size:14px; max-width:36ch; margin:0 auto 14px; }
+  .cert .ctext b { color:var(--ink); }
+  .cert .cscore { display:inline-block; font:600 13px var(--mono); color:var(--clay); background:var(--clay-soft);
+    border-radius:99px; padding:7px 16px; margin-bottom:20px; letter-spacing:.04em; }
+  .cert .cdate { font:500 11.5px var(--mono); color:var(--muted); border-top:1px solid var(--line); padding-top:14px; margin:0 12px; letter-spacing:.08em; }
+  .foot { text-align:center; color:var(--muted); font-size:12px; margin-top:28px; font-family:var(--mono); }
+  .foot b { color:var(--clay); font-weight:500; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="home" class="view">
+    <div class="spark" aria-hidden="true"><svg viewBox="0 0 34 34" fill="none">
+      <path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z" fill="var(--clay)"/>
+    </svg></div>
+    <div class="eyebrow">Практика с Claude · курс 2</div>
+    <h1>Агенты, циклы и графы</h1>
+    <p class="lede" id="hello">4 модуля, 9 уроков и финальный тест — от понятия «агент» до своей рабочей схемы.</p>
+    <div class="progress" id="progressBar" aria-hidden="true"></div>
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="glossary">
+      <h2>Перед стартом — три слова</h2>
+      <p><b>Агент</b> — ИИ-помощник с целью, доступными инструментами, памятью и проверкой результата. Он не действует «сам по себе»: ему нужны правила и разрешения.</p>
+      <p><b>Рабочий процесс</b> (workflow) — понятная цепочка шагов: что сделать, что проверить и что передать дальше.</p>
+      <p><b>Граф</b> — карта такого процесса: блоки-задачи соединены стрелками только там, где один результат нужен следующему.</p>
+      <p><b>URL</b> — адрес страницы в интернете, то есть обычная ссылка.</p>
+      <p>Все английские слова в примерах сразу переведены. Если термин незнаком, открывай урок и смотри пояснение рядом с ним.</p>
+    </div>
+    <div id="moduleList"></div>
+    <div class="foot">бот-гид по обучению · <b>курс 2</b></div>
+  </div>
+
+  <div id="lesson" class="view hidden">
+    <button class="back" id="backBtn" type="button">← К программе курса</button>
+    <div class="eyebrow" id="lKicker"></div>
+    <h1 id="lTitle"></h1>
+    <p class="lede" id="lSub"></p>
+    <div id="lBody"></div>
+    <button class="finish" id="finishBtn"></button>
+    <button class="finish hidden" id="nextBtn" type="button"></button>
+    <div class="foot"><b>Агенты, циклы и графы</b></div>
+  </div>
+
+  <div id="test" class="view hidden">
+    <button class="back" id="backBtn2" type="button">← К программе курса</button>
+    <div class="eyebrow">Финал · проверка знаний</div>
+    <h1>Финальный тест</h1>
+    <p class="lede">8 вопросов по всему курсу. Нужно 6 правильных ответов, затем — два коротких вопроса, и появится сертификат.</p>
+    <div class="card"><div id="tQuiz"></div>
+      <div class="score hidden" id="tScore"></div>
+      <button class="finish" id="testBtn" disabled>Ответь на все вопросы</button>
+    </div>
+    <div class="foot"><b>Агенты, циклы и графы</b></div>
+  </div>
+
+  <div id="survey" class="view hidden">
+    <div class="eyebrow">Почти готово · два вопроса о курсе</div>
+    <h1>Тест сдан! 🎉</h1>
+    <p class="lede">Ответь на два коротких вопроса — и забирай сертификат.</p>
+    <div class="card"><div id="sQuiz"></div>
+      <button class="finish" id="surveyBtn" disabled>Ответь на оба вопроса</button>
+    </div>
+    <div class="foot"><b>Агенты, циклы и графы</b></div>
+  </div>
+
+  <div id="cert" class="view hidden">
+    <button class="back" id="backBtn3" type="button">← К программе курса</button>
+    <div class="cert">
+      <div class="csp"><svg viewBox="0 0 34 34" fill="none"><path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z" fill="var(--clay)"/></svg></div>
+      <div class="ct">Сертификат</div>
+      <div class="csub">о прохождении курса</div>
+      <div class="cname" id="certName">Студент курса</div>
+      <div class="rule">✳</div>
+      <div class="ctext">успешно прошёл(ла) курс<br><b>«Агенты, циклы и графы»</b><br>9 уроков и финальный тест</div>
+      <div class="cscore" id="certScore"></div>
+      <div class="cdate" id="certDate"></div>
+    </div>
+    <div class="foot">бот-гид по обучению · <b>курс 2</b></div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready(); tg.expand();
+try {
+  if (tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme;
+  tg.onEvent && tg.onEvent("themeChanged", () => { document.documentElement.dataset.theme = tg.colorScheme; });
+} catch (e) {}
+const u = tg.initDataUnsafe?.user;
+if (u?.first_name) document.getElementById("hello").textContent = u.first_name + ", впереди 4 модуля, 9 уроков и финальный тест — от агента до своей рабочей схемы.";
+
+const MODULES = [
+{ title: "Модуль 1 · Агенты", lessons: [
+  { id:"m1l1", title:"Чат и агент", sub:"Цель вместо цепочки инструкций", body:`
+    <div class="card"><h2><span class="num">✳</span>Что меняется</h2>
+      <p>Обычный чат работает так: ты спросил, получил ответ и сам решаешь, что делать дальше. <b>Агент</b> — это ИИ-помощник, которому задали цель, разрешили пользоваться нужными инструментами и дали правила проверки.</p>
+      <p>Минимальная формула агента: <b>цель + инструменты + память + цикл</b>. <b>Инструменты</b> — это поиск, файлы, код или подключённые сервисы. <b>Память</b> хранит краткое состояние работы. <b>Цикл</b> повторяет работу, пока результат не пройдёт проверку или не закончится лимит попыток.</p>
+      <div class="tip"><span>⚠️</span><span>Агент не получает доступ к компьютеру автоматически. Если инструмент не подключён или нет разрешения, он не сможет им воспользоваться. Человек задаёт границы и принимает важные решения.</span></div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Отличие на практике</h2>
+      <div class="ex bad">Перескажи эту статью</div>
+      <div class="ex good">Найди три надежных источника по теме, выдели ключевые утверждения, сверь противоречия и подготовь справку с ссылками</div>
+      <p>Во втором запросе описан не только ответ, а готовый результат и путь к нему. Claude сможет выполнить несколько шагов сам <b>только при наличии подходящих инструментов и разрешений</b>.</p>
+    </div>` },
+  { id:"m1l2", title:"Уровни самостоятельности", sub:"От чата до автономного процесса", body:`
+    <div class="card"><h2><span class="num">01</span>Четыре уровня</h2>
+      <p><b>Автономность</b> — это просто ответ на вопрос: «Сколько шагов помощник делает сам, а сколько — человек?»</p>
+      <ul><li><b>Чат:</b> человек решает, что делать после каждого ответа.</li><li><b>Инструменты:</b> ИИ сам решает, когда искать, читать файл или запускать код — если доступ разрешён.</li><li><b>Многошаговый процесс:</b> ИИ разбивает цель на шаги и проверяет результат.</li><li><b>Полная автономия:</b> процесс запускается по расписанию или событию и идёт без человека внутри цикла.</li></ul>
+      <div class="tip"><span>💡</span><span><b>Правило:</b> выбирай минимальный уровень, который убирает ручную рутину. Даже автономному процессу нужны лимиты, журнал действий и точка, где человек может остановить работу.</span></div>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Три полезных агента</h2>
+      <p><b>Исследователь</b> ищет ответ и оставляет источник под каждым важным утверждением.</p>
+      <p><b>Аналитик</b> объясняет цифры, находит тенденции, необычные значения и нестыковки.</p>
+      <p><b>Агент для кода</b> сначала формулирует понимание задачи, учитывает необычные случаи и проверяет ошибки.</p>
+    </div>` },
+  { id:"m1l3", title:"Память и контрольные точки", sub:"Как продолжать работу без потери контекста", body:`
+    <div class="card"><h2><span class="num">✳</span>Почему агент забывает</h2>
+      <p><b>Окно контекста</b> — это рабочая память текущего диалога: в неё помещаются последние сообщения, файлы и правила, которые модель видит прямо сейчас. Оно ограничено по размеру, поэтому очень длинный разговор может вытеснить исходную цель.</p>
+      <p>Новая сессия начинается без старого диалога. После сбоя неясно, что уже пробовали и где остановились. Решение — короткая <b>контрольная точка</b>: запись состояния, с которой можно продолжить работу.</p>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Шаблон памяти</h2>
+      <div class="ex good">Перед продолжением запиши: 1) цель; 2) что сделано; 3) какие решения приняты и почему; 4) что осталось; 5) что нужно для продолжения. Уложись в 150 слов и пиши конкретно.</div>
+      <p>Когда разговор стал слишком длинным, сожми главное: цель, сделанное, решения и следующие шаги. <b>Системная инструкция</b> — это постоянные правила помощника: его роль, формат ответа и ограничения. Их не нужно переписывать в каждом сообщении.</p>
+    </div>` },
+]},
+{ title: "Модуль 2 · Циклы", lessons: [
+  { id:"m2l1", title:"План, действие, проверка", sub:"Когда повторение становится движением вперед", body:`
+    <div class="card"><h2><span class="num">01</span>Пять шагов цикла</h2>
+      <ul><li><b>План (PLAN):</b> понять задачу и критерии.</li><li><b>Действие (EXECUTE):</b> сделать работу.</li><li><b>Проверка (CHECK):</b> сверить результат с целью.</li><li><b>Исправление (ITERATE):</b> улучшить самое слабое место.</li><li><b>Стоп (STOP):</b> остановиться после успеха или лимита.</li></ul>
+      <p><b>Критерий</b> — признак, по которому можно проверить результат: например, «в тексте есть три источника, даты и нет неподтверждённых фактов». Циклом процесс делает не повторение, а <b>проверка, которая может ответить «нет»</b>.</p>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Ограничение обязательно</h2>
+      <div class="tip"><span>⚠️</span><span>У цикла должны быть два финала: задача сделана или достигнут жёсткий предел попыток. Например: «после 8 проходов остановись и доложи, что произошло». Без лимита процесс может тратить время и деньги бесконечно.</span></div>
+    </div>` },
+  { id:"m2l2", title:"Самопроверяющийся цикл", sub:"Готовый шаблон для первой практики", body:`
+    <div class="card"><h2><span class="num">✳</span>Собери его одним промптом</h2>
+      <div class="ex good"><b>ЦЕЛЬ (GOAL):</b> что должно получиться.<br><b>КРИТЕРИИ (CRITERIA):</b> три измеримых признака хорошего результата.<br><b>КАЖДЫЙ ПРОХОД:</b> ЧЕРНОВИК (DRAFT) → ОЦЕНКА (SCORE) → ПРОБЕЛЫ (GAPS) → СЛЕДУЮЩЕЕ ДЕЙСТВИЕ.<br><b>ГОТОВО (DONE):</b> если каждый критерий получил 8 из 10. Иначе исправь самое слабое место и начни следующий проход.</div>
+      <p><b>Оценка 0–10:</b> 0 — признака нет, 5 — есть частично, 8 — достаточно для цели, 10 — сделано отлично и проверено. «Пробелы» — это конкретно то, чего не хватает. Слово <b>CALL</b> в подобных шаблонах часто означает «следующее действие», поэтому мы пишем его по-русски, чтобы не путать с телефонным звонком.</p>
+      <p>Сначала прогони задачу вручную. Если процесс нестабилен в одном диалоге, автоматизация лишь ускорит ошибки.</p>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Цена цикла</h2>
+      <p>Каждый проход повторно передаёт модели цель, прошлый результат, оценки и список недочётов. Текст растёт, поэтому десять проходов могут стоить дороже десяти обычных запросов.</p>
+      <p>Сравнивай затраты с пользой: сколько времени и денег ушло и сколько результата пригодилось. Правило «меньше половины — делай сам» — только ориентир, а не закон.</p>
+    </div>` },
+]},
+{ title: "Модуль 3 · Графы", lessons: [
+  { id:"m3l1", title:"Узлы и зависимости", sub:"Как описывать настоящий рабочий процесс", body:`
+    <div class="card"><h2><span class="num">✳</span>Две детали графа</h2>
+      <p><b>Граф</b> — это карта рабочего процесса: карточки-задачи соединены стрелками. <b>Узел</b> — одна работа, один вход и один выход. Не «изучи тему, сделай выжимку и напиши черновик», а что-то одно.</p>
+      <p><b>Ребро</b> — стрелка-зависимость: результат одного узла действительно нужен следующему. Просто привычный порядок шагов ребром не является.</p>
+      <div class="diagram" aria-label="Пример графа">собрать источники → проверить источники → написать справку
+
+стрелка означает: следующий шаг ждёт результат предыдущего</div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Контракт выхода</h2>
+      <div class="ex good"><b>РАБОТА (JOB):</b> изучить цены одного конкурента<br><b>ВХОД (IN):</b> название конкурента, ссылка (URL)<br><b>ВЫХОД (OUT):</b> цена, тариф, источник, дата проверки<br><b>ПРАВИЛО (RULE):</b> если форма не совпала — отклонить и переделать</div>
+      <p><b>Контракт выхода</b> — заранее договорённая форма результата. Жёсткая форма позволяет следующему узлу читать работу без человека посередине.</p>
+    </div>` },
+  { id:"m3l2", title:"Ромб: задачи параллельно", sub:"Убираем ложные ожидания", body:`
+    <div class="card"><h2><span class="num">01</span>Настоящая зависимость</h2>
+      <p>Спроси про каждую стрелку: результат левого шага действительно попадает внутрь правого? Если нет, это <b>ложное ребро</b>, и задачи можно запускать одновременно.</p>
+      <p>Разбор трёх конкурентов не обязан идти по очереди, если каждый разбор независим. В конце отдельный узел собирает все результаты.</p>
+      <div class="diagram" aria-label="Параллельные задачи">изучить конкурента А ─┐
+изучить конкурента Б ─┼→ собрать общий вывод
+изучить конкурента В ─┘
+
+А, Б и В не ждут друг друга — поэтому их можно запускать параллельно.</div>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Узор «веер — сборка»</h2>
+      <div class="tip"><span>✳</span><span>Параллельные задачи должны быть действительно независимы, а финальному узлу должны быть нужны все результаты. Иначе часть работы была лишней.</span></div>
+      <p>Скорость появляется не из-за меньшего объёма работы, а из-за удаления ожидания там, где оно не нужно. Если задача Б использует результат задачи А, запускать их параллельно нельзя.</p>
+    </div>` },
+  { id:"m3l3", title:"Отдельный проверяющий агент", sub:"Чистый контекст против слепых зон", body:`
+    <div class="card"><h2><span class="num">✳</span>Не проверяй домашку сам</h2>
+      <p>Агент, который написал результат, продолжает видеть собственную логику и легко пропускает ошибку. Поэтому проверяющий — отдельный узел.</p>
+      <p><b>Чистый контекст</b> означает, что проверяющий видит саму находку и правила проверки, но не видит длинный диалог автора. Например: автор собрал три источника, а проверяющий получил только эти три ссылки и проверяет их заново. Если у двух агентов общий контекст, это один агент, который притворяется двумя.</p>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Три проверки</h2>
+      <ul><li>Это утверждение вообще верно?</li><li>Источник достаточно свежий?</li><li>Ссылка ведёт на настоящий источник и подтверждает именно это?</li></ul>
+      <div class="ex good"><b>ВХОД (INPUT):</b> только находка<br><b>ОСТАВИТЬ:</b> минимум 2 из 3 проверок пройдены<br><b>ОТКЛОНИТЬ:</b> 2 или 3 проверки не пройдены</div>
+      <p>Если факт нельзя проверить или источник не подтверждает именно это утверждение, находку лучше не передавать в финальный текст.</p>
+    </div>` },
+]},
+{ title: "Модуль 4 · Сборка", lessons: [
+  { id:"m4l1", title:"Собираем свою рабочую схему", sub:"Итоговый процесс для реальной задачи", body:`
+    <div class="card"><h2><span class="num">01</span>Собери снизу вверх</h2>
+      <p><b>Workflow (рабочий процесс)</b> — это вся схема: цель, отдельные шаги, зависимости, проверки и итоговая сборка.</p>
+      <ul><li>Сформулируй цель как готовый результат.</li><li>Выдели узлы: у каждого одна задача, вход и форма выхода.</li><li>Укажи зависимости только там, где они настоящие.</li><li>Независимые узлы запусти параллельно.</li><li>Перед итоговой сборкой поставь отдельного проверяющего.</li></ul>
+      <div class="diagram" aria-label="Пример рабочего процесса">цель → собрать данные → проверить данные → собрать итог
+                         ↘ независимые задачи ↗</div>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Финальный чек-лист</h2>
+      <ul><li>Проверка может отклонить результат.</li><li>Есть лимит попыток и условие остановки.</li><li>Контрольная точка сохраняет состояние.</li><li>Финальный текст строится только из выживших находок.</li></ul>
+      <div class="tip"><span>🎓</span><span><b>Практика:</b> выбери задачу на ближайшую неделю и собери для неё агента, самопроверяющийся цикл и маленький граф. Сравни результат с обычным чатом.</span></div>
+      <p>«Проверенная находка» — это факт или результат, который прошёл правила проверки. Не добавляй в финальный текст то, что проверяющий отклонил.</p>
+    </div>` },
+]},
+];
+
+const FINAL_QUIZ = [
+  {q:"Что превращает обычный чат в агента?",a:[["Более длинный промпт",0,"Длина сама по себе не создаёт агента."],["Цель, инструменты, память и цикл",1,"Верно: именно окружение вокруг модели даёт автономность."],["Только новая модель",0,"Та же модель может работать и в чате, и в агентном процессе."]]},
+  {q:"Что является главным признаком настоящего цикла?",a:[["Модель повторяет ответ несколько раз",0,"Повторение без контроля не улучшает результат."],["Проверка может забраковать результат",1,"Да. Честная проверка превращает повторение в движение вперёд."],["Цикл работает без ограничения попыток",0,"Без лимита он может бесконечно тратить ресурсы."]]},
+  {q:"Что лучше всего сохранить в контрольной точке?",a:[["Только последний ответ",0,"Этого недостаточно для продолжения."],["Исходную цель, решения, сделанное и следующие шаги",1,"Верно: это минимальный набор для новой сессии."],["Весь чат целиком",0,"Контрольная точка должна быть короткой и конкретной."]]},
+  {q:"Что такое узел в графе?",a:[["Любой абзац текста",0,"Узел — это рабочая единица, а не кусок текста."],["Одна работа с заданным входом и выходом",1,"Да. Чёткий узел можно передать следующему без ручной перекладки."],["Всегда финальный ответ",0,"Финальный ответ — только один из возможных узлов."]]},
+  {q:"Когда два узла можно запускать параллельно?",a:[["Когда они записаны рядом",0,"Порядок записи не создаёт зависимости."],["Когда второй не использует результат первого",1,"Верно: между ними нет настоящего ребра."],["Никогда",0,"Независимые задачи как раз и дают ускорение графа."]]},
+  {q:"Зачем нужен отдельный проверяющий агент?",a:[["Чтобы пересказать работу автора",0,"Проверяющий должен пытаться найти причину для отказа."],["Чтобы проверить находку в чистом контексте",1,"Да. Он не должен видеть рассуждение автора."],["Чтобы увеличить количество текста",0,"Цель — надежность, а не объём." ]]},
+  {q:"Какие три вопроса задаёт проверяющий находке?",a:[["Длинная ли она, красивая ли и новая ли",0,"Это не критерии достоверности."],["Верна ли, свежа ли и настоящий ли источник",1,"Верно: три независимые проверки."],["Понравится ли она автору, клиенту и модели",0,"Проверка должна опираться на факты." ]]},
+  {q:"Что объединяет агент, цикл и граф?",a:[["Агент даёт автономность, цикл — надежность, граф — скорость",1,"Именно такая последовательность усиливает рабочий процесс."],["Все три нужны в каждой задаче",0,"Не каждая задача требует всех уровней."],["Они заменяют человека во всех решениях",0,"Человек всё равно отвечает за важные решения." ]]},
+];
+const PASS_SCORE = 6;
+const SURVEY = [
+  {q:"Насколько понятным был курс?",a:["Совсем непонятно","Скорее непонятно","Нейтрально","Понятно","Очень понятно"]},
+  {q:"Насколько вероятно, что ты применишь рабочую схему на практике?",a:["Точно нет","Вряд ли","Не уверен(а)","Скорее да","Обязательно"]},
+];
+
+const KEY = "agents_graphs_v1";
+let store = {};
+try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+const ALL = MODULES.flatMap(m => m.lessons);
+const TOTAL = ALL.length + 1;
+const $ = id => document.getElementById(id);
+let currentId = null;
+function doneCount() { return ALL.filter(l => store[l.id]).length + (store.testPassed ? 1 : 0); }
+function show(id) { ["home","lesson","test","survey","cert"].forEach(v => $(v).classList.add("hidden"));
+  const el=$(id); el.classList.remove("hidden"); el.classList.remove("view"); void el.offsetWidth; el.classList.add("view"); window.scrollTo(0,0); }
+function renderHome() {
+  show("home"); const dc=doneCount();
+  $("progressBar").innerHTML=Array.from({length:TOTAL},(_,i)=>`<span class="${i<dc?"done":""}"></span>`).join("");
+  $("progressLabel").textContent=dc===TOTAL?"курс пройден — сертификат твой! ✳":"пройдено "+dc+" из "+TOTAL;
+  let html="";
+  MODULES.forEach(m=>{ html+=`<div class="module"><div class="module-title">${m.title}</div><div class="toc">`;
+    m.lessons.forEach(l=>{ html+=`<button class="lesson-item ${store[l.id]?"done":""}" data-id="${l.id}" type="button"><div class="st">✓</div><div class="li-t">${l.title}<div class="li-sub">${l.sub}</div></div></button>`; });
+    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?"✓":"★"}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан — открыть сертификат":"8 вопросов · 6 верных → сертификат"}</div></div></button>`;
+    html+=`</div></div>`; });
+  $("moduleList").innerHTML=html;
+  document.querySelectorAll(".lesson-item").forEach(el=>{ el.addEventListener("click",()=>{const id=el.dataset.id; if(id==="__test"){store.testPassed?renderCert():renderTest();}else openLesson(id);}); });
+}
+function openLesson(id) { currentId=id; const idx=ALL.findIndex(l=>l.id===id), l=ALL[idx], mod=MODULES.find(m=>m.lessons.includes(l)); show("lesson");
+  $("lKicker").textContent=mod.title+" · урок "+(idx+1)+" из "+ALL.length; $("lTitle").textContent=l.title; $("lSub").textContent=l.sub; $("lBody").innerHTML=l.body;
+  renderLessonActions(); }
+function renderLessonActions(){
+  const btn=$("finishBtn"), next=$("nextBtn"), idx=ALL.findIndex(l=>l.id===currentId), last=idx===ALL.length-1;
+  if(store[currentId]){
+    btn.classList.add("done"); btn.textContent="✓ Урок пройден";
+    next.classList.remove("hidden"); next.textContent=last?(store.testPassed?"К сертификату →":"К финальному тесту →"):"Следующий урок →";
+  }else{
+    btn.classList.remove("done"); btn.textContent="Отметить урок пройденным";
+    next.classList.add("hidden");
+  }
+}
+$("finishBtn").addEventListener("click",()=>{if(!store[currentId]){store[currentId]=true;save();if(tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}}}renderLessonActions();});
+$("nextBtn").addEventListener("click",()=>{const idx=ALL.findIndex(l=>l.id===currentId);if(idx<ALL.length-1)openLesson(ALL[idx+1].id);else if(store.testPassed)renderCert();else renderTest();});
+function renderTest(){ show("test"); $("tScore").classList.add("hidden"); const answers={};
+  $("tQuiz").innerHTML=FINAL_QUIZ.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a[0]}</div>`).join("")}<div class="expl"></div></div>`).join("");
+  const btn=$("testBtn");btn.disabled=true;btn.textContent="Ответь на все вопросы";
+  document.querySelectorAll("#tQuiz .q").forEach(qEl=>{const qi=+qEl.dataset.qi;qEl.querySelectorAll(".opt").forEach(optEl=>{const pick=()=>{if(qi in answers)return;const ai=+optEl.dataset.ai;answers[qi]=FINAL_QUIZ[qi].a[ai][1]===1;optEl.classList.add(answers[qi]?"right":"wrong");if(!answers[qi])qEl.querySelectorAll(".opt").forEach(o=>{if(FINAL_QUIZ[qi].a[+o.dataset.ai][1])o.classList.add("right");});const ex=qEl.querySelector(".expl");ex.textContent=FINAL_QUIZ[qi].a[ai][2];ex.classList.add("show");if(Object.keys(answers).length===FINAL_QUIZ.length){const score=Object.values(answers).filter(Boolean).length,passed=score>=PASS_SCORE;$("tScore").textContent="Твой результат: "+score+" из "+FINAL_QUIZ.length;$("tScore").classList.remove("hidden");btn.disabled=false;btn.textContent=passed?"🎓 Получить сертификат":"Попробовать ещё раз";btn.onclick=()=>{if(passed){store.testPassed=true;store.testScore=score;save();renderSurvey();}else renderTest();};}};optEl.addEventListener("click",pick);optEl.addEventListener("keydown",e=>{if(e.key==="Enter")pick();});});}); }
+function renderSurvey(){ show("survey"); const answers={}; $("sQuiz").innerHTML=SURVEY.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a}</div>`).join("")}</div>`).join(""); const btn=$("surveyBtn");btn.disabled=true;btn.textContent="Ответь на оба вопроса";
+  document.querySelectorAll("#sQuiz .q").forEach(qEl=>{const qi=+qEl.dataset.qi;qEl.querySelectorAll(".opt").forEach(optEl=>{const pick=()=>{qEl.querySelectorAll(".opt").forEach(o=>o.classList.remove("right"));optEl.classList.add("right");answers[qi]=+optEl.dataset.ai;if(Object.keys(answers).length===SURVEY.length){btn.disabled=false;btn.textContent="🎓 Получить сертификат";btn.onclick=()=>{store.survey=answers;save();renderCert();};}};optEl.addEventListener("click",pick);optEl.addEventListener("keydown",e=>{if(e.key==="Enter")pick();});});}); }
+function renderCert(){show("cert");$("certName").textContent=(u&&[u.first_name,u.last_name].filter(Boolean).join(" "))||"Студент курса";const sc=store.testScore??FINAL_QUIZ.length;$("certScore").textContent="✳ верных ответов: "+sc+" из "+FINAL_QUIZ.length+" ✳";const d=new Date();$("certDate").textContent=d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"})+" · @glgidbot";}
+$("backBtn").addEventListener("click",renderHome);$("backBtn2").addEventListener("click",renderHome);$("backBtn3").addEventListener("click",renderHome);
+renderHome();
+</script>
+</body>
+</html>
