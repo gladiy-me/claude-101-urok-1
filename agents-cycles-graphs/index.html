@@ -98,6 +98,13 @@
   .ex.good::before { content:"✓ сильный промпт"; color:var(--sage); }
   .ex.bad { background:var(--bad-soft); }
   .ex.bad::before { content:"✕ слабый промпт"; color:var(--bad); }
+  .prompt-box { margin:12px 0 16px; }
+  .prompt-box .ex, .prompt-box .diagram { margin-bottom:8px; }
+  .copy-prompt { border:1px solid var(--line); border-radius:10px; padding:8px 11px; font:500 12px var(--body);
+    cursor:pointer; background:var(--paper); color:var(--clay); transition:background .15s, transform .1s; }
+  .copy-prompt:active { transform:scale(.98); }
+  .copy-prompt:hover { background:var(--clay-soft); }
+  .copy-prompt:focus-visible { outline:2px solid var(--clay); outline-offset:2px; }
   .tip { display:flex; gap:10px; background:var(--clay-soft); border-radius:14px; padding:13px 14px;
     font-size:13.5px; margin:12px 0 0; color:var(--ink); }
   .diagram { background:var(--bubble); border:1px solid var(--line); border-radius:14px; padding:14px;
@@ -153,7 +160,7 @@
     </svg></div>
     <div class="eyebrow">Практика с Claude · курс 2</div>
     <h1>Агенты, циклы и графы</h1>
-    <p class="lede" id="hello">4 модуля, 9 уроков и финальный тест — от понятия «агент» до своей рабочей схемы.</p>
+    <p class="lede" id="hello">5 модулей, 10 уроков и финальный тест — от понятия «агент» до готовых промтов и своей рабочей схемы.</p>
     <div class="progress" id="progressBar" aria-hidden="true"></div>
     <div class="progress-label" id="progressLabel"></div>
     <div class="glossary">
@@ -183,7 +190,7 @@
     <button class="back" id="backBtn2" type="button">← К программе курса</button>
     <div class="eyebrow">Финал · проверка знаний</div>
     <h1>Финальный тест</h1>
-    <p class="lede">8 вопросов по всему курсу. Нужно 6 правильных ответов, затем — два коротких вопроса, и появится сертификат.</p>
+    <p class="lede">9 вопросов по всему курсу. Нужно 7 правильных ответов, затем — два коротких вопроса, и появится сертификат.</p>
     <div class="card"><div id="tQuiz"></div>
       <div class="score hidden" id="tScore"></div>
       <button class="finish" id="testBtn" disabled>Ответь на все вопросы</button>
@@ -209,7 +216,7 @@
       <div class="csub">о прохождении курса</div>
       <div class="cname" id="certName">Студент курса</div>
       <div class="rule">✳</div>
-      <div class="ctext">успешно прошёл(ла) курс<br><b>«Агенты, циклы и графы»</b><br>9 уроков и финальный тест</div>
+      <div class="ctext">успешно прошёл(ла) курс<br><b>«Агенты, циклы и графы»</b><br>10 уроков и финальный тест</div>
       <div class="cscore" id="certScore"></div>
       <div class="cdate" id="certDate"></div>
     </div>
@@ -225,7 +232,7 @@ try {
   tg.onEvent && tg.onEvent("themeChanged", () => { document.documentElement.dataset.theme = tg.colorScheme; });
 } catch (e) {}
 const u = tg.initDataUnsafe?.user;
-if (u?.first_name) document.getElementById("hello").textContent = u.first_name + ", впереди 4 модуля, 9 уроков и финальный тест — от агента до своей рабочей схемы.";
+if (u?.first_name) document.getElementById("hello").textContent = u.first_name + ", впереди 5 модулей, 10 уроков и финальный тест — от агента до готовых промтов и своей рабочей схемы.";
 
 const MODULES = [
 { title: "Модуль 1 · Агенты", lessons: [
@@ -333,6 +340,52 @@ const MODULES = [
       <p>«Проверенная находка» — это факт или результат, который прошёл правила проверки. Не добавляй в финальный текст то, что проверяющий отклонил.</p>
     </div>` },
 ]},
+{ title: "Модуль 5 · Библиотека промтов", lessons: [
+  { id:"m5l1", title:"Готовые агенты из статьи", sub:"Скопируй, подставь свою задачу и запусти", body:`
+    <div class="card"><h2><span class="num">✳</span>Как пользоваться библиотекой</h2>
+      <p>Ниже — готовые заготовки для ролей из статьи. Скопируй промт, замени слова в <b>[квадратных скобках]</b> и добавь свои материалы: тему, таблицу, файл или ссылку.</p>
+      <p>Для постоянного агента вставь промт в системные инструкции. Для разовой задачи отправь его обычным сообщением вместе с входными данными.</p>
+      <div class="tip"><span>⚠️</span><span>Не вставляй пароли, токены и персональные данные. Если задача важная, оставь финальное решение за человеком и попроси агента показать, что именно он проверил.</span></div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Исследовательский агент</h2>
+      <p>Подходит для справок, обзоров, конкурентного анализа и поиска фактов. Его задача — оставить только то, что прямо отвечает на вопрос.</p>
+      <div class="prompt-box"><div class="ex good">Ты — исследовательский агент. Твоя задача — найти то, что действительно важно по теме [ТЕМА], а не собрать всё подряд.<br><br>Работай так:<br>1. Разбей задачу на 3–4 конкретных подвопроса.<br>2. Ищи ответ на каждый подвопрос отдельно.<br>3. Для каждой находки спроси: это прямой ответ или просто что-то рядом?<br>4. Оставляй только прямые ответы, остальное отбрасывай.<br>5. Подготовь структурированную сводку: главные находки, источник под каждой находкой и то, что надёжно найти не удалось.<br><br>Правила:<br>— у каждого важного утверждения должен быть источник;<br>— если источники противоречат, покажи противоречие и не выбирай сторону молча;<br>— если надёжного ответа нет, скажи это прямо и не додумывай;<br>— укажи дату проверки источников.</div><button class="copy-prompt" type="button">Скопировать промт</button></div>
+      <p><b>Пример задачи:</b> «Сравни три сервиса для команды из пяти человек по цене, главным возможностям и последним изменениям за год».</p>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Агент для анализа данных</h2>
+      <p>Подходит для CSV, таблиц и отчётов. Он не перечисляет столбцы, а объясняет, что данные означают и какое действие из них следует.</p>
+      <div class="prompt-box"><div class="ex good">Ты — агент для анализа данных. Твоя работа — понять, что данные на самом деле говорят, а не просто описать, что в них лежит.<br><br>Входные данные: [ВСТАВЬ ТАБЛИЦУ, CSV ИЛИ ОПИСАНИЕ].<br>Вопрос, на который нужно ответить: [ВОПРОС].<br><br>Работай так:<br>1. Определи, что измеряют данные и на какой вопрос они способны ответить.<br>2. Найди закономерности, выбросы, тренды и неожиданные значения.<br>3. Отметь пропуски, подозрительные всплески и нестыковки.<br>4. Для каждой находки объясни её смысл и укажи, на каких строках или цифрах она основана.<br>5. Расставь находки по важности, а не по порядку появления.<br><br>Если данные не позволяют ответить на вопрос, скажи это прямо. В конце закончи одним предложением: «Самое важное действие: [действие]».</div><button class="copy-prompt" type="button">Скопировать промт</button></div>
+    </div>
+    <div class="card"><h2><span class="num">03</span>Агент для кода</h2>
+      <p>Подходит для написания, исправления и разбора кода. Важная привычка: сначала понять задачу, затем написать решение, затем проверить края и ошибки.</p>
+      <div class="prompt-box"><div class="ex good">Ты — агент для кода. Твоя работа — выдавать работающий и проверяемый код, а не много обещаний.<br><br>Задача: [ОПИШИ, ЧТО ДОЛЖЕН ДЕЛАТЬ КОД].<br>Язык и окружение: [ЯЗЫК, ВЕРСИЯ, ФРЕЙМВОРК].<br>Текущий код или ошибка: [ВСТАВЬ КОД ИЛИ ТЕКСТ ОШИБКИ].<br><br>Работай так:<br>1. Сначала в 2–3 предложениях напиши, как ты понял задачу.<br>2. Назови разумные допущения, если требования неясны.<br>3. Дай чистое решение со смысловыми именами и понятными комментариями к блокам.<br>4. Добавь обработку ошибок и перечисли крайние случаи, на которых решение может сломаться.<br>5. Проверь решение на этих случаях и объясни, как его запустить.<br><br>Если исправляешь баг, сначала одной фразой объясни причину, затем покажи исправление. Не скрывай проблему молча и не утверждай, что код работает, если ты его не проверил.</div><button class="copy-prompt" type="button">Скопировать промт</button></div>
+    </div>
+    <div class="card"><h2><span class="num">04</span>Контрольная точка для новой сессии</h2>
+      <p>Сохрани её, когда разговор стал длинным, задача прервалась или нужно передать работу другому человеку.</p>
+      <div class="prompt-box"><div class="ex good">Прежде чем продолжить, запиши контрольную точку:<br>1. Что уже сделано?<br>2. Какие решения приняты и почему?<br>3. Что ещё предстоит?<br>4. Что понадобится, чтобы продолжить в новой сессии?<br><br>Уложись в 150 слов. Пиши конкретно: размытая контрольная точка бесполезна.</div><button class="copy-prompt" type="button">Скопировать промт</button></div>
+      <p>В новой сессии добавь перед контрольной точкой: «Подтверди, что понимаешь, на чём мы остановились, назови следующий шаг и продолжай, не повторяя уже сделанное».</p>
+    </div>
+    <div class="card"><h2><span class="num">05</span>Независимый проверяющий агент</h2>
+      <p>Проверяющий получает только одну находку и правила проверки — без длинного диалога автора. Так он не наследует его уверенность и ошибки.</p>
+      <div class="prompt-box"><div class="ex good">Ты — независимый проверяющий. Получи только одну находку и её источник.<br><br>Находка: [ВСТАВЬ ОДНО УТВЕРЖДЕНИЕ].<br>Источник: [ВСТАВЬ ССЫЛКУ ИЛИ ФАЙЛ].<br><br>Проверь отдельно:<br>1. Верно ли утверждение?<br>2. Свежий ли источник для этой задачи?<br>3. Настоящий ли это источник и подтверждает ли он именно это утверждение?<br><br>Верни результат в формате:<br>СТАТУС: PASS или FAIL<br>ПРОВЕРКИ: верность — PASS/FAIL; свежесть — PASS/FAIL; источник — PASS/FAIL<br>ОБЪЯСНЕНИЕ: 2–4 конкретных предложения.<br><br>Оставляй находку только если пройдены минимум 2 из 3 проверок. Если проверить нельзя, ставь FAIL, а не додумывай.</div><button class="copy-prompt" type="button">Скопировать промт</button></div>
+    </div>
+    <div class="card"><h2><span class="num">06</span>Шаблон графа для нескольких агентов</h2>
+      <p>Когда задача большая, сначала запусти независимые исследования, затем проверку и только после неё — общую сборку.</p>
+      <div class="prompt-box"><div class="diagram" aria-label="Копируемый шаблон графа">workflow: competitive-research
+
+nodes:
+  research_a: изучить [КОМПАНИЮ А] — цена, функции, изменения, отзывы
+  research_b: изучить [КОМПАНИЮ Б] — цена, функции, изменения, отзывы
+  research_c: изучить [КОМПАНИЮ В] — цена, функции, изменения, отзывы
+  checker: проверить три отчёта на пропуски, устаревшие факты и уход от темы
+  synthesize: собрать сравнение по цене, функциям и позиционированию
+
+depends_on:
+  checker: [research_a, research_b, research_c]
+  synthesize: [checker]</div><button class="copy-prompt" type="button">Скопировать схему</button></div>
+      <div class="tip"><span>✳</span><span>А, Б и В не зависят друг от друга, поэтому их можно выполнять параллельно. Проверяющий ждёт все три отчёта, а итоговая сборка ждёт проверку.</span></div>
+    </div>` },
+]},
 ];
 
 const FINAL_QUIZ = [
@@ -344,8 +397,9 @@ const FINAL_QUIZ = [
   {q:"Зачем нужен отдельный проверяющий агент?",a:[["Чтобы пересказать работу автора",0,"Проверяющий должен пытаться найти причину для отказа."],["Чтобы проверить находку в чистом контексте",1,"Да. Он не должен видеть рассуждение автора."],["Чтобы увеличить количество текста",0,"Цель — надежность, а не объём." ]]},
   {q:"Какие три вопроса задаёт проверяющий находке?",a:[["Длинная ли она, красивая ли и новая ли",0,"Это не критерии достоверности."],["Верна ли, свежа ли и настоящий ли источник",1,"Верно: три независимые проверки."],["Понравится ли она автору, клиенту и модели",0,"Проверка должна опираться на факты." ]]},
   {q:"Что объединяет агент, цикл и граф?",a:[["Агент даёт автономность, цикл — надежность, граф — скорость",1,"Именно такая последовательность усиливает рабочий процесс."],["Все три нужны в каждой задаче",0,"Не каждая задача требует всех уровней."],["Они заменяют человека во всех решениях",0,"Человек всё равно отвечает за важные решения." ]]},
+  {q:"Как должен работать независимый проверяющий агент?",a:[["Видеть весь диалог автора и защищать его вывод",0,"Чистый контекст нужен именно для независимой проверки."],["Проверить верность, свежесть и настоящий источник находки",1,"Верно: эти три проверки помогают отсеять слабые находки."],["Просто переписать находку короче",0,"Проверяющий ищет ошибки, а не только сокращает текст."]] },
 ];
-const PASS_SCORE = 6;
+const PASS_SCORE = 7;
 const SURVEY = [
   {q:"Насколько понятным был курс?",a:["Совсем непонятно","Скорее непонятно","Нейтрально","Понятно","Очень понятно"]},
   {q:"Насколько вероятно, что ты применишь рабочую схему на практике?",a:["Точно нет","Вряд ли","Не уверен(а)","Скорее да","Обязательно"]},
@@ -369,14 +423,23 @@ function renderHome() {
   let html="";
   MODULES.forEach(m=>{ html+=`<div class="module"><div class="module-title">${m.title}</div><div class="toc">`;
     m.lessons.forEach(l=>{ html+=`<button class="lesson-item ${store[l.id]?"done":""}" data-id="${l.id}" type="button"><div class="st">✓</div><div class="li-t">${l.title}<div class="li-sub">${l.sub}</div></div></button>`; });
-    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?"✓":"★"}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан — открыть сертификат":"8 вопросов · 6 верных → сертификат"}</div></div></button>`;
+    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?"✓":"★"}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан — открыть сертификат":"9 вопросов · 7 верных → сертификат"}</div></div></button>`;
     html+=`</div></div>`; });
   $("moduleList").innerHTML=html;
   document.querySelectorAll(".lesson-item").forEach(el=>{ el.addEventListener("click",()=>{const id=el.dataset.id; if(id==="__test"){store.testPassed?renderCert():renderTest();}else openLesson(id);}); });
 }
+function wireCopyButtons(){
+  document.querySelectorAll("#lBody .copy-prompt").forEach(btn=>{btn.addEventListener("click",async()=>{
+    const source=btn.closest(".prompt-box")?.querySelector(".ex, .diagram"), text=source?.innerText?.trim(); if(!text)return;
+    let copied=false;
+    try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);copied=true;}}catch(e){}
+    if(!copied){const area=document.createElement("textarea");area.value=text;area.setAttribute("readonly","");area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();try{copied=document.execCommand("copy");}catch(e){}area.remove();}
+    const old=btn.textContent;btn.textContent=copied?"Скопировано ✓":"Скопируй вручную";setTimeout(()=>{btn.textContent=old;},1800);
+  });});
+}
 function openLesson(id) { currentId=id; const idx=ALL.findIndex(l=>l.id===id), l=ALL[idx], mod=MODULES.find(m=>m.lessons.includes(l)); show("lesson");
   $("lKicker").textContent=mod.title+" · урок "+(idx+1)+" из "+ALL.length; $("lTitle").textContent=l.title; $("lSub").textContent=l.sub; $("lBody").innerHTML=l.body;
-  renderLessonActions(); }
+  wireCopyButtons(); renderLessonActions(); }
 function renderLessonActions(){
   const btn=$("finishBtn"), next=$("nextBtn"), idx=ALL.findIndex(l=>l.id===currentId), last=idx===ALL.length-1;
   if(store[currentId]){
