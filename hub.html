@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Claude 101 — выбор курса</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf8f4;
+    --card: #ffffff;
+    --ink: #26241f;
+    --muted: #7c776c;
+    --line: #e8e3d9;
+    --clay: #c65d3b;
+    --clay-soft: #f3e3db;
+    --sage: #5f7d54;
+    --sage-soft: #e6ecdf;
+    --bad: #b5402c;
+    --bad-soft: #f4ddd7;
+    --bubble: #f0ebe1;
+    --gold: #b8892b;
+    --gold-soft: #f5ecd6;
+    --shadow: 0 1px 2px rgba(38,36,31,.05), 0 6px 24px rgba(38,36,31,.06);
+    --display: "Spectral", Georgia, serif;
+    --body: "Golos Text", -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #211f1c; --card: #2b2925; --ink: #f0ede5; --muted: #9d968a;
+      --line: #3a3731; --clay: #e08960; --clay-soft: #453329;
+      --sage: #97b385; --sage-soft: #313a2c; --bad: #de6a4f; --bad-soft: #46302a;
+      --bubble: #35322c; --gold: #d9b45e; --gold-soft: #453a22;
+      --shadow: 0 1px 2px rgba(0,0,0,.2), 0 8px 28px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #211f1c; --card: #2b2925; --ink: #f0ede5; --muted: #9d968a;
+    --line: #3a3731; --clay: #e08960; --clay-soft: #453329;
+    --sage: #97b385; --sage-soft: #313a2c; --bad: #de6a4f; --bad-soft: #46302a;
+    --bubble: #35322c; --gold: #d9b45e; --gold-soft: #453a22;
+    --shadow: 0 1px 2px rgba(0,0,0,.2), 0 8px 28px rgba(0,0,0,.25);
+  }
+  :root[data-theme="light"] {
+    --paper: #faf8f4; --card: #ffffff; --ink: #26241f; --muted: #7c776c;
+    --line: #e8e3d9; --clay: #c65d3b; --clay-soft: #f3e3db;
+    --sage: #5f7d54; --sage-soft: #e6ecdf; --bad: #b5402c; --bad-soft: #f4ddd7;
+    --bubble: #f0ebe1; --gold: #b8892b; --gold-soft: #f5ecd6;
+    --shadow: 0 1px 2px rgba(38,36,31,.05), 0 6px 24px rgba(38,36,31,.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--paper); color: var(--ink);
+    font: 400 15.5px/1.6 var(--body);
+    -webkit-tap-highlight-color: transparent; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 26px 18px 44px; }
+
+  .eyebrow { font: 500 11.5px/1 var(--mono); letter-spacing: .18em;
+    text-transform: uppercase; color: var(--clay); margin-bottom: 10px; }
+  h1 { font: 600 28px/1.15 var(--display); letter-spacing: -.01em;
+    text-wrap: balance; margin-bottom: 8px; }
+  .lede { color: var(--muted); font-size: 15px; margin-bottom: 22px; max-width: 42ch; }
+
+  .spark { display: inline-block; width: 34px; height: 34px; margin-bottom: 14px; }
+  .spark svg { width: 100%; height: 100%; display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .spark svg { animation: spin 40s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .view { animation: rise .35s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+    .pop { animation: pop .45s cubic-bezier(.2,.9,.3,1.4) both; }
+    @keyframes pop { from { opacity: 0; transform: scale(.85); } }
+  }
+
+  /* ---------- профиль ---------- */
+  .profile { background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 18px; margin-bottom: 18px;
+    box-shadow: var(--shadow); }
+  .p-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .p-ava { width: 52px; height: 52px; border-radius: 50%; flex: none;
+    background: var(--clay-soft); display: grid; place-items: center;
+    border: 2px solid var(--clay); }
+  .p-ava svg { width: 26px; height: 26px; }
+  .p-name { font: 600 17px/1.2 var(--display); margin-bottom: 3px; }
+  .p-rank { font: 500 11.5px/1 var(--mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--clay); }
+  .p-xp { margin-left: auto; text-align: right; flex: none; }
+  .p-xp b { font: 600 20px/1 var(--display); display: block; }
+  .p-xp span { font: 500 10px var(--mono); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); }
+
+  .xpbar { height: 8px; border-radius: 4px; background: var(--line);
+    overflow: hidden; margin-bottom: 7px; }
+  .xpbar i { display: block; height: 100%; border-radius: 4px;
+    background: var(--clay); transition: width .6s ease; }
+  .xphint { font: 500 11.5px var(--mono); color: var(--muted);
+    letter-spacing: .04em; margin-bottom: 16px; }
+
+  .p-stats { display: flex; gap: 8px; }
+  .stat { flex: 1; background: var(--bubble); border-radius: 12px;
+    padding: 10px 8px; text-align: center; }
+  .stat b { display: block; font: 600 17px/1.1 var(--display); }
+  .stat span { font: 500 9.5px var(--mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); }
+  .stat.hot b { color: var(--clay); }
+
+  /* ---------- бейджи ---------- */
+  .badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .bdg { background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 8px; text-align: center;
+    box-shadow: var(--shadow); }
+  .bdg .bi { font-size: 21px; display: block; margin-bottom: 5px;
+    filter: grayscale(1); opacity: .35; }
+  .bdg .bn { font: 500 10px/1.25 var(--body); color: var(--muted); }
+  .bdg.on { border-color: var(--clay); background: var(--clay-soft); }
+  .bdg.on .bi { filter: none; opacity: 1; }
+  .bdg.on .bn { color: var(--ink); }
+  .bdg.gold.on { border-color: var(--gold); background: var(--gold-soft); }
+  .sec-title { font: 600 12px var(--body); letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted); margin: 0 2px 10px; }
+
+  /* ---------- вступление ---------- */
+  .intro { background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 18px; margin-bottom: 22px;
+    box-shadow: var(--shadow); }
+  .intro p { font-size: 14.5px; color: var(--muted); margin-bottom: 12px; }
+  .intro p b { color: var(--ink); font-weight: 600; }
+  .intro p:last-child { margin-bottom: 0; }
+  .steps { display: flex; flex-direction: column; gap: 9px; margin: 0 0 12px;
+    padding: 0; list-style: none; }
+  .steps li { display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; color: var(--muted); }
+  .steps b { color: var(--clay); font: 600 12px/1.7 var(--mono); flex: none; }
+
+  /* ---------- курсы ---------- */
+  .course { background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 20px 18px; margin-bottom: 16px;
+    box-shadow: var(--shadow); }
+  .course h2 { font: 600 21px/1.25 var(--display); letter-spacing: -.01em;
+    margin-bottom: 8px; display: flex; align-items: baseline; gap: 10px; }
+  .ico { font-size: 20px; flex: none; }
+  .course p { color: var(--muted); font-size: 14.5px; margin-bottom: 14px; }
+  .course p b { color: var(--ink); font-weight: 600; }
+  .lvl { font: 500 10.5px/1 var(--mono); letter-spacing: .1em;
+    text-transform: uppercase; padding: 5px 9px; border-radius: 99px;
+    display: inline-block; margin-bottom: 12px; }
+  .lvl.base { background: var(--sage-soft); color: var(--sage); }
+  .lvl.next { background: var(--clay-soft); color: var(--clay); }
+  .mods { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .mod { font: 500 11.5px/1 var(--mono); letter-spacing: .04em;
+    background: var(--bubble); color: var(--muted);
+    border: 1px solid var(--line); border-radius: 99px; padding: 6px 10px; }
+  .progress { display: flex; gap: 4px; margin-bottom: 6px; }
+  .progress span { height: 4px; flex: 1; border-radius: 2px; background: var(--line); }
+  .progress span.done { background: var(--clay); }
+  .progress-label { font: 500 11.5px var(--mono); color: var(--muted);
+    letter-spacing: .08em; margin-bottom: 14px; }
+  .progress-label.complete { color: var(--sage); }
+  .go { width: 100%; border: 0; border-radius: 13px; padding: 15px;
+    font: 600 15px var(--body); cursor: pointer;
+    background: var(--clay); color: #fff;
+    transition: opacity .15s, transform .12s ease; }
+  .go:active { transform: scale(.98); }
+  .go:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+  .go.started { background: var(--sage-soft); color: var(--sage); }
+
+  .foot { margin-top: 26px; text-align: center; font-size: 12.5px; color: var(--muted); }
+  .foot b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- тост награды ---------- */
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(140%);
+    background: var(--ink); color: var(--paper); border-radius: 14px;
+    padding: 12px 18px; font: 600 14px var(--body); box-shadow: var(--shadow);
+    max-width: 88vw; text-align: center; transition: transform .4s cubic-bezier(.2,.9,.3,1.3);
+    z-index: 50; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="view">
+    <div class="spark" aria-hidden="true">
+      <svg viewBox="0 0 34 34" fill="none">
+        <path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z"
+          fill="var(--clay)"/>
+      </svg>
+    </div>
+    <div class="eyebrow">Гид по нейросетям · обучение</div>
+    <h1>Два курса. Начни с любого</h1>
+    <p class="lede" id="hello">Оба бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.</p>
+
+    <div class="profile" id="profile"></div>
+
+    <div class="sec-title">Награды</div>
+    <div class="badges" id="badges"></div>
+
+    <div class="intro" style="margin-top:22px">
+      <p>Это не лекции на час. Каждый урок — <b>5–7 минут</b>: коротко читаешь, пробуешь на практике, отвечаешь на пару вопросов в конце.</p>
+      <ul class="steps">
+        <li><b>01</b><span>Открой урок и прочитай — без воды, по делу</span></li>
+        <li><b>02</b><span>Попробуй сам: внутри есть готовые промпты, копируй и меняй под себя</span></li>
+        <li><b>03</b><span>Ответь на вопросы в конце — и получи сертификат</span></li>
+      </ul>
+      <p>Можно не спешить: <b>прогресс сохраняется сам</b>. Закрыл, вернулся через неделю — продолжишь с того же места.</p>
+      <p><b>С чего начать?</b> Если с нейросетями недавно на «ты» — бери первый курс. Уже пользуешься и хочешь, чтобы ИИ работал за тебя, — второй.</p>
+    </div>
+
+    <div class="sec-title">Курсы</div>
+    <div class="course" id="c1"></div>
+    <div class="course" id="c2"></div>
+
+    <div class="foot">Мини-курс от <b>@glgidbot</b></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready(); tg.expand();
+try {
+  if (tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme;
+  tg.onEvent && tg.onEvent("themeChanged", () => {
+    document.documentElement.dataset.theme = tg.colorScheme;
+  });
+} catch (e) {}
+
+const u = tg.initDataUnsafe?.user;
+const FIRST = u?.first_name || "";
+if (FIRST) {
+  document.getElementById("hello").textContent =
+    FIRST + ", оба курса бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.";
+}
+
+/* ==================== КУРСЫ ==================== */
+const COURSES = [
+  {
+    el: "c1", ico: "📚", title: "Claude 101", lvl: "base", lvlText: "с нуля",
+    url: "index.html", key: "claude101_v2",
+    desc: "Базовый курс: как устроен Claude, как писать промпты, работать с документами, проектами и инструментами. <b>14 уроков</b> и финальный тест.",
+    mods: ["Знакомство с Claude", "Организация работы", "Расширяем возможности", "Всё вместе", "Финал"],
+    ids: ["m1l1","m1l2","m1l3","m1l4","m1l5","m2l1","m2l2","m2l3","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"],
+  },
+  {
+    el: "c2", ico: "⚙️", title: "Агенты, циклы и графы", lvl: "next", lvlText: "нужна база",
+    url: "agents-cycles-graphs/index.html", key: "agents_graphs_v1",
+    desc: "Как запускать агентов, строить самопроверяющиеся циклы и разбивать большие задачи на понятную схему. <b>10 уроков</b>, готовые промпты и финальный тест.",
+    mods: ["Агенты", "Циклы", "Графы", "Сборка", "Библиотека промтов"],
+    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m5l1"],
+  },
+];
+
+/* ==================== ГЕЙМ-МОДЕЛЬ ==================== */
+const XP = { lesson: 20, test: 60, perfect: 40, badge: 30, week: 50 };
+const RANKS = [
+  { min: 0,    ico: "🌱", name: "Новичок" },
+  { min: 150,  ico: "✳️", name: "Уверенный пользователь" },
+  { min: 350,  ico: "🛠", name: "Практик" },
+  { min: 600,  ico: "🛰", name: "Оператор нейросетей" },
+  { min: 800,  ico: "🏅", name: "Мастер" },
+  { min: 1000, ico: "👑", name: "GOAT" },
+];
+const BADGES = [
+  { id: "first",   ico: "🌱", name: "Первый шаг",    test: s => s.lessons >= 1 },
+  { id: "half",    ico: "📚", name: "Половина пути", test: s => s.lessons >= 12 },
+  { id: "cert",    ico: "🎓", name: "Сертификат",    test: s => s.tests >= 1 },
+  { id: "perfect", ico: "💯", name: "Идеальный тест", test: s => s.perfect >= 1 },
+  { id: "week",    ico: "🔥", name: "Неделя подряд", test: s => s.bestStreak >= 7 },
+  { id: "both",    ico: "👑", name: "Оба курса", gold: true, test: s => s.lessons >= 24 && s.tests >= 2 },
+];
+const GAME_KEY = "glgid_game_v1";
+const API = "https://glgid-api.vercel.app";
+
+function readJSON(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; }
+}
+function today() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function dayDiff(a, b) {
+  return Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 864e5);
+}
+
+function loadGame() {
+  const g = readJSON(GAME_KEY);
+  g.days = Array.isArray(g.days) ? g.days : [];
+  g.badges = g.badges && typeof g.badges === "object" ? g.badges : {};
+  g.bestStreak = g.bestStreak || 0;
+  return g;
+}
+function saveGame(g) {
+  try { localStorage.setItem(GAME_KEY, JSON.stringify(g)); } catch (e) {}
+}
+
+/* streak по списку активных дней */
+function streakOf(days) {
+  if (!days.length) return 0;
+  const set = new Set(days);
+  let cur = today();
+  if (!set.has(cur)) {
+    const y = new Date(Date.now() - 864e5);
+    cur = y.getFullYear() + "-" + String(y.getMonth() + 1).padStart(2, "0") + "-" + String(y.getDate()).padStart(2, "0");
+    if (!set.has(cur)) return 0;
+  }
+  let n = 0;
+  while (set.has(cur)) {
+    n++;
+    const p = new Date(cur + "T00:00:00"); p.setDate(p.getDate() - 1);
+    cur = p.getFullYear() + "-" + String(p.getMonth() + 1).padStart(2, "0") + "-" + String(p.getDate()).padStart(2, "0");
+  }
+  return n;
+}
+
+/* счёт по курсам — источник правды: их собственный localStorage */
+function courseStats() {
+  let lessons = 0, tests = 0, perfect = 0, per = [];
+  for (const c of COURSES) {
+    const st = readJSON(c.key);
+    const done = c.ids.filter(id => st[id]).length;
+    const passed = !!st.testPassed;
+    const max = c.ids.length + 1;
+    lessons += done; tests += passed ? 1 : 0;
+    if (passed && (st.testScore || 0) >= max) perfect++;
+    per.push({ done, passed, total: max });
+  }
+  return { lessons, tests, perfect, per };
+}
+
+function computeXp(s, g) {
+  return s.lessons * XP.lesson + s.tests * XP.test + s.perfect * XP.perfect
+       + Object.keys(g.badges).length * XP.badge
+       + Math.floor(g.bestStreak / 7) * XP.week;
+}
+function rankOf(xp) {
+  let r = RANKS[0];
+  for (const x of RANKS) if (xp >= x.min) r = x;
+  return r;
+}
+function nextRank(xp) {
+  for (const x of RANKS) if (xp < x.min) return x;
+  return null;
+}
+
+/* ==================== РЕНДЕР ==================== */
+const SPARK = `<svg viewBox="0 0 34 34" fill="none"><path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z" fill="var(--clay)"/></svg>`;
+
+function renderProfile(s, g, xp) {
+  const r = rankOf(xp), nx = nextRank(xp);
+  const pct = nx ? Math.max(4, Math.min(100, Math.round((xp - r.min) / (nx.min - r.min) * 100))) : 100;
+  const left = nx ? nx.min - xp : 0;
+  const streak = streakOf(g.days);
+  const done = Object.keys(g.badges).length;
+
+  document.getElementById("profile").innerHTML = `
+    <div class="p-top">
+      <div class="p-ava">${SPARK}</div>
+      <div>
+        <div class="p-name">${FIRST ? esc(FIRST) : "Ты"}</div>
+        <div class="p-rank">${r.ico} ${esc(r.name)}</div>
+      </div>
+      <div class="p-xp"><b>${xp}</b><span>XP</span></div>
+    </div>
+    <div class="xpbar"><i style="width:${pct}%"></i></div>
+    <div class="xphint">${nx ? `до «${esc(nx.name)}» — ${left} XP` : "максимальное звание 👑"}</div>
+    <div class="p-stats">
+      <div class="stat${streak >= 2 ? " hot" : ""}"><b>${streak ? streak + " 🔥" : "—"}</b><span>дней подряд</span></div>
+      <div class="stat"><b>${s.lessons}/24</b><span>уроков</span></div>
+      <div class="stat"><b>${done}/${BADGES.length}</b><span>наград</span></div>
+    </div>`;
+}
+
+function renderBadges(g) {
+  document.getElementById("badges").innerHTML = BADGES.map(b => {
+    const on = !!g.badges[b.id];
+    return `<div class="bdg${b.gold ? " gold" : ""}${on ? " on" : ""}" title="${esc(b.name)}">
+      <span class="bi">${b.ico}</span><span class="bn">${esc(b.name)}</span></div>`;
+  }).join("");
+}
+
+function renderCourse(c, stat) {
+  const { done, passed, total } = stat;
+  const started = done > 0, complete = done >= total && passed;
+  const bars = Array.from({ length: total }, (_, i) =>
+    `<span class="${i < done ? "done" : ""}"></span>`).join("");
+  const chips = c.mods.map(m => `<span class="mod">${esc(m)}</span>`).join("");
+  const label = complete ? `Курс пройден · ${done}/${total}`
+    : started ? `Пройдено ${done} из ${total}` : `${total} шагов · с нуля`;
+
+  document.getElementById(c.el).innerHTML = `
+    <h2><span class="ico">${c.ico}</span>${esc(c.title)}</h2>
+    <span class="lvl ${c.lvl}">${esc(c.lvlText)}</span>
+    <p>${c.desc}</p>
+    <div class="mods">${chips}</div>
+    <div class="progress" aria-hidden="true">${bars}</div>
+    <div class="progress-label${complete ? " complete" : ""}">${label}</div>
+    <button class="go${started && !complete ? " started" : ""}" data-url="${c.url}">
+      ${complete ? "Повторить курс" : started ? "Продолжить обучение" : "Начать курс"}
+    </button>`;
+}
+
+function esc(x) {
+  return String(x).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/* ==================== ТОСТ ==================== */
+let queue = [], toasting = false;
+function toast(text) {
+  queue.push(text);
+  if (!toasting) nextToast();
+}
+function nextToast() {
+  const el = document.getElementById("toast");
+  const text = queue.shift();
+  if (!text) { toasting = false; el.classList.remove("show"); return; }
+  toasting = true;
+  el.textContent = text;
+  el.classList.add("show");
+  try { tg.HapticFeedback?.notificationOccurred?.("success"); } catch (e) {}
+  setTimeout(() => { el.classList.remove("show"); setTimeout(nextToast, 420); }, 2600);
+}
+
+/* ==================== ПРОКАЧКА ==================== */
+function tick() {
+  const g = loadGame();
+  const s = courseStats();
+
+  const t = today();
+  if (!g.days.includes(t)) {
+    g.days.push(t);
+    if (g.days.length > 400) g.days = g.days.slice(-400);
+  }
+  g.bestStreak = Math.max(g.bestStreak || 0, streakOf(g.days));
+
+  const fresh = [];
+  for (const b of BADGES) {
+    if (!g.badges[b.id] && b.test({ ...s, bestStreak: g.bestStreak })) {
+      g.badges[b.id] = t;
+      fresh.push(b);
+    }
+  }
+  saveGame(g);
+
+  const xp = computeXp(s, g);
+  renderProfile(s, g, xp);
+  renderBadges(g);
+  COURSES.forEach((c, i) => renderCourse(c, s.per[i]));
+
+  fresh.forEach(b => toast(`${b.ico} Награда: «${b.name}»`));
+  return { s, g, xp };
+}
+
+const state = tick();
+if (API) {
+  restoreFromServer().then(() => syncToServer(tick()));
+}
+
+/* ==================== СИНХРОНИЗАЦИЯ (бэкенд) ==================== */
+function packCourses() {
+  const out = {};
+  for (const c of COURSES) {
+    const st = readJSON(c.key);
+    out[c.key] = {
+      done: c.ids.filter(id => st[id]),
+      passed: !!st.testPassed,
+      score: Number(st.testScore) || 0,
+    };
+  }
+  return out;
+}
+
+/** Локально пусто, а на сервере есть дело → восстанавливаем (переезд на новый телефон). */
+async function restoreFromServer() {
+  const g = loadGame();
+  const hasLocal = COURSES.some(c => Object.keys(readJSON(c.key)).length) || Object.keys(g.badges).length;
+  if (hasLocal) return;
+  try {
+    const r = await fetch(API + "/progress?init=" + encodeURIComponent(tg.initData));
+    const d = await r.json();
+    if (!d.ok || d.empty) return;
+    for (const c of COURSES) {
+      const p = d.progress?.[c.key];
+      if (!p) continue;
+      const st = {};
+      p.done.forEach(id => { if (c.ids.includes(id)) st[id] = true; });
+      if (p.passed) { st.testPassed = true; st.testScore = p.score || 0; }
+      if (Object.keys(st).length) localStorage.setItem(c.key, JSON.stringify(st));
+    }
+    if (d.bestStreak > (g.bestStreak || 0)) { g.bestStreak = d.bestStreak; saveGame(g); }
+  } catch (e) {}
+}
+
+function syncToServer({ s, g, xp }) {
+  if (!API || !tg.initData) return;
+  const body = JSON.stringify({
+    init: tg.initData,
+    xp, rank: rankOf(xp).name,
+    lessons: s.lessons, tests: s.tests, perfect: s.perfect,
+    badges: Object.keys(g.badges), streak: streakOf(g.days), bestStreak: g.bestStreak,
+    courses: packCourses(),
+  });
+  try {
+    fetch(API + "/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body })
+      .then(r => r.json())
+      .catch(() => {});
+  } catch (e) {}
+}
+
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".go");
+  if (!btn) return;
+  try { tg.HapticFeedback?.selectionChanged?.(); } catch (err) {}
+  window.location.href = btn.dataset.url;
+});
+</script>
+</body>
+</html>
