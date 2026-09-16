@@ -177,7 +177,7 @@
     <button class="back" id="backBtn2" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
     <div class="eyebrow">Финал · проверка знаний</div>
     <h1>Финальный тест</h1>
-    <p class="lede">10 вопросов по всему курсу. Для сертификата нужно 8 правильных ответов.</p>
+    <p class="lede">12 вопросов по всему курсу. Для сертификата нужно 9 правильных ответов.</p>
     <div class="card"><div id="tQuiz"></div><div class="score hidden" id="tScore"></div>
       <button class="finish" id="testBtn" disabled>Ответь на все вопросы</button></div>
     <div class="foot"><span>Chat, Work или Codex</span></div>
@@ -463,7 +463,7 @@ function renderHome(){
   MODULES.forEach(m=>{
     html+=`<div class="module"><div class="module-title">${m.title}</div><div class="toc">`;
     m.lessons.forEach(l=>{html+=`<button class="lesson-item ${store[l.id]?"done":""}" data-id="${l.id}" type="button"><div class="st">${icon("check")}</div><div class="li-t">${l.title}<div class="li-sub">${l.sub}</div></div></button>`;});
-    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?icon("check"):icon("star")}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан, открыть сертификат":"10 вопросов, нужно 8 верных"}</div></div></button>`;
+    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?icon("check"):icon("star")}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан, открыть сертификат":`${FINAL_QUIZ.length} вопросов, нужно ${PASS_SCORE} верных`}</div></div></button>`;
     html+="</div></div>";
   });
   $("moduleList").innerHTML=html;
