@@ -1,1 +1,452 @@
-Preparing course file
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Chat, Work или Codex · мини-курс</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+  :root {
+    --paper:#faf8f4; --card:#fff; --ink:#26241f; --muted:#7c776c; --line:#e8e3d9;
+    --clay:#c65d3b; --clay-soft:#f3e3db; --sage:#5f7d54; --sage-soft:#e6ecdf;
+    --bad:#b5402c; --bad-soft:#f4ddd7; --bubble:#f0ebe1;
+    --shadow:0 1px 2px rgba(38,36,31,.05),0 6px 24px rgba(38,36,31,.06);
+    --display:"Spectral",Georgia,serif; --body:"Golos Text",-apple-system,"Segoe UI",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark) {
+    :root { --paper:#211f1c; --card:#2b2925; --ink:#f0ede5; --muted:#aaa296; --line:#3a3731;
+      --clay:#e08960; --clay-soft:#453329; --sage:#97b385; --sage-soft:#313a2c;
+      --bad:#de6a4f; --bad-soft:#46302a; --bubble:#35322c;
+      --shadow:0 1px 2px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.25); }
+  }
+  :root[data-theme="dark"] { --paper:#211f1c; --card:#2b2925; --ink:#f0ede5; --muted:#aaa296;
+    --line:#3a3731; --clay:#e08960; --clay-soft:#453329; --sage:#97b385; --sage-soft:#313a2c;
+    --bad:#de6a4f; --bad-soft:#46302a; --bubble:#35322c;
+    --shadow:0 1px 2px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.25); }
+  :root[data-theme="light"] { --paper:#faf8f4; --card:#fff; --ink:#26241f; --muted:#7c776c;
+    --line:#e8e3d9; --clay:#c65d3b; --clay-soft:#f3e3db; --sage:#5f7d54;
+    --sage-soft:#e6ecdf; --bad:#b5402c; --bad-soft:#f4ddd7; --bubble:#f0ebe1;
+    --shadow:0 1px 2px rgba(38,36,31,.05),0 6px 24px rgba(38,36,31,.06); }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { background:var(--paper); color:var(--ink); font:400 15.5px/1.6 var(--body);
+    -webkit-tap-highlight-color:transparent; }
+  .wrap { max-width:480px; margin:0 auto; padding:26px 18px 44px; }
+  .view { animation:rise .35s ease both; }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } }
+  .hidden { display:none!important; }
+  .ui-icon { width:1em; height:1em; display:inline-block; vertical-align:-.14em; fill:none;
+    stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .brand-icon { width:1em; height:1em; display:inline-block; vertical-align:-.14em; }
+  .hero-icon { width:38px; height:38px; color:var(--clay); margin-bottom:13px; }
+  .hero-icon .ui-icon { width:100%; height:100%; }
+  .eyebrow { font:500 11.5px/1 var(--mono); letter-spacing:.18em; text-transform:uppercase;
+    color:var(--clay); margin-bottom:10px; }
+  h1 { font:600 28px/1.15 var(--display); letter-spacing:-.01em; text-wrap:balance; margin-bottom:8px; }
+  .lede { color:var(--muted); font-size:15px; margin-bottom:22px; max-width:42ch; }
+
+  .progress { display:flex; gap:4px; margin-bottom:7px; }
+  .progress span { height:5px; flex:1; border-radius:3px; background:var(--line); }
+  .progress span.done { background:var(--clay); }
+  .progress-label { font:500 11.5px var(--mono); color:var(--muted); letter-spacing:.08em; margin-bottom:22px; }
+  .progress-label .ui-icon { color:var(--sage); margin-left:3px; }
+  .module { margin-bottom:21px; }
+  .module-title { font:600 11px var(--body); letter-spacing:.09em; text-transform:uppercase;
+    color:var(--muted); margin:0 2px 8px; }
+  .toc { display:flex; flex-direction:column; gap:8px; }
+  .lesson-item { width:100%; display:flex; gap:11px; align-items:center; text-align:left;
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px;
+    box-shadow:var(--shadow); cursor:pointer; color:var(--ink); font:inherit; }
+  .lesson-item:active { transform:scale(.98); }
+  .lesson-item:focus-visible,.finish:focus-visible,.opt:focus-visible,.copy-prompt:focus-visible {
+    outline:2px solid var(--clay); outline-offset:2px; }
+  .st { width:22px; height:22px; border-radius:50%; flex:none; border:2px solid var(--line);
+    display:grid; place-items:center; color:transparent; }
+  .st .ui-icon { width:13px; height:13px; }
+  .lesson-item.done .st { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .lesson-item.final .st { border-color:var(--clay); }
+  .lesson-item.final:not(.done) .st { color:var(--clay); }
+  .li-t { flex:1; min-width:0; font:500 14.5px/1.35 var(--body); }
+  .li-sub { font-size:12px; color:var(--muted); font-weight:400; margin-top:1px; }
+
+  .back { display:inline-flex; align-items:center; gap:7px; color:var(--clay); font:500 14px var(--body);
+    margin-bottom:20px; cursor:pointer; user-select:none; background:transparent; border:0; padding:0; }
+  .back .ui-icon { width:16px; height:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px 18px;
+    margin-bottom:14px; box-shadow:var(--shadow); }
+  .card h2 { font:600 19px/1.3 var(--display); margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+  .num { font:600 15px var(--mono); color:var(--clay); flex:none; }
+  .num .ui-icon { width:18px; height:18px; }
+  .card p { color:var(--muted); font-size:14.5px; margin-bottom:10px; }
+  .card p:last-child { margin-bottom:0; }
+  .card b { color:var(--ink); font-weight:600; }
+  .card ul,.card ol { margin:0 0 10px 19px; color:var(--muted); font-size:14.5px; }
+  .card li { margin-bottom:6px; }
+  .card li::marker { color:var(--clay); }
+  .mode-grid { display:grid; gap:8px; margin:12px 0; }
+  .mode { border:1px solid var(--line); background:var(--paper); border-radius:13px; padding:12px 13px; }
+  .mode b { display:block; margin-bottom:2px; color:var(--clay); }
+  .mode span { color:var(--muted); font-size:13.5px; }
+  .diagram { background:var(--bubble); border:1px solid var(--line); border-radius:14px; padding:14px;
+    margin:12px 0; color:var(--ink); font:500 13px/1.7 var(--mono); white-space:pre-wrap; }
+  .ex { position:relative; background:var(--sage-soft); color:var(--ink); border-radius:16px 16px 4px 16px;
+    padding:14px; margin:15px 0 10px 18px; font:400 13px/1.55 var(--mono); }
+  .ex::before { content:"пример запроса"; position:absolute; top:-9px; right:12px; font:500 9.5px var(--mono);
+    letter-spacing:.1em; text-transform:uppercase; color:var(--sage); background:var(--card); padding:1px 7px;
+    border-radius:99px; border:1px solid var(--line); }
+  .prompt-box { margin:12px 0 16px; }
+  .copy-prompt { border:1px solid var(--line); border-radius:10px; padding:8px 11px; font:500 12px var(--body);
+    cursor:pointer; background:var(--paper); color:var(--clay); }
+  .copy-prompt:active { transform:scale(.98); }
+  .tip { display:flex; gap:10px; background:var(--clay-soft); border-radius:14px; padding:13px 14px;
+    font-size:13.5px; margin:12px 0 0; color:var(--ink); }
+  .tip-icon { width:19px; height:19px; flex:none; color:var(--clay); margin-top:1px; }
+  .tip-icon .ui-icon { width:100%; height:100%; }
+  .tip b { color:var(--clay); }
+  .refs { margin-top:13px; padding-top:12px; border-top:1px solid var(--line); font-size:12.5px; }
+  .refs a { color:var(--clay); text-decoration:none; }
+
+  .finish { width:100%; border:0; border-radius:13px; padding:15px; font:600 15px var(--body);
+    cursor:pointer; background:var(--clay); color:#fff; margin-top:6px; }
+  .finish[disabled] { opacity:.35; cursor:default; }
+  .finish.done { background:var(--sage-soft); color:var(--sage); }
+  .finish .ui-icon { width:17px; height:17px; margin-right:7px; }
+  .finish .ui-icon.trailing { margin:0 0 0 7px; }
+  .q { margin-bottom:18px; }
+  .qq { font:600 15px/1.4 var(--body); margin-bottom:10px; }
+  .opt { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+    font-size:14px; margin-bottom:8px; cursor:pointer; user-select:none; }
+  .opt.right { background:var(--sage-soft); border-color:var(--sage); }
+  .opt.wrong { background:var(--bad-soft); border-color:var(--bad); }
+  .expl { display:none; font-size:13px; color:var(--muted); padding:9px 13px; border-left:2px solid var(--clay); }
+  .expl.show { display:block; }
+  .score { font:600 16px var(--display); text-align:center; padding:8px 0 2px; }
+
+  .title-icon { display:inline-flex; width:26px; height:26px; color:var(--clay); vertical-align:-.16em; }
+  .title-icon .ui-icon { width:100%; height:100%; }
+  .cert { position:relative; background:var(--card); border:2px solid var(--clay); border-radius:18px;
+    padding:42px 26px 28px; text-align:center; box-shadow:var(--shadow); overflow:hidden; }
+  .cert::before { content:""; position:absolute; inset:9px; border:1px solid var(--clay-soft); border-radius:11px; }
+  .cert::after { content:""; position:absolute; left:0; right:0; top:0; height:6px; background:var(--clay); }
+  .cert-mark { width:50px; height:50px; color:var(--clay); margin:0 auto 15px; }
+  .cert-mark .ui-icon { width:100%; height:100%; }
+  .ct { font:600 14px var(--mono); letter-spacing:.3em; text-transform:uppercase; color:var(--clay); }
+  .csub { font:500 10.5px var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
+  .cname { font:600 30px/1.15 var(--display); margin-bottom:14px; text-wrap:balance; }
+  .ctext { color:var(--muted); font-size:14px; max-width:36ch; margin:0 auto 14px; }
+  .ctext b { color:var(--ink); }
+  .cscore { display:inline-block; font:600 13px var(--mono); color:var(--clay); background:var(--clay-soft);
+    border-radius:99px; padding:7px 16px; margin-bottom:20px; }
+  .cdate { font:500 11.5px var(--mono); color:var(--muted); border-top:1px solid var(--line);
+    padding-top:14px; margin:0 12px; }
+  .foot { text-align:center; color:var(--muted); font-size:12px; margin-top:28px; font-family:var(--mono);
+    display:flex; align-items:center; justify-content:center; gap:6px; }
+  .foot .brand-icon { width:15px; height:15px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="home" class="view">
+    <div class="hero-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></svg></div>
+    <div class="eyebrow">ChatGPT и Claude · выбор режима</div>
+    <h1>Chat, Work или Codex</h1>
+    <p class="lede" id="hello">5 модулей, 11 коротких уроков и финальный тест. После курса ты выберешь режим под задачу за 10 секунд.</p>
+    <div class="progress" id="progressBar" aria-hidden="true"></div>
+    <div class="progress-label" id="progressLabel"></div>
+    <div id="moduleList"></div>
+    <div class="foot"><img class="brand-icon" src="../assets/brands/telegram.svg" alt=""><span>бот-гид по обучению · <b>@glgidbot</b></span></div>
+  </div>
+
+  <div id="lesson" class="view hidden">
+    <button class="back" id="backBtn" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
+    <div class="eyebrow" id="lKicker"></div>
+    <h1 id="lTitle"></h1>
+    <p class="lede" id="lSub"></p>
+    <div id="lBody"></div>
+    <button class="finish" id="finishBtn"></button>
+    <button class="finish hidden" id="nextBtn" type="button"></button>
+    <div class="foot"><span>Chat, Work или Codex</span></div>
+  </div>
+
+  <div id="test" class="view hidden">
+    <button class="back" id="backBtn2" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
+    <div class="eyebrow">Финал · проверка знаний</div>
+    <h1>Финальный тест</h1>
+    <p class="lede">10 вопросов по всему курсу. Для сертификата нужно 8 правильных ответов.</p>
+    <div class="card"><div id="tQuiz"></div><div class="score hidden" id="tScore"></div>
+      <button class="finish" id="testBtn" disabled>Ответь на все вопросы</button></div>
+    <div class="foot"><span>Chat, Work или Codex</span></div>
+  </div>
+
+  <div id="survey" class="view hidden">
+    <div class="eyebrow">Почти готово · два вопроса о курсе</div>
+    <h1>Тест сдан! <span class="title-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span></h1>
+    <p class="lede">Ответь на два коротких вопроса и забирай сертификат.</p>
+    <div class="card"><div id="sQuiz"></div><button class="finish" id="surveyBtn" disabled>Ответь на оба вопроса</button></div>
+    <div class="foot"><span>Chat, Work или Codex</span></div>
+  </div>
+
+  <div id="cert" class="view hidden">
+    <button class="back" id="backBtn3" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
+    <div class="cert">
+      <div class="cert-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg></div>
+      <div class="ct">Сертификат</div><div class="csub">о прохождении курса</div>
+      <div class="cname" id="certName">Студент курса</div>
+      <div class="ctext">успешно прошёл(ла) курс<br><b>«Chat, Work или Codex»</b><br>11 уроков и финальный тест</div>
+      <div class="cscore" id="certScore"></div><div class="cdate" id="certDate"></div>
+    </div>
+    <div class="foot"><img class="brand-icon" src="../assets/brands/telegram.svg" alt=""><span>бот-гид по обучению · <b>@glgidbot</b></span></div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready(); tg.expand();
+try {
+  if (tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme;
+  tg.onEvent && tg.onEvent("themeChanged", () => { document.documentElement.dataset.theme = tg.colorScheme; });
+} catch (e) {}
+const u = tg.initDataUnsafe?.user;
+if (u?.first_name) document.getElementById("hello").textContent = u.first_name + ", впереди 11 коротких уроков и финальный тест. После курса ты выберешь режим под задачу за 10 секунд.";
+
+const ICONS = {
+  arrowRight:'<path d="M4 12h16"/><path d="m14 6 6 6-6 6"/>',
+  check:'<path d="m5 12 4 4L19 6"/>',
+  checkCircle:'<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+  graduation:'<path d="m2 10 10-5 10 5-10 5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/>',
+  lightbulb:'<path d="M9 18h6M10 22h4"/><path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.9.7-1.3 1.5-1.5 2.5h-4c-.2-1-.6-1.8-1.5-2.5Z"/>',
+  sparkles:'<path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2Z"/><path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8Z"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/>',
+  warning:'<path d="M10.3 3.8 2.4 18a2 2 0 0 0 1.8 3h15.6a2 2 0 0 0 1.8-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>'
+};
+function icon(name, cls="") { return `<svg class="ui-icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ICONS.sparkles}</svg>`; }
+function tipIcon(name) { return `<span class="tip-icon" aria-hidden="true">${icon(name)}</span>`; }
+
+const MODULES = [
+{ title:"Модуль 1 · Быстрый выбор", lessons:[
+  { id:"m1l1", title:"Три режима, три результата", sub:"Ответ, готовый результат или программный продукт", body:`
+    <div class="card"><h2><span class="num">${icon("sparkles")}</span>Запомни одну связку</h2>
+      <div class="mode-grid">
+        <div class="mode"><b>Chat: нужен ответ</b><span>Объяснить, придумать, написать, найти, сравнить или проанализировать.</span></div>
+        <div class="mode"><b>Work: нужен готовый результат</b><span>Пройти несколько шагов и принести документ, таблицу, презентацию, отчёт или сайт.</span></div>
+        <div class="mode"><b>Codex: нужно работать с программным продуктом</b><span>Изменить приложение, исправить баг, запустить тесты или разобраться в репозитории.</span></div>
+      </div>
+      <div class="tip">${tipIcon("lightbulb")}<span><b>Это не уровни сложности.</b> Work не «умнее» Chat, а Codex не обязан быть последней ступенью. Это разные рабочие окружения.</span></div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Один вопрос перед стартом</h2>
+      <p>Спроси себя: <b>что должно лежать передо мной в конце?</b></p>
+      <ul><li>Ответ или идея: Chat.</li><li>Готовый файл или выполненная цепочка: Work.</li><li>Изменения в кодовой базе: Codex.</li></ul>
+    </div>` },
+  { id:"m1l2", title:"Выбор за десять секунд", sub:"Три вопроса без технических терминов", body:`
+    <div class="card"><h2><span class="num">01</span>Пройди мини-фильтр</h2>
+      <ol><li><b>Нужен разговор или результат?</b> Разговор ведёт в Chat, готовый результат чаще в Work.</li><li><b>Сколько действий внутри?</b> Один-два шага подходят Chat, длинная цепочка чаще подходит Work.</li><li><b>Главный объект задачи — кодовая база?</b> Если да, открывай Codex.</li></ol>
+      <div class="diagram">ОТВЕТ / ИДЕЯ → CHAT
+ГОТОВЫЙ ФАЙЛ / ЦЕПОЧКА → WORK
+ПРИЛОЖЕНИЕ / РЕПОЗИТОРИЙ → CODEX</div>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Быстрая тренировка</h2>
+      <p>«Объясни, почему упали продажи»: <b>Chat</b>.</p>
+      <p>«Обработай 200 файлов и собери отчёт»: <b>Work</b>.</p>
+      <p>«Найди баг в приложении, исправь и запусти тесты»: <b>Codex</b>.</p>
+      <div class="tip">${tipIcon("lightbulb")}<span>Если сомневаешься, начни с Chat. Когда увидишь, что сам вручную управляешь длинной цепочкой, перенеси задачу в Work или Codex.</span></div>
+    </div>` },
+  { id:"m1l3", title:"Та же логика в Claude", sub:"Work ≈ Cowork, Codex ≈ Claude Code", body:`
+    <div class="card"><h2><span class="num">${icon("sparkles")}</span>Названия разные, принцип один</h2>
+      <p>ChatGPT и Claude по-разному называют похожие рабочие режимы. Запомни не название, а <b>тип результата</b>, который тебе нужен.</p>
+      <div class="mode-grid">
+        <div class="mode"><b>ChatGPT Chat ↔ Claude Chat</b><span>Разговор, вопрос, идея, объяснение или короткий текст.</span></div>
+        <div class="mode"><b>ChatGPT Work ≈ Claude Cowork</b><span>Много шагов и готовый результат: документ, таблица, презентация, исследование или работа с файлами.</span></div>
+        <div class="mode"><b>Codex ≈ Claude Code</b><span>Разработка: открыть проект, изменить код, запустить тесты и проверить изменения.</span></div>
+      </div>
+      <div class="tip">${tipIcon("lightbulb")}<span>Знак <b>≈</b> означает «ближайший аналог по назначению», а не полную копию. Возможности, интерфейс и доступность у сервисов отличаются.</span></div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Как выбирать в Claude</h2>
+      <ul><li>Нужен ответ или совместное обсуждение: <b>Claude Chat</b>.</li><li>Нужно поручить длинную задачу и получить готовую работу: <b>Claude Cowork</b>.</li><li>Нужно менять приложение, репозиторий или тесты: <b>Claude Code</b>.</li></ul>
+      <p>Например, «сравни материалы и собери презентацию» — Cowork. «Исправь ошибку в приложении и проверь тесты» — Claude Code.</p>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Где это включается</h2>
+      <p><b>В ChatGPT:</b> в новом чате выбери Chat или Work. Для разработки открой Codex через переключатель продукта.</p>
+      <p><b>В Claude:</b> рядом с полем сообщения выбери Chat или Cowork. Для разработки открой вкладку Code в приложении Claude Desktop или запусти Claude Code другим доступным способом.</p>
+      <div class="tip">${tipIcon("warning")}<span>Если нужной кнопки нет, это не обязательно ошибка: доступ зависит от тарифа, платформы, региона, настроек рабочей области и этапа запуска функции.</span></div>
+    </div>` },
+]},
+{ title:"Модуль 2 · Chat", lessons:[
+  { id:"m2l1", title:"Когда выбирать Chat", sub:"Думать вместе с ИИ", body:`
+    <div class="card"><h2><span class="num">${icon("sparkles")}</span>Сильная сторона Chat</h2>
+      <p>Chat подходит, когда ты хочешь разобраться в теме, получить идею, подготовить текст или обсудить решение. Основная механика разговорная: спросил, получил ответ, уточнил, попросил переделать.</p>
+      <p>В зависимости от тарифа и настроек Chat может использовать поиск, файлы, расчёты, изображения и подключённые сервисы. Но ты всё равно в основном ведёшь диалог.</p>
+      <ul><li>Написать письмо или пост.</li><li>Объяснить сложную тему простыми словами.</li><li>Сравнить варианты и помочь принять решение.</li><li>Разобрать договор, таблицу или небольшой фрагмент кода.</li></ul>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Пример</h2>
+      <div class="ex">Вот договор. Найди спорные условия, объясни каждый риск человеческим языком и составь список вопросов юристу. Не давай юридических гарантий.</div>
+      <p>Здесь нужен анализ и объяснение. Отдельный рабочий компьютер и изменение проекта не нужны, поэтому Chat достаточно.</p>
+    </div>` },
+  { id:"m2l2", title:"Как ставить задачу в Chat", sub:"Контекст, задача, ограничения и формат", body:`
+    <div class="card"><h2><span class="num">01</span>Четыре детали</h2>
+      <ul><li><b>Контекст:</b> что происходит и для кого результат.</li><li><b>Задача:</b> что именно нужно сделать.</li><li><b>Ограничения:</b> длина, тон, источники, запреты.</li><li><b>Формат:</b> список, таблица, письмо или пошаговый план.</li></ul>
+      <p>Первый ответ не обязан быть финальным. Проси сократить, упростить, добавить примеры или объяснить спорное место.</p>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Попробуй на своей задаче</h2>
+      <div class="prompt-box"><div class="ex">Контекст: [что происходит и кто будет читать результат].
+
+Задача: [что нужно объяснить, придумать, написать или проанализировать].
+
+Ограничения: [длина, тон, сроки, источники и что нельзя делать].
+
+Формат ответа: [список, таблица, письмо или план].
+
+Если данных не хватает, сначала задай мне не больше трёх уточняющих вопросов.</div><button class="copy-prompt" type="button">Скопировать шаблон</button></div>
+    </div>` },
+]},
+{ title:"Модуль 3 · Work", lessons:[
+  { id:"m3l1", title:"Когда выбирать Work", sub:"Отдать ИИ длинную цепочку действий", body:`
+    <div class="card"><h2><span class="num">${icon("sparkles")}</span>Не рассказать, а сделать</h2>
+      <p>Work нужен, когда результатом должен стать не совет, а выполненная последовательность действий. Хороший ориентир: тебе нужен готовый документ, таблица, презентация, отчёт, исследование или интерактивная страница (Site).</p>
+      <p>На вебе и мобильных устройствах Work выполняет задачу в облаке. В десктопном приложении при доступности режима он также может работать с разрешёнными локальными файлами и приложениями.</p>
+      <div class="tip">${tipIcon("warning")}<span><b>Work доступен не всем одновременно.</b> Развёртывание зависит от тарифа, региона и настроек рабочей области. Если кнопки нет, это не ошибка курса.</span></div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Пример</h2>
+      <div class="ex">Возьми данные из открытого источника, проверь пропуски и дубликаты, построй три графика и собери понятную страницу с выводами. Под каждым выводом укажи, на каких данных он основан.</div>
+      <p>Внутри много шагов, а на выходе нужен готовый файл или страница. Это задача для Work.</p>
+    </div>` },
+  { id:"m3l2", title:"Как ставить задачу в Work", sub:"Результат, входные данные и критерии готовности", body:`
+    <div class="card"><h2><span class="num">01</span>Дай агенту рамки</h2>
+      <ul><li><b>Результат:</b> что должно быть готово в конце.</li><li><b>Материалы:</b> файлы, ссылки, таблицы и исходные данные.</li><li><b>Критерии:</b> как проверить качество.</li><li><b>Границы:</b> что можно делать самостоятельно, а где нужно спросить тебя.</li><li><b>Формат отчёта:</b> что показать вместе с результатом.</li></ul>
+    </div>
+    <div class="card"><h2><span class="num">02</span>Рабочий шаблон</h2>
+      <div class="prompt-box"><div class="ex">Результат: [какой готовый файл, отчёт или страница нужны].
+
+Материалы: [файлы, ссылки и данные].
+
+Сделай по шагам: [ключевые этапы или разрешение составить план самостоятельно].
+
+Критерии готовности: [3–5 проверяемых признаков].
+
+Обязательно спроси меня перед: [публикацией, отправкой, оплатой, удалением или другим важным действием].
+
+В конце покажи результат, источники и список выполненных проверок.</div><button class="copy-prompt" type="button">Скопировать шаблон</button></div>
+    </div>` },
+  { id:"m3l3", title:"Доступ и безопасность Work", sub:"Облако, входы и подтверждения", body:`
+    <div class="card"><h2><span class="num">${icon("warning")}</span>Отдельный компьютер не отменяет осторожность</h2>
+      <p>Облачный браузер Work работает отдельно от браузера на твоём устройстве. Он не получает автоматически твои открытые вкладки, файлы cookie с сохранёнными входами, пароли и историю.</p>
+      <p>Если сайту нужен вход, используй защищённую форму авторизации. Не вставляй пароль или код подтверждения в обычное сообщение.</p>
+      <ul><li>Давай доступ только к нужным сайтам, папкам и сервисам.</li><li>Проверяй адрес сайта и запросы на подтверждение.</li><li>Перед оплатой, публикацией или другим важным действием просмотри финальный шаг.</li><li>Проверяй готовый результат и источники.</li></ul>
+      <div class="tip">${tipIcon("lightbulb")}<span>Work похож на временный облачный компьютер для задачи, но это не постоянный сервер для программы, которая должна без остановки работать неделями.</span></div>
+    </div>` },
+]},
+{ title:"Модуль 4 · Codex", lessons:[
+  { id:"m4l1", title:"Когда выбирать Codex", sub:"Работать с приложением и репозиторием", body:`
+    <div class="card"><h2><span class="num">${icon("sparkles")}</span>Объект работы: программный продукт</h2>
+      <p>Codex создан для разработки: писать и исправлять код, запускать тесты и команды, просматривать изменения и работать с репозиторием. Репозиторий здесь означает папку проекта вместе с историей изменений.</p>
+      <p>В десктопном приложении Codex может открыть локальную папку и использовать её файлы, терминал, установленные инструменты и Git, систему истории изменений. Есть и удалённые сценарии, поэтому Codex не всегда означает «только локально».</p>
+      <ul><li>Добавить функцию в существующее приложение.</li><li>Найти причину ошибки и исправить её.</li><li>Разобраться в незнакомом репозитории.</li><li>Провести рефакторинг нескольких связанных файлов.</li><li>Запустить сборку и подготовить diff для проверки.</li></ul>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Пример</h2>
+      <div class="ex">Открой этот репозиторий. Найди причину медленной загрузки страницы, исправь код, запусти подходящие тесты и покажи diff. Не меняй публичный API без необходимости.</div>
+      <p>Главный объект задачи уже лежит в кодовой базе, то есть в файлах приложения. Результат нужно проверить инструментами проекта. Это естественная работа для Codex.</p>
+    </div>` },
+  { id:"m4l2", title:"Как ставить задачу в Codex", sub:"Проблема, область изменений и проверка", body:`
+    <div class="card"><h2><span class="num">01</span>Хорошая постановка</h2>
+      <ul><li><b>Проблема:</b> что сейчас работает неправильно.</li><li><b>Ожидание:</b> как должно работать после исправления.</li><li><b>Область:</b> какой проект или папка разрешены.</li><li><b>Ограничения:</b> совместимость, стиль кода и то, что нельзя ломать.</li><li><b>Проверка:</b> тесты, сборка, автоматическая проверка кода и ручной сценарий.</li></ul>
+      <div class="prompt-box"><div class="ex">Проект: [папка или репозиторий].
+
+Проблема: [симптом и как его воспроизвести].
+
+Ожидаемый результат: [что должно происходить].
+
+Ограничения: [что нельзя менять, версии и совместимость].
+
+Сначала найди причину. Затем внеси минимальные изменения, добавь или обнови тест и запусти проверки. В конце покажи краткое объяснение, список изменённых файлов и diff, то есть сравнение строк до и после.</div><button class="copy-prompt" type="button">Скопировать шаблон</button></div>
+      <div class="tip">${tipIcon("warning")}<span>Не открывай агенту весь домашний каталог, если задаче нужна одна папка проекта. После работы проверь diff и результаты тестов.</span></div>
+    </div>` },
+]},
+{ title:"Модуль 5 · Практика", lessons:[
+  { id:"m5l1", title:"Пограничные задачи", sub:"Что делать, когда подходят два режима", body:`
+    <div class="card"><h2><span class="num">${icon("sparkles")}</span>Режимы пересекаются</h2>
+      <p>Chat умеет написать небольшой скрипт. Work может собрать сайт. Codex способен объяснить код. Жёсткой стены между ними нет.</p>
+      <p>Выбирай по двум признакам: <b>насколько самостоятельным должен быть ИИ</b> и <b>какое окружение ему понадобится</b>.</p>
+      <div class="mode-grid">
+        <div class="mode"><b>Chat</b><span>Ты думаешь вместе с моделью и управляешь каждым следующим шагом.</span></div>
+        <div class="mode"><b>Work</b><span>Ты отдаёшь задачу целиком и получаешь готовый результат.</span></div>
+        <div class="mode"><b>Codex</b><span>Ты пускаешь агента непосредственно в разработку.</span></div>
+      </div>
+    </div>
+    <div class="card"><h2><span class="num">01</span>Финальная практика</h2>
+      <p>Возьми одну реальную задачу на сегодня и ответь:</p>
+      <ol><li>Что должно быть готово в конце?</li><li>Сколько самостоятельных шагов внутри?</li><li>Нужна ли кодовая база, локальные инструменты или терминал?</li><li>Какие действия агент обязан согласовать?</li><li>Чем ты проверишь результат?</li></ol>
+      <p>После ответов выбери режим и составь запрос по одному из шаблонов курса. Потом возвращайся к финальному тесту.</p>
+      <div class="refs"><b>Основа курса:</b> <a href="https://teletype.in/@glady/z49Gw-GBKug" target="_blank" rel="noopener">статья @glady</a>. Назначение режимов сверено с <a href="https://learn.chatgpt.com/docs/use-chatgpt" target="_blank" rel="noopener">официальной документацией ChatGPT</a>, <a href="https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" target="_blank" rel="noopener">справкой Claude Cowork</a> и <a href="https://code.claude.com/docs/en/desktop-quickstart" target="_blank" rel="noopener">документацией Claude Code</a>. Доступность режимов может меняться.</div>
+    </div>` },
+]}
+];
+
+const FINAL_QUIZ = [
+  {q:"Нужно объяснить сложную тему и вместе улучшить ответ. Что выбрать?",a:[["Chat",1,"Верно. Здесь нужен разговор и последовательные уточнения."],["Work",0,"Work полезнее, когда нужна длинная цепочка и готовый артефакт."],["Codex",0,"Кодовая база здесь не является объектом работы."]]},
+  {q:"Нужно обработать 200 файлов и собрать готовый отчёт. Что выбрать?",a:[["Chat",0,"В Chat пришлось бы вручную управлять длинной цепочкой."],["Work",1,"Верно. Много шагов и готовый отчёт хорошо подходят Work."],["Codex",0,"Codex нужен прежде всего для программного продукта."]]},
+  {q:"Нужно исправить ошибку в локальном приложении и запустить тесты. Что выбрать?",a:[["Chat",0,"Chat поможет советом, но здесь нужно менять сам проект."],["Work",0,"Work может работать с файлами, но для кодовой базы естественнее Codex."],["Codex",1,"Верно. Репозиторий, изменения и тесты — задача Codex."]]},
+  {q:"Что верно про облачный браузер Work?",a:[["Он автоматически использует пароли из твоего браузера",0,"Нет. Облачный браузер отделён от браузера на устройстве."],["Он работает на отдельном компьютере и имеет собственную сессию",1,"Верно. Вход на сайты при необходимости выполняется отдельно."],["Он доступен на любом тарифе без ограничений",0,"Доступ зависит от тарифа, региона и настроек рабочей области."]]},
+  {q:"Codex всегда работает только на твоём компьютере?",a:[["Да, других вариантов нет",0,"Нет. У Codex есть и удалённые сценарии."],["Нет, окружение зависит от выбранной локальной или удалённой задачи",1,"Верно. Сначала смотри, где открыт проект и куда отправлена задача."],["Codex вообще не умеет работать локально",0,"Умеет. Локальная папка — один из главных сценариев Codex."]]},
+  {q:"Какой быстрый ориентир лучше всего описывает Chat?",a:[["Один-два шага и нужен ответ",1,"Верно. Это типичный разговорный сценарий."],["Нужен непрерывно работающий сервер",0,"Ни один из трёх режимов не заменяет постоянную инфраструктуру."],["Нужно изменить десятки файлов проекта",0,"Это естественнее делать в Codex."]]},
+  {q:"Как безопаснее входить на сайт в облачном браузере Work?",a:[["Отправить пароль обычным сообщением",0,"Пароли и коды подтверждения нельзя отправлять в разговор."],["Использовать защищённый вход, проверить адрес и выдать только нужный доступ",1,"Верно. Также проверяй важные действия перед подтверждением."],["Разрешить доступ ко всем сайтам заранее",0,"Широкий доступ без необходимости увеличивает риск."]]},
+  {q:"Что делать, если задачу можно выполнить в двух режимах?",a:[["Всегда выбирать самый новый режим",0,"Новизна режима не определяет подходящее окружение."],["Смотреть на итоговый результат, число шагов и главный объект работы",1,"Верно. Эти три признака дают практичный выбор."],["Всегда выбирать Codex",0,"Codex нужен не для каждой задачи."]]},
+  {q:"Что полезно указать в задаче для Work или Codex?",a:[["Только короткую команду без контекста",0,"Агенту нужны рамки и способ проверить результат."],["Результат, материалы, ограничения и критерии готовности",1,"Верно. Так агент понимает и цель, и границы."],["Пароли и коды доступа",0,"Секреты нельзя помещать в обычный запрос."]]},
+  {q:"Как правильно понимать соответствие Work ≈ Cowork и Codex ≈ Claude Code?",a:[["Это ближайшие по назначению режимы, но не полные копии",1,"Верно. Логика выбора похожа, а возможности и интерфейсы отличаются."],["Это один и тот же сервис под разными названиями",0,"Нет. ChatGPT и Claude — разные продукты."],["Cowork нужен только для кода, а Claude Code — для презентаций",0,"Наоборот: Cowork рассчитан на многошаговую работу, а Claude Code — на разработку."]]}
+];
+const PASS_SCORE = 8;
+const SURVEY = [
+  {q:"Теперь понятнее, чем отличаются Chat, Work и Codex?",a:["Совсем непонятно","Скорее непонятно","Частично","Понятно","Очень понятно"]},
+  {q:"Получится выбрать режим для своей следующей задачи?",a:["Точно нет","Скорее нет","Не уверен(а)","Скорее да","Да"]}
+];
+
+const KEY="chatgpt_modes_v1";
+let store={};
+try { store=JSON.parse(localStorage.getItem(KEY))||{}; } catch(e) {}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){} }
+const ALL=MODULES.flatMap(m=>m.lessons), TOTAL=ALL.length+1;
+const $=id=>document.getElementById(id);
+let currentId=null;
+function doneCount(){ return ALL.filter(l=>store[l.id]).length+(store.testPassed?1:0); }
+function show(id){ ["home","lesson","test","survey","cert"].forEach(v=>$(v).classList.add("hidden")); const el=$(id); el.classList.remove("hidden"); el.classList.remove("view"); void el.offsetWidth; el.classList.add("view"); window.scrollTo(0,0); }
+
+function renderHome(){
+  show("home"); const dc=doneCount();
+  $("progressBar").innerHTML=Array.from({length:TOTAL},(_,i)=>`<span class="${i<dc?"done":""}"></span>`).join("");
+  $("progressLabel").innerHTML=dc===TOTAL?`курс пройден, сертификат твой ${icon("checkCircle")}`:`пройдено ${dc} из ${TOTAL}`;
+  let html="";
+  MODULES.forEach(m=>{
+    html+=`<div class="module"><div class="module-title">${m.title}</div><div class="toc">`;
+    m.lessons.forEach(l=>{html+=`<button class="lesson-item ${store[l.id]?"done":""}" data-id="${l.id}" type="button"><div class="st">${icon("check")}</div><div class="li-t">${l.title}<div class="li-sub">${l.sub}</div></div></button>`;});
+    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?icon("check"):icon("star")}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан, открыть сертификат":"10 вопросов, нужно 8 верных"}</div></div></button>`;
+    html+="</div></div>";
+  });
+  $("moduleList").innerHTML=html;
+  document.querySelectorAll(".lesson-item").forEach(el=>el.addEventListener("click",()=>{const id=el.dataset.id; id==="__test"?(store.testPassed?renderCert():renderTest()):openLesson(id);}));
+}
+
+function wireCopyButtons(){
+  document.querySelectorAll("#lBody .copy-prompt").forEach(btn=>btn.addEventListener("click",async()=>{
+    const text=btn.closest(".prompt-box")?.querySelector(".ex")?.innerText?.trim(); if(!text)return;
+    let copied=false; try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);copied=true;}}catch(e){}
+    if(!copied){const area=document.createElement("textarea");area.value=text;area.setAttribute("readonly","");area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();try{copied=document.execCommand("copy");}catch(e){}area.remove();}
+    const old=btn.innerHTML;btn.innerHTML=copied?`${icon("check")}Скопировано`:"Скопируй вручную";setTimeout(()=>{btn.innerHTML=old;},1800);
+  }));
+}
+function openLesson(id){currentId=id;const idx=ALL.findIndex(l=>l.id===id),l=ALL[idx],mod=MODULES.find(m=>m.lessons.includes(l));show("lesson");$("lKicker").textContent=`${mod.title} · урок ${idx+1} из ${ALL.length}`;$("lTitle").textContent=l.title;$("lSub").textContent=l.sub;$("lBody").innerHTML=l.body;wireCopyButtons();renderLessonActions();}
+function renderLessonActions(){const btn=$("finishBtn"),next=$("nextBtn"),idx=ALL.findIndex(l=>l.id===currentId),last=idx===ALL.length-1;if(store[currentId]){btn.classList.add("done");btn.innerHTML=`${icon("check")}Урок пройден`;next.classList.remove("hidden");next.innerHTML=(last?(store.testPassed?"К сертификату":"К финальному тесту"):"Следующий урок")+icon("arrowRight","trailing");}else{btn.classList.remove("done");btn.textContent="Отметить урок пройденным";next.classList.add("hidden");}}
+$("finishBtn").addEventListener("click",()=>{if(!store[currentId]){store[currentId]=true;save();try{tg.HapticFeedback?.notificationOccurred?.("success");}catch(e){}}renderLessonActions();});
+$("nextBtn").addEventListener("click",()=>{const idx=ALL.findIndex(l=>l.id===currentId);if(idx<ALL.length-1)openLesson(ALL[idx+1].id);else store.testPassed?renderCert():renderTest();});
+
+function renderTest(){show("test");$("tScore").classList.add("hidden");const answers={};$("tQuiz").innerHTML=FINAL_QUIZ.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a[0]}</div>`).join("")}<div class="expl"></div></div>`).join("");const btn=$("testBtn");btn.disabled=true;btn.textContent="Ответь на все вопросы";
+  document.querySelectorAll("#tQuiz .q").forEach(qEl=>{const qi=+qEl.dataset.qi;qEl.querySelectorAll(".opt").forEach(optEl=>{const pick=()=>{if(qi in answers)return;const ai=+optEl.dataset.ai;answers[qi]=FINAL_QUIZ[qi].a[ai][1]===1;optEl.classList.add(answers[qi]?"right":"wrong");if(!answers[qi])qEl.querySelectorAll(".opt").forEach(o=>{if(FINAL_QUIZ[qi].a[+o.dataset.ai][1])o.classList.add("right");});const ex=qEl.querySelector(".expl");ex.textContent=FINAL_QUIZ[qi].a[ai][2];ex.classList.add("show");if(Object.keys(answers).length===FINAL_QUIZ.length){const score=Object.values(answers).filter(Boolean).length,passed=score>=PASS_SCORE;$("tScore").textContent=`Твой результат: ${score} из ${FINAL_QUIZ.length}`;$("tScore").classList.remove("hidden");btn.disabled=false;btn.innerHTML=passed?`${icon("graduation")}Получить сертификат`:"Попробовать ещё раз";btn.onclick=()=>{if(passed){store.testPassed=true;store.testScore=score;save();renderSurvey();}else renderTest();};}};optEl.addEventListener("click",pick);optEl.addEventListener("keydown",e=>{if(e.key==="Enter")pick();});});});
+}
+function renderSurvey(){show("survey");const answers={};$("sQuiz").innerHTML=SURVEY.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a}</div>`).join("")}</div>`).join("");const btn=$("surveyBtn");btn.disabled=true;btn.textContent="Ответь на оба вопроса";document.querySelectorAll("#sQuiz .q").forEach(qEl=>{const qi=+qEl.dataset.qi;qEl.querySelectorAll(".opt").forEach(optEl=>{const pick=()=>{qEl.querySelectorAll(".opt").forEach(o=>o.classList.remove("right"));optEl.classList.add("right");answers[qi]=+optEl.dataset.ai;if(Object.keys(answers).length===SURVEY.length){btn.disabled=false;btn.innerHTML=`${icon("graduation")}Получить сертификат`;btn.onclick=()=>{store.survey=answers;save();renderCert();};}};optEl.addEventListener("click",pick);optEl.addEventListener("keydown",e=>{if(e.key==="Enter")pick();});});});}
+function renderCert(){show("cert");$("certName").textContent=(u&&[u.first_name,u.last_name].filter(Boolean).join(" "))||"Студент курса";const sc=store.testScore??FINAL_QUIZ.length;$("certScore").textContent=`Верных ответов: ${sc} из ${FINAL_QUIZ.length}`;const d=new Date();$("certDate").textContent=d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"})+" · @glgidbot";}
+$("backBtn").addEventListener("click",renderHome);$("backBtn2").addEventListener("click",renderHome);$("backBtn3").addEventListener("click",renderHome);
+renderHome();
+</script>
+</body>
+</html>
