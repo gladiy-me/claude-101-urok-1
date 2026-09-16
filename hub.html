@@ -66,9 +66,9 @@
   .lede { color: var(--muted); font-size: 15px; margin-bottom: 22px; max-width: 42ch; }
 
   .spark { display: inline-block; width: 34px; height: 34px; margin-bottom: 14px; }
-  .spark svg { width: 100%; height: 100%; display: block; }
+  .spark img { width: 100%; height: 100%; display: block; }
   @media (prefers-reduced-motion: no-preference) {
-    .spark svg { animation: spin 40s linear infinite; }
+    .spark img { animation: spin 40s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .view { animation: rise .35s ease both; }
     @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
@@ -84,10 +84,10 @@
   .p-ava { width: 52px; height: 52px; border-radius: 50%; flex: none;
     background: var(--clay-soft); display: grid; place-items: center;
     border: 2px solid var(--clay); }
-  .p-ava svg { width: 26px; height: 26px; }
+  .p-ava svg, .p-ava img { width: 26px; height: 26px; }
   .p-name { font: 600 17px/1.2 var(--display); margin-bottom: 3px; }
   .p-rank { font: 500 11.5px/1 var(--mono); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--clay); }
+    text-transform: uppercase; color: var(--clay); display: flex; align-items: center; gap: 6px; }
   .p-xp { margin-left: auto; text-align: right; flex: none; }
   .p-xp b { font: 600 20px/1 var(--display); display: block; }
   .p-xp span { font: 500 10px var(--mono); letter-spacing: .12em;
@@ -103,7 +103,8 @@
   .p-stats { display: flex; gap: 8px; }
   .stat { flex: 1; background: var(--bubble); border-radius: 12px;
     padding: 10px 8px; text-align: center; }
-  .stat b { display: block; font: 600 17px/1.1 var(--display); }
+  .stat b { display: flex; align-items: center; justify-content: center; gap: 5px;
+    font: 600 17px/1.1 var(--display); }
   .stat span { font: 500 9.5px var(--mono); letter-spacing: .1em;
     text-transform: uppercase; color: var(--muted); }
   .stat.hot b { color: var(--clay); }
@@ -113,11 +114,12 @@
   .bdg { background: var(--card); border: 1px solid var(--line);
     border-radius: 14px; padding: 12px 8px; text-align: center;
     box-shadow: var(--shadow); }
-  .bdg .bi { font-size: 21px; display: block; margin-bottom: 5px;
-    filter: grayscale(1); opacity: .35; }
+  .bdg .bi { width: 23px; height: 23px; display: block; margin: 0 auto 5px;
+    color: var(--muted); opacity: .35; }
+  .bdg .bi .ui-icon { width: 100%; height: 100%; }
   .bdg .bn { font: 500 10px/1.25 var(--body); color: var(--muted); }
   .bdg.on { border-color: var(--clay); background: var(--clay-soft); }
-  .bdg.on .bi { filter: none; opacity: 1; }
+  .bdg.on .bi { color: var(--clay); opacity: 1; }
   .bdg.on .bn { color: var(--ink); }
   .bdg.gold.on { border-color: var(--gold); background: var(--gold-soft); }
   .sec-title { font: 600 12px var(--body); letter-spacing: .06em;
@@ -142,7 +144,8 @@
     box-shadow: var(--shadow); }
   .course h2 { font: 600 21px/1.25 var(--display); letter-spacing: -.01em;
     margin-bottom: 8px; display: flex; align-items: baseline; gap: 10px; }
-  .ico { font-size: 20px; flex: none; }
+  .ico { width: 21px; height: 21px; flex: none; color: var(--clay); }
+  .ico .ui-icon, .ico .brand-icon { width: 100%; height: 100%; display: block; }
   .course p { color: var(--muted); font-size: 14.5px; margin-bottom: 14px; }
   .course p b { color: var(--ink); font-weight: 600; }
   .lvl { font: 500 10.5px/1 var(--mono); letter-spacing: .1em;
@@ -168,30 +171,35 @@
   .go:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
   .go.started { background: var(--sage-soft); color: var(--sage); }
 
-  .foot { margin-top: 26px; text-align: center; font-size: 12.5px; color: var(--muted); }
+  .foot { margin-top: 26px; text-align: center; font-size: 12.5px; color: var(--muted);
+    display: flex; align-items: center; justify-content: center; gap: 6px; }
   .foot b { color: var(--ink); font-weight: 600; }
+
+  .ui-icon { width: 1em; height: 1em; display: inline-block; vertical-align: -.14em;
+    fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;
+    stroke-linejoin: round; }
+  .brand-icon { width: 1em; height: 1em; display: inline-block; vertical-align: -.14em; }
+  .foot .brand-icon { width: 16px; height: 16px; }
+  .xphint .ui-icon { color: var(--gold); margin-left: 3px; }
 
   /* ---------- тост награды ---------- */
   .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(140%);
     background: var(--ink); color: var(--paper); border-radius: 14px;
     padding: 12px 18px; font: 600 14px var(--body); box-shadow: var(--shadow);
     max-width: 88vw; text-align: center; transition: transform .4s cubic-bezier(.2,.9,.3,1.3);
-    z-index: 50; }
+    z-index: 50; align-items: center; gap: 8px; }
+  .toast .ui-icon { flex: none; width: 18px; height: 18px; }
   .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.show { display: flex; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="view">
-    <div class="spark" aria-hidden="true">
-      <svg viewBox="0 0 34 34" fill="none">
-        <path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z"
-          fill="var(--clay)"/>
-      </svg>
-    </div>
+    <div class="spark" aria-hidden="true"><img src="assets/brands/claude.svg" alt=""></div>
     <div class="eyebrow">Гид по нейросетям · обучение</div>
-    <h1>Два курса. Начни с любого</h1>
-    <p class="lede" id="hello">Оба бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.</p>
+    <h1>Три курса. Начни с нужного</h1>
+    <p class="lede" id="hello">Все курсы бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.</p>
 
     <div class="profile" id="profile"></div>
 
@@ -206,14 +214,15 @@
         <li><b>03</b><span>Ответь на вопросы в конце — и получи сертификат</span></li>
       </ul>
       <p>Можно не спешить: <b>прогресс сохраняется сам</b>. Закрыл, вернулся через неделю — продолжишь с того же места.</p>
-      <p><b>С чего начать?</b> Если с нейросетями недавно на «ты» — бери первый курс. Уже пользуешься и хочешь, чтобы ИИ работал за тебя, — второй.</p>
+      <p><b>С чего начать?</b> Первый курс знакомит с ИИ. Второй учит собирать агентов. Третий помогает выбрать рабочий режим в ChatGPT и понять ту же логику в Claude.</p>
     </div>
 
     <div class="sec-title">Курсы</div>
     <div class="course" id="c1"></div>
     <div class="course" id="c2"></div>
+    <div class="course" id="c3"></div>
 
-    <div class="foot">Мини-курс от <b>@glgidbot</b></div>
+    <div class="foot"><img class="brand-icon" src="assets/brands/telegram.svg" alt=""><span>Мини-курс от <b>@glgidbot</b></span></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -232,44 +241,74 @@ const u = tg.initDataUnsafe?.user;
 const FIRST = u?.first_name || "";
 if (FIRST) {
   document.getElementById("hello").textContent =
-    FIRST + ", оба курса бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.";
+    FIRST + ", все курсы бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.";
+}
+
+const ICONS = {
+  award: '<circle cx="12" cy="8" r="6"/><path d="m8.2 13-1.2 8 5-3 5 3-1.2-8"/>',
+  book: '<path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v16H5.5A2.5 2.5 0 0 0 3 21.5Z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v16h5.5a2.5 2.5 0 0 1 2.5 2.5Z"/>',
+  crown: '<path d="m3 7 4.5 4L12 5l4.5 6L21 7l-2 11H5Z"/><path d="M5 21h14"/>',
+  flame: '<path d="M12 22c4 0 7-3 7-7 0-3-1.5-5.5-4-8 .1 2-1 3.2-2.2 4.1C13 7.5 11 4.5 8 2c.2 4-3 6.7-3 11 0 5 3 9 7 9Z"/>',
+  medal: '<circle cx="12" cy="13" r="5"/><path d="m9 8-3-6h4l2 4 2-4h4l-3 6"/><path d="m12 16-1.5 3 1.5-.8 1.5.8Z"/>',
+  messages: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/>',
+  orbit: '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="4" ry="9"/>',
+  sparkles: '<path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2Z"/><path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8Z"/><path d="m5 14 .7 1.8 1.8.7-1.8.7L5 19l-.7-1.8-1.8-.7 1.8-.7Z"/>',
+  sprout: '<path d="M12 22V12"/><path d="M7 3c3 0 5 2 5 5-3 0-5-2-5-5Z"/><path d="M17 7c-3 0-5 2-5 5 3 0 5-2 5-5Z"/>',
+  workflow: '<circle cx="6" cy="5" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="19" r="2"/><path d="M8 5h3a3 3 0 0 1 3 3v1a3 3 0 0 0 3 3"/><path d="M8 19h3a3 3 0 0 0 3-3v-1a3 3 0 0 1 3-3"/>',
+  wrench: '<path d="M14.7 6.3a4 4 0 0 0-5-5l2.1 2.1-2.4 2.4-2.1-2.1a4 4 0 0 0 5 5L20 16.4a2.1 2.1 0 0 1-3 3l-7.7-7.7a4 4 0 0 0 5.4-5.4Z"/>'
+};
+function icon(name, cls = "") {
+  return `<svg class="ui-icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ICONS.sparkles}</svg>`;
+}
+function brandIcon(name, cls = "") {
+  return `<img class="brand-icon ${cls}" src="assets/brands/${name}.svg" alt="" aria-hidden="true">`;
 }
 
 /* ==================== КУРСЫ ==================== */
 const COURSES = [
   {
-    el: "c1", ico: "📚", title: "Claude 101", lvl: "base", lvlText: "с нуля",
+    el: "c1", ico: "claude", brand: true, title: "Claude 101", lvl: "base", lvlText: "с нуля",
     url: "index.html", key: "claude101_v2",
     desc: "Базовый курс: как устроен Claude, как писать промпты, работать с документами, проектами и инструментами. <b>14 уроков</b> и финальный тест.",
     mods: ["Знакомство с Claude", "Организация работы", "Расширяем возможности", "Всё вместе", "Финал"],
-    ids: ["m1l1","m1l2","m1l3","m1l4","m1l5","m2l1","m2l2","m2l3","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"],
+    ids: ["m1l1","m1l2","m1l3","m1l4","m1l5","m2l1","m2l2","m2l3","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"], quizTotal: 10,
   },
   {
-    el: "c2", ico: "⚙️", title: "Агенты, циклы и графы", lvl: "next", lvlText: "нужна база",
+    el: "c2", ico: "workflow", title: "Агенты, циклы и графы", lvl: "next", lvlText: "нужна база",
     url: "agents-cycles-graphs/index.html", key: "agents_graphs_v1",
     desc: "Как запускать агентов, строить самопроверяющиеся циклы и разбивать большие задачи на понятную схему. <b>10 уроков</b>, готовые промпты и финальный тест.",
     mods: ["Агенты", "Циклы", "Графы", "Сборка", "Библиотека промтов"],
-    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m5l1"],
+    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m5l1"], quizTotal: 9,
+  },
+  {
+    el: "c3", ico: "messages", title: "Chat, Work или Codex", lvl: "base", lvlText: "практика",
+    url: "chat-work-codex/index.html", key: "chatgpt_modes_v1",
+    desc: "Как выбрать режим в ChatGPT и понять аналоги в Claude. <b>11 уроков</b>, примеры запросов и финальный тест.",
+    mods: ["Быстрый выбор", "Chat", "Work", "Codex", "Практика"],
+    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"], quizTotal: 10,
   },
 ];
+const TOTAL_LESSONS = COURSES.reduce((sum, c) => sum + c.ids.length, 0);
+const TOTAL_TESTS = COURSES.length;
+const HALF_LESSONS = Math.ceil(TOTAL_LESSONS / 2);
 
 /* ==================== ГЕЙМ-МОДЕЛЬ ==================== */
 const XP = { lesson: 20, test: 60, perfect: 40, badge: 30, week: 50 };
 const RANKS = [
-  { min: 0,    ico: "🌱", name: "Новичок" },
-  { min: 150,  ico: "✳️", name: "Уверенный пользователь" },
-  { min: 350,  ico: "🛠", name: "Практик" },
-  { min: 600,  ico: "🛰", name: "Оператор нейросетей" },
-  { min: 800,  ico: "🏅", name: "Мастер" },
-  { min: 1000, ico: "👑", name: "GOAT" },
+  { min: 0,    ico: "sprout", name: "Новичок" },
+  { min: 150,  ico: "sparkles", name: "Уверенный пользователь" },
+  { min: 350,  ico: "wrench", name: "Практик" },
+  { min: 600,  ico: "orbit", name: "Оператор нейросетей" },
+  { min: 800,  ico: "medal", name: "Мастер" },
+  { min: 1000, ico: "crown", name: "GOAT" },
 ];
 const BADGES = [
-  { id: "first",   ico: "🌱", name: "Первый шаг",    test: s => s.lessons >= 1 },
-  { id: "half",    ico: "📚", name: "Половина пути", test: s => s.lessons >= 12 },
-  { id: "cert",    ico: "🎓", name: "Сертификат",    test: s => s.tests >= 1 },
-  { id: "perfect", ico: "💯", name: "Идеальный тест", test: s => s.perfect >= 1 },
-  { id: "week",    ico: "🔥", name: "Неделя подряд", test: s => s.bestStreak >= 7 },
-  { id: "both",    ico: "👑", name: "Оба курса", gold: true, test: s => s.lessons >= 24 && s.tests >= 2 },
+  { id: "first",   ico: "sprout", name: "Первый шаг",    test: s => s.lessons >= 1 },
+  { id: "half",    ico: "book", name: "Половина пути", test: s => s.lessons >= HALF_LESSONS },
+  { id: "cert",    ico: "award", name: "Сертификат",    test: s => s.tests >= 1 },
+  { id: "perfect", ico: "sparkles", name: "Идеальный тест", test: s => s.perfect >= 1 },
+  { id: "week",    ico: "flame", name: "Неделя подряд", test: s => s.bestStreak >= 7 },
+  { id: "both",    ico: "crown", name: "Все курсы", gold: true, test: s => s.lessons >= TOTAL_LESSONS && s.tests >= TOTAL_TESTS },
 ];
 const GAME_KEY = "glgid_game_v1";
 const API = "https://glgid-api.vercel.app";
@@ -320,11 +359,12 @@ function courseStats() {
   let lessons = 0, tests = 0, perfect = 0, per = [];
   for (const c of COURSES) {
     const st = readJSON(c.key);
-    const done = c.ids.filter(id => st[id]).length;
+    const lessonDone = c.ids.filter(id => st[id]).length;
     const passed = !!st.testPassed;
     const max = c.ids.length + 1;
-    lessons += done; tests += passed ? 1 : 0;
-    if (passed && (st.testScore || 0) >= max) perfect++;
+    const done = lessonDone + (passed ? 1 : 0);
+    lessons += lessonDone; tests += passed ? 1 : 0;
+    if (passed && (st.testScore || 0) >= c.quizTotal) perfect++;
     per.push({ done, passed, total: max });
   }
   return { lessons, tests, perfect, per };
@@ -346,7 +386,7 @@ function nextRank(xp) {
 }
 
 /* ==================== РЕНДЕР ==================== */
-const SPARK = `<svg viewBox="0 0 34 34" fill="none"><path d="M17 2 L19.4 12.2 L27.6 6.4 L21.8 14.6 L32 17 L21.8 19.4 L27.6 27.6 L19.4 21.8 L17 32 L14.6 21.8 L6.4 27.6 L12.2 19.4 L2 17 L12.2 14.6 L6.4 6.4 L14.6 12.2 Z" fill="var(--clay)"/></svg>`;
+const SPARK = brandIcon("claude");
 
 function renderProfile(s, g, xp) {
   const r = rankOf(xp), nx = nextRank(xp);
@@ -360,15 +400,15 @@ function renderProfile(s, g, xp) {
       <div class="p-ava">${SPARK}</div>
       <div>
         <div class="p-name">${FIRST ? esc(FIRST) : "Ты"}</div>
-        <div class="p-rank">${r.ico} ${esc(r.name)}</div>
+        <div class="p-rank">${icon(r.ico)}<span>${esc(r.name)}</span></div>
       </div>
       <div class="p-xp"><b>${xp}</b><span>XP</span></div>
     </div>
     <div class="xpbar"><i style="width:${pct}%"></i></div>
-    <div class="xphint">${nx ? `до «${esc(nx.name)}» — ${left} XP` : "максимальное звание 👑"}</div>
+    <div class="xphint">${nx ? `до «${esc(nx.name)}» — ${left} XP` : `максимальное звание ${icon("crown")}`}</div>
     <div class="p-stats">
-      <div class="stat${streak >= 2 ? " hot" : ""}"><b>${streak ? streak + " 🔥" : "—"}</b><span>дней подряд</span></div>
-      <div class="stat"><b>${s.lessons}/24</b><span>уроков</span></div>
+      <div class="stat${streak >= 2 ? " hot" : ""}"><b>${streak ? streak + icon("flame") : "—"}</b><span>дней подряд</span></div>
+      <div class="stat"><b>${s.lessons}/${TOTAL_LESSONS}</b><span>уроков</span></div>
       <div class="stat"><b>${done}/${BADGES.length}</b><span>наград</span></div>
     </div>`;
 }
@@ -377,7 +417,7 @@ function renderBadges(g) {
   document.getElementById("badges").innerHTML = BADGES.map(b => {
     const on = !!g.badges[b.id];
     return `<div class="bdg${b.gold ? " gold" : ""}${on ? " on" : ""}" title="${esc(b.name)}">
-      <span class="bi">${b.ico}</span><span class="bn">${esc(b.name)}</span></div>`;
+      <span class="bi">${icon(b.ico)}</span><span class="bn">${esc(b.name)}</span></div>`;
   }).join("");
 }
 
@@ -388,10 +428,10 @@ function renderCourse(c, stat) {
     `<span class="${i < done ? "done" : ""}"></span>`).join("");
   const chips = c.mods.map(m => `<span class="mod">${esc(m)}</span>`).join("");
   const label = complete ? `Курс пройден · ${done}/${total}`
-    : started ? `Пройдено ${done} из ${total}` : `${total} шагов · с нуля`;
+    : started ? `Пройдено ${done} из ${total}` : `${total} шагов · ${esc(c.lvlText)}`;
 
   document.getElementById(c.el).innerHTML = `
-    <h2><span class="ico">${c.ico}</span>${esc(c.title)}</h2>
+    <h2><span class="ico">${c.brand ? brandIcon(c.ico) : icon(c.ico)}</span>${esc(c.title)}</h2>
     <span class="lvl ${c.lvl}">${esc(c.lvlText)}</span>
     <p>${c.desc}</p>
     <div class="mods">${chips}</div>
@@ -417,7 +457,7 @@ function nextToast() {
   const text = queue.shift();
   if (!text) { toasting = false; el.classList.remove("show"); return; }
   toasting = true;
-  el.textContent = text;
+  el.innerHTML = `${icon("award")}<span>${esc(text)}</span>`;
   el.classList.add("show");
   try { tg.HapticFeedback?.notificationOccurred?.("success"); } catch (e) {}
   setTimeout(() => { el.classList.remove("show"); setTimeout(nextToast, 420); }, 2600);
@@ -449,7 +489,7 @@ function tick() {
   renderBadges(g);
   COURSES.forEach((c, i) => renderCourse(c, s.per[i]));
 
-  fresh.forEach(b => toast(`${b.ico} Награда: «${b.name}»`));
+  fresh.forEach(b => toast(`Награда: «${b.name}»`));
   return { s, g, xp };
 }
 
