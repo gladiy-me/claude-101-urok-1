@@ -54,6 +54,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   html, body { background: var(--paper); color: var(--ink);
     font: 400 15.5px/1.6 var(--body);
     -webkit-tap-highlight-color: transparent; }
@@ -138,9 +139,36 @@
     font-size: 14px; color: var(--muted); }
   .steps b { color: var(--clay); font: 600 12px/1.7 var(--mono); flex: none; }
 
+  /* ---------- оглавление ---------- */
+  .course-map { background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px 14px 10px; margin-bottom: 22px;
+    box-shadow: var(--shadow); }
+  .map-head { display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; margin-bottom: 2px; }
+  .map-title { font: 600 19px/1.2 var(--display); }
+  .map-meta { font: 500 10px/1.2 var(--mono); color: var(--muted);
+    text-align: right; white-space: nowrap; }
+  .map-item { display: grid; grid-template-columns: 28px minmax(0, 1fr) 18px;
+    gap: 9px; align-items: start; color: var(--ink); text-decoration: none;
+    padding: 12px 0; border-top: 1px solid var(--line); }
+  .map-item:first-child { margin-top: 8px; }
+  .map-item:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px;
+    border-radius: 8px; }
+  .map-num { color: var(--clay); font: 600 12px/1.4 var(--mono); }
+  .map-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .map-copy strong { font: 600 14.5px/1.25 var(--body); }
+  .map-copy small { color: var(--muted); font: 400 13px/1.35 var(--body); }
+  .map-copy em { color: var(--clay); font: 500 10px/1.35 var(--mono);
+    font-style: normal; margin-top: 2px; }
+  .map-arrow { color: var(--muted); padding-top: 2px; }
+  .map-arrow .ui-icon { width: 16px; height: 16px; }
+  .map-note { color: var(--muted); font: 400 12px/1.45 var(--body);
+    border-top: 1px solid var(--line); padding-top: 10px; margin-top: 2px; }
+
   /* ---------- курсы ---------- */
   .course { background: var(--card); border: 1px solid var(--line);
     border-radius: 18px; padding: 20px 18px; margin-bottom: 16px;
+    scroll-margin-top: 16px;
     box-shadow: var(--shadow); }
   .course h2 { font: 600 21px/1.25 var(--display); letter-spacing: -.01em;
     margin-bottom: 8px; display: flex; align-items: baseline; gap: 10px; }
@@ -199,7 +227,7 @@
     <div class="spark" aria-hidden="true"><img src="assets/brands/claude.svg" alt=""></div>
     <div class="eyebrow">Гид по нейросетям · обучение</div>
     <h1>Три курса. Начни с нужного</h1>
-    <p class="lede" id="hello">Все курсы бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.</p>
+    <p class="lede" id="hello">Здесь 3 курса: от первых шагов до агентов и выбора рабочего режима. Все бесплатные, с нуля и в своём темпе.</p>
 
     <div class="profile" id="profile"></div>
 
@@ -214,7 +242,16 @@
         <li><b>03</b><span>Ответь на вопросы в конце — и получи сертификат</span></li>
       </ul>
       <p>Можно не спешить: <b>прогресс сохраняется сам</b>. Закрыл, вернулся через неделю — продолжишь с того же места.</p>
-      <p><b>С чего начать?</b> Первый курс знакомит с ИИ. Второй учит собирать агентов. Третий помогает выбрать рабочий режим в ChatGPT и понять ту же логику в Claude.</p>
+      <p><b>Не обязательно проходить всё.</b> Выбери курс под свою задачу, а оглавление ниже подскажет, с какого начать.</p>
+    </div>
+
+    <div class="course-map" aria-labelledby="course-map-title">
+      <div class="map-head">
+        <h2 class="map-title" id="course-map-title">Оглавление</h2>
+        <span class="map-meta" id="course-map-meta"></span>
+      </div>
+      <div id="course-map-list"></div>
+      <p class="map-note">Рекомендованный путь: 1 → 2 → 3. Третий курс можно открыть отдельно, если нужно быстро разобраться с режимами.</p>
     </div>
 
     <div class="sec-title">Курсы</div>
@@ -245,6 +282,7 @@ if (FIRST) {
 }
 
 const ICONS = {
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   award: '<circle cx="12" cy="8" r="6"/><path d="m8.2 13-1.2 8 5-3 5 3-1.2-8"/>',
   book: '<path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v16H5.5A2.5 2.5 0 0 0 3 21.5Z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v16h5.5a2.5 2.5 0 0 1 2.5 2.5Z"/>',
   crown: '<path d="m3 7 4.5 4L12 5l4.5 6L21 7l-2 11H5Z"/><path d="M5 21h14"/>',
@@ -269,6 +307,7 @@ const COURSES = [
   {
     el: "c1", ico: "claude", brand: true, title: "Claude 101", lvl: "base", lvlText: "с нуля",
     url: "index.html", key: "claude101_v2",
+    guide: { purpose: "Разобраться с Claude и научиться работать с ИИ каждый день.", audience: "Если начинаешь с нуля" },
     desc: "Базовый курс: как устроен Claude, как писать промпты, работать с документами, проектами и инструментами. <b>14 уроков</b> и финальный тест.",
     mods: ["Знакомство с Claude", "Организация работы", "Расширяем возможности", "Всё вместе", "Финал"],
     ids: ["m1l1","m1l2","m1l3","m1l4","m1l5","m2l1","m2l2","m2l3","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"], quizTotal: 10,
@@ -276,6 +315,7 @@ const COURSES = [
   {
     el: "c2", ico: "workflow", title: "Агенты, циклы и графы", lvl: "next", lvlText: "нужна база",
     url: "agents-cycles-graphs/index.html", key: "agents_graphs_v1",
+    guide: { purpose: "Собирать сложные задачи в цепочки, циклы и агентов.", audience: "После первого курса или с базой" },
     desc: "Как запускать агентов, строить самопроверяющиеся циклы и разбивать большие задачи на понятную схему. <b>10 уроков</b>, готовые промпты и финальный тест.",
     mods: ["Агенты", "Циклы", "Графы", "Сборка", "Библиотека промтов"],
     ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m5l1"], quizTotal: 9,
@@ -283,6 +323,7 @@ const COURSES = [
   {
     el: "c3", ico: "messages", title: "Chat, Work или Codex", lvl: "base", lvlText: "практика",
     url: "chat-work-codex/index.html", key: "chatgpt_modes_v1",
+    guide: { purpose: "Понять, когда выбирать Chat, Work или Codex в ChatGPT и Claude.", audience: "Можно начать сразу под задачу" },
     desc: "Как выбрать режим в ChatGPT и понять аналоги в Claude. <b>11 уроков</b>, примеры запросов и финальный тест.",
     mods: ["Быстрый выбор", "Chat", "Work", "Codex", "Практика"],
     ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"], quizTotal: 10,
@@ -442,6 +483,21 @@ function renderCourse(c, stat) {
     </button>`;
 }
 
+function renderCourseMap() {
+  document.getElementById("course-map-meta").textContent =
+    `${COURSES.length} курса · ${TOTAL_LESSONS} уроков · ${TOTAL_TESTS} финальных теста`;
+  document.getElementById("course-map-list").innerHTML = COURSES.map((c, i) => `
+    <a class="map-item" href="#${c.el}">
+      <span class="map-num">${String(i + 1).padStart(2, "0")}</span>
+      <span class="map-copy">
+        <strong>${esc(c.title)}</strong>
+        <small>${esc(c.guide.purpose)}</small>
+        <em>${esc(c.guide.audience)}</em>
+      </span>
+      <span class="map-arrow">${icon("arrow")}</span>
+    </a>`).join("");
+}
+
 function esc(x) {
   return String(x).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
@@ -487,6 +543,7 @@ function tick() {
   const xp = computeXp(s, g);
   renderProfile(s, g, xp);
   renderBadges(g);
+  renderCourseMap();
   COURSES.forEach((c, i) => renderCourse(c, s.per[i]));
 
   fresh.forEach(b => toast(`Награда: «${b.name}»`));
