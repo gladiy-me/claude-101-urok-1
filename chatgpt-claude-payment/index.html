@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Регистрация и оплата ChatGPT и Claude · мини-курс</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+  :root {
+    --paper:#faf8f4; --card:#fff; --ink:#26241f; --muted:#7c776c; --line:#e8e3d9;
+    --clay:#c65d3b; --clay-soft:#f3e3db; --sage:#5f7d54; --sage-soft:#e6ecdf;
+    --bad:#b5402c; --bad-soft:#f4ddd7; --bubble:#f0ebe1;
+    --shadow:0 1px 2px rgba(38,36,31,.05),0 6px 24px rgba(38,36,31,.06);
+    --display:"Spectral",Georgia,serif; --body:"Golos Text",-apple-system,"Segoe UI",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark) {
+    :root { --paper:#211f1c; --card:#2b2925; --ink:#f0ede5; --muted:#aaa296; --line:#3a3731;
+      --clay:#e08960; --clay-soft:#453329; --sage:#97b385; --sage-soft:#313a2c;
+      --bad:#de6a4f; --bad-soft:#46302a; --bubble:#35322c;
+      --shadow:0 1px 2px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.25); }
+  }
+  :root[data-theme="dark"] { --paper:#211f1c; --card:#2b2925; --ink:#f0ede5; --muted:#aaa296;
+    --line:#3a3731; --clay:#e08960; --clay-soft:#453329; --sage:#97b385; --sage-soft:#313a2c;
+    --bad:#de6a4f; --bad-soft:#46302a; --bubble:#35322c;
+    --shadow:0 1px 2px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.25); }
+  :root[data-theme="light"] { --paper:#faf8f4; --card:#fff; --ink:#26241f; --muted:#7c776c;
+    --line:#e8e3d9; --clay:#c65d3b; --clay-soft:#f3e3db; --sage:#5f7d54;
+    --sage-soft:#e6ecdf; --bad:#b5402c; --bad-soft:#f4ddd7; --bubble:#f0ebe1;
+    --shadow:0 1px 2px rgba(38,36,31,.05),0 6px 24px rgba(38,36,31,.06); }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { background:var(--paper); color:var(--ink); font:400 15.5px/1.6 var(--body);
+    -webkit-tap-highlight-color:transparent; }
+  .wrap { max-width:480px; margin:0 auto; padding:26px 18px 44px; }
+  .view { animation:rise .35s ease both; }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } }
+  .hidden { display:none!important; }
+  .ui-icon { width:1em; height:1em; display:inline-block; vertical-align:-.14em; fill:none;
+    stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .brand-icon { width:1em; height:1em; display:inline-block; vertical-align:-.14em; }
+  .hero-icon { width:38px; height:38px; color:var(--clay); margin-bottom:13px; }
+  .hero-icon .ui-icon { width:100%; height:100%; }
+  .eyebrow { font:500 11.5px/1 var(--mono); letter-spacing:.18em; text-transform:uppercase;
+    color:var(--clay); margin-bottom:10px; }
+  h1 { font:600 28px/1.15 var(--display); letter-spacing:-.01em; text-wrap:balance; margin-bottom:8px; }
+  .lede { color:var(--muted); font-size:15px; margin-bottom:22px; max-width:42ch; }
+
+  .progress { display:flex; gap:4px; margin-bottom:7px; }
+  .progress span { height:5px; flex:1; border-radius:3px; background:var(--line); }
+  .progress span.done { background:var(--clay); }
+  .progress-label { font:500 11.5px var(--mono); color:var(--muted); letter-spacing:.08em; margin-bottom:22px; }
+  .progress-label .ui-icon { color:var(--sage); margin-left:3px; }
+  .module { margin-bottom:21px; }
+  .module-title { font:600 11px var(--body); letter-spacing:.09em; text-transform:uppercase;
+    color:var(--muted); margin:0 2px 8px; }
+  .toc { display:flex; flex-direction:column; gap:8px; }
+  .lesson-item { width:100%; display:flex; gap:11px; align-items:center; text-align:left;
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px;
+    box-shadow:var(--shadow); cursor:pointer; color:var(--ink); font:inherit; }
+  .lesson-item:active { transform:scale(.98); }
+  .lesson-item:focus-visible,.finish:focus-visible,.opt:focus-visible,.copy-prompt:focus-visible {
+    outline:2px solid var(--clay); outline-offset:2px; }
+  .st { width:22px; height:22px; border-radius:50%; flex:none; border:2px solid var(--line);
+    display:grid; place-items:center; color:transparent; }
+  .st .ui-icon { width:13px; height:13px; }
+  .lesson-item.done .st { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .lesson-item.final .st { border-color:var(--clay); }
+  .lesson-item.final:not(.done) .st { color:var(--clay); }
+  .li-t { flex:1; min-width:0; font:500 14.5px/1.35 var(--body); }
+  .li-sub { font-size:12px; color:var(--muted); font-weight:400; margin-top:1px; }
+
+  .back { display:inline-flex; align-items:center; gap:7px; color:var(--clay); font:500 14px var(--body);
+    margin-bottom:20px; cursor:pointer; user-select:none; background:transparent; border:0; padding:0; }
+  .back .ui-icon { width:16px; height:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px 18px;
+    margin-bottom:14px; box-shadow:var(--shadow); }
+  .card h2 { font:600 19px/1.3 var(--display); margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+  .num { font:600 15px var(--mono); color:var(--clay); flex:none; }
+  .num .ui-icon { width:18px; height:18px; }
+  .card p { color:var(--muted); font-size:14.5px; margin-bottom:10px; }
+  .card p:last-child { margin-bottom:0; }
+  .card b { color:var(--ink); font-weight:600; }
+  .card a { color:var(--clay); text-decoration:none; }
+  .card ul,.card ol { margin:0 0 10px 19px; color:var(--muted); font-size:14.5px; }
+  .card li { margin-bottom:6px; }
+  .card li::marker { color:var(--clay); }
+  .mode-grid { display:grid; gap:8px; margin:12px 0; }
+  .mode { border:1px solid var(--line); background:var(--paper); border-radius:13px; padding:12px 13px; }
+  .mode b { display:block; margin-bottom:2px; color:var(--clay); }
+  .mode span { color:var(--muted); font-size:13.5px; }
+  .diagram { background:var(--bubble); border:1px solid var(--line); border-radius:14px; padding:14px;
+    margin:12px 0; color:var(--ink); font:500 13px/1.7 var(--mono); white-space:pre-wrap; }
+  .ex { position:relative; background:var(--sage-soft); color:var(--ink); border-radius:16px 16px 4px 16px;
+    padding:14px; margin:15px 0 10px 18px; font:400 13px/1.55 var(--mono); }
+  .ex::before { content:"пример запроса"; position:absolute; top:-9px; right:12px; font:500 9.5px var(--mono);
+    letter-spacing:.1em; text-transform:uppercase; color:var(--sage); background:var(--card); padding:1px 7px;
+    border-radius:99px; border:1px solid var(--line); }
+  .prompt-box { margin:12px 0 16px; }
+  .copy-prompt { border:1px solid var(--line); border-radius:10px; padding:8px 11px; font:500 12px var(--body);
+    cursor:pointer; background:var(--paper); color:var(--clay); }
+  .copy-prompt:active { transform:scale(.98); }
+  .tip { display:flex; gap:10px; background:var(--clay-soft); border-radius:14px; padding:13px 14px;
+    font-size:13.5px; margin:12px 0 0; color:var(--ink); }
+  .tip-icon { width:19px; height:19px; flex:none; color:var(--clay); margin-top:1px; }
+  .tip-icon .ui-icon { width:100%; height:100%; }
+  .tip b { color:var(--clay); }
+  .refs { margin-top:13px; padding-top:12px; border-top:1px solid var(--line); font-size:12.5px; }
+  .refs a { color:var(--clay); text-decoration:none; }
+
+  .finish { width:100%; border:0; border-radius:13px; padding:15px; font:600 15px var(--body);
+    cursor:pointer; background:var(--clay); color:#fff; margin-top:6px; }
+  .finish[disabled] { opacity:.35; cursor:default; }
+  .finish.done { background:var(--sage-soft); color:var(--sage); }
+  .finish .ui-icon { width:17px; height:17px; margin-right:7px; }
+  .finish .ui-icon.trailing { margin:0 0 0 7px; }
+  .q { margin-bottom:18px; }
+  .qq { font:600 15px/1.4 var(--body); margin-bottom:10px; }
+  .opt { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+    font-size:14px; margin-bottom:8px; cursor:pointer; user-select:none; }
+  .opt.right { background:var(--sage-soft); border-color:var(--sage); }
+  .opt.wrong { background:var(--bad-soft); border-color:var(--bad); }
+  .expl { display:none; font-size:13px; color:var(--muted); padding:9px 13px; border-left:2px solid var(--clay); }
+  .expl.show { display:block; }
+  .score { font:600 16px var(--display); text-align:center; padding:8px 0 2px; }
+
+  .title-icon { display:inline-flex; width:26px; height:26px; color:var(--clay); vertical-align:-.16em; }
+  .title-icon .ui-icon { width:100%; height:100%; }
+  .cert { position:relative; background:var(--card); border:2px solid var(--clay); border-radius:18px;
+    padding:42px 26px 28px; text-align:center; box-shadow:var(--shadow); overflow:hidden; }
+  .cert::before { content:""; position:absolute; inset:9px; border:1px solid var(--clay-soft); border-radius:11px; }
+  .cert::after { content:""; position:absolute; left:0; right:0; top:0; height:6px; background:var(--clay); }
+  .cert-mark { width:50px; height:50px; color:var(--clay); margin:0 auto 15px; }
+  .cert-mark .ui-icon { width:100%; height:100%; }
+  .ct { font:600 14px var(--mono); letter-spacing:.3em; text-transform:uppercase; color:var(--clay); }
+  .csub { font:500 10.5px var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
+  .cname { font:600 30px/1.15 var(--display); margin-bottom:14px; text-wrap:balance; }
+  .ctext { color:var(--muted); font-size:14px; max-width:36ch; margin:0 auto 14px; }
+  .ctext b { color:var(--ink); }
+  .cscore { display:inline-block; font:600 13px var(--mono); color:var(--clay); background:var(--clay-soft);
+    border-radius:99px; padding:7px 16px; margin-bottom:20px; }
+  .cdate { font:500 11.5px var(--mono); color:var(--muted); border-top:1px solid var(--line);
+    padding-top:14px; margin:0 12px; }
+  .foot { text-align:center; color:var(--muted); font-size:12px; margin-top:28px; font-family:var(--mono);
+    display:flex; align-items:center; justify-content:center; gap:6px; }
+  .foot .brand-icon { width:15px; height:15px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="home" class="view">
+    <div class="hero-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></svg></div>
+    <div class="eyebrow">ChatGPT и Claude · доступ и оплата</div>
+    <h1>Регистрация и оплата ChatGPT и Claude</h1>
+    <p class="lede" id="hello">Один подробный урок: регистрация, оплата, безопасность и первый запрос. В конце — короткая проверка.</p>
+    <div class="progress" id="progressBar" aria-hidden="true"></div>
+    <div class="progress-label" id="progressLabel"></div>
+    <div id="moduleList"></div>
+    <div class="foot"><img class="brand-icon" src="../assets/brands/telegram.svg" alt=""><span>бот-гид по обучению · <b>@glgidbot</b></span></div>
+  </div>
+
+  <div id="lesson" class="view hidden">
+    <button class="back" id="backBtn" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
+    <div class="eyebrow" id="lKicker"></div>
+    <h1 id="lTitle"></h1>
+    <p class="lede" id="lSub"></p>
+    <div id="lBody"></div>
+    <button class="finish" id="finishBtn"></button>
+    <button class="finish hidden" id="nextBtn" type="button"></button>
+    <div class="foot"><span>Chat, Work или Codex</span></div>
+  </div>
+
+  <div id="test" class="view hidden">
+    <button class="back" id="backBtn2" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
+    <div class="eyebrow">Финал · проверка знаний</div>
+    <h1>Финальный тест</h1>
+    <p class="lede">12 вопросов по всему курсу. Для сертификата нужно 9 правильных ответов.</p>
+    <div class="card"><div id="tQuiz"></div><div class="score hidden" id="tScore"></div>
+      <button class="finish" id="testBtn" disabled>Ответь на все вопросы</button></div>
+    <div class="foot"><span>Chat, Work или Codex</span></div>
+  </div>
+
+  <div id="survey" class="view hidden">
+    <div class="eyebrow">Почти готово · два вопроса о курсе</div>
+    <h1>Тест сдан! <span class="title-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span></h1>
+    <p class="lede">Ответь на два коротких вопроса и забирай сертификат.</p>
+    <div class="card"><div id="sQuiz"></div><button class="finish" id="surveyBtn" disabled>Ответь на оба вопроса</button></div>
+    <div class="foot"><span>Chat, Work или Codex</span></div>
+  </div>
+
+  <div id="cert" class="view hidden">
+    <button class="back" id="backBtn3" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>К программе курса</button>
+    <div class="cert">
+      <div class="cert-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m2 10 10-5 10 5-10 5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg></div>
+      <div class="ct">Сертификат</div><div class="csub">о прохождении курса</div>
+      <div class="cname" id="certName">Студент курса</div>
+      <div class="ctext">успешно прошёл(ла) курс<br><b>«Chat, Work или Codex»</b><br>12 уроков и финальный тест</div>
+      <div class="cscore" id="certScore"></div><div class="cdate" id="certDate"></div>
+    </div>
+    <div class="foot"><img class="brand-icon" src="../assets/brands/telegram.svg" alt=""><span>бот-гид по обучению · <b>@glgidbot</b></span></div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready(); tg.expand();
+try {
+  if (tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme;
+  tg.onEvent && tg.onEvent("themeChanged", () => { document.documentElement.dataset.theme = tg.colorScheme; });
+} catch (e) {}
+const u = tg.initDataUnsafe?.user;
+if (u?.first_name) document.getElementById("hello").textContent = u.first_name + ", впереди 12 коротких уроков и финальный тест. После курса ты выберешь режим под задачу за 10 секунд.";
+
+const ICONS = {
+  arrowRight:'<path d="M4 12h16"/><path d="m14 6 6 6-6 6"/>',
+  check:'<path d="m5 12 4 4L19 6"/>',
+  checkCircle:'<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+  graduation:'<path d="m2 10 10-5 10 5-10 5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/>',
+  lightbulb:'<path d="M9 18h6M10 22h4"/><path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.9.7-1.3 1.5-1.5 2.5h-4c-.2-1-.6-1.8-1.5-2.5Z"/>',
+  sparkles:'<path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2Z"/><path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8Z"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/>',
+  warning:'<path d="M10.3 3.8 2.4 18a2 2 0 0 0 1.8 3h15.6a2 2 0 0 0 1.8-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>'
+};
+function icon(name, cls="") { return `<svg class="ui-icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ICONS.sparkles}</svg>`; }
+function tipIcon(name) { return `<span class="tip-icon" aria-hidden="true">${icon(name)}</span>`; }
+
+const MODULES = [
+{ title:"Модуль 1 · Регистрация и оплата", lessons:[
+  { id:"p1l1", title:"Регистрация, оплата и пользование ChatGPT и Claude", sub:"Подробная инструкция для новичка, включая мои реферальные ссылки", body:`
+
+<div class="payment-guide"><style>
+.payment-guide h2{font:600 18px/1.3 var(--display);margin:22px 0 10px}
+.payment-guide .notice,.payment-guide .warning{border-radius:14px;padding:14px;margin:14px 0;font-size:14px}
+.payment-guide .notice{background:#f5ecd6;border:1px solid #ead9b0}
+.payment-guide .warning{background:var(--clay-soft);border:1px solid #e8c9bd}
+.payment-guide .notice strong,.payment-guide .warning strong{display:block;margin-bottom:4px}
+.payment-guide .route{display:grid;gap:7px;margin:12px 0}
+.payment-guide .route-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:14px}
+.payment-guide .route-item b{color:var(--clay)}
+.payment-guide .step{display:grid;grid-template-columns:28px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;margin-bottom:14px;box-shadow:var(--shadow)}
+.payment-guide .step-num{color:var(--clay);font:600 15px var(--mono)}
+.payment-guide .step h3,.payment-guide .pay-card h3{font:600 17px var(--display);margin:0 0 8px}
+.payment-guide .step p{color:var(--muted);font-size:14.5px}
+.payment-guide .card ul,.payment-guide .card ol,.payment-guide .step ol,.payment-guide .warning ol{padding-left:22px;margin:8px 0 12px}
+.payment-guide li{margin:6px 0;font-size:14.5px}
+.payment-guide .link-list{display:grid;gap:8px;margin:10px 0}
+.payment-guide a.link-button{display:flex;justify-content:space-between;gap:8px;background:var(--clay-soft);border:1px solid #e8c9bd;border-radius:12px;padding:10px 12px;color:var(--ink);text-decoration:none;font-weight:600}
+.payment-guide .link-button span{color:var(--clay)}
+.payment-guide .tip{display:block;margin:12px 0;background:var(--sage-soft);border:1px solid #d1dec9}
+.payment-guide .tip strong{display:block;margin-bottom:4px}
+.payment-guide .pay-card{border-top:1px solid var(--line);padding:14px 0 4px}
+.payment-guide .pay-card:first-of-type{border-top:0}
+.payment-guide .prompt{background:#2b2925;border-radius:12px;color:#f4efe6;font:13px/1.55 var(--mono);padding:14px;white-space:pre-wrap}
+.payment-guide .checklist{list-style:none;padding-left:0}
+.payment-guide .checklist li:before{content:"□";color:var(--clay);margin-right:8px}
+.payment-guide details summary{cursor:pointer}
+</style>
+<div class="notice">
+      <strong>Перед началом</strong>
+      Цены, доступность и требования сервисов меняются. Используйте только свои реальные данные и проверяйте условия на официальной странице оплаты.
+    </div>
+
+    <h2>Какой будет порядок</h2>
+    <div class="route">
+      <div class="route-item"><b>1</b><span>Подключить стабильный VPN</span></div>
+      <div class="route-item"><b>2</b><span>Подготовить свою почту</span></div>
+      <div class="route-item"><b>3</b><span>Зарегистрировать ChatGPT и Claude</span></div>
+      <div class="route-item"><b>4</b><span>Выбрать тариф и способ оплаты</span></div>
+      <div class="route-item"><b>5</b><span>Выпустить карту и оплатить подписку</span></div>
+    </div>
+
+    <h2>Что понадобится</h2>
+    <div class="card">
+      <ul>
+        <li>стабильное подключение к интернету;</li>
+        <li>своя почта с постоянным доступом;</li>
+        <li>уникальный пароль и двухфакторная защита, то есть дополнительный код при входе;</li>
+        <li>для Claude, если сервис попросит, свой номер телефона, который он принимает;</li>
+        <li>если понадобится оплата, один подходящий способ оплаты.</li>
+      </ul>
+    </div>
+
+    <h2>Шаг 1. Подключите VPN</h2>
+    <div class="step">
+      <span class="step-num">1</span>
+      <div>
+        <h3>Выберите стабильный сервер</h3>
+        <p>В исходном гайде упоминается LeadVPN. Если у вас уже есть другой надёжный VPN, новый покупать не обязательно.</p>
+        <div class="link-list">
+          <a class="link-button" href="https://twa.leadnode.net/login?start_param=pref_btjtsk1" target="_blank" rel="noopener">Открыть LeadVPN <span>↗</span></a>
+        </div>
+        <ol>
+          <li>Установите приложение VPN на телефон или компьютер.</li>
+          <li>Выберите одну страну, где сервис официально доступен.</li>
+          <li>Нажмите кнопку подключения и дождитесь статуса «Подключено».</li>
+          <li>Только после этого откройте ChatGPT или Claude.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="tip"><strong>Совет</strong>Используйте один и тот же сервер. Частая смена страны и IP может вызвать дополнительную проверку.</div>
+
+    <h2>Шаг 2. Подготовьте почту</h2>
+    <div class="step">
+      <span class="step-num">2</span>
+      <div>
+        <h3>Используйте свой адрес</h3>
+        <ol>
+          <li>Проверьте, что можете войти в почту.</li>
+          <li>Убедитесь, что пароль уникальный.</li>
+          <li>Включите двухфакторную защиту. При входе понадобится пароль и дополнительный код.</li>
+          <li>Добавьте резервный способ восстановления.</li>
+        </ol>
+      </div>
+    </div>
+
+    <h2>Шаг 3. Зарегистрируйте ChatGPT</h2>
+    <div class="card">
+      <div class="link-list">
+        <a class="link-button" href="https://chatgpt.com/" target="_blank" rel="noopener">Открыть ChatGPT <span>↗</span></a>
+      </div>
+      <ol>
+        <li>Убедитесь, что VPN подключён.</li>
+        <li>Нажмите <b>Sign up</b> или <b>Зарегистрироваться</b>.</li>
+        <li>Выберите Google или регистрацию через почту.</li>
+        <li>Подтвердите почту, если сервис попросит.</li>
+        <li>Войдите в аккаунт.</li>
+      </ol>
+      <p>Бесплатной версией можно пользоваться сразу. Платный тариф на этом этапе не обязателен.</p>
+    </div>
+
+    <h2>Шаг 4. Зарегистрируйте Claude</h2>
+    <div class="card">
+      <div class="link-list">
+        <a class="link-button" href="https://claude.ai/" target="_blank" rel="noopener">Открыть Claude <span>↗</span></a>
+      </div>
+      <ol>
+        <li>Сначала включите тот же VPN-сервер.</li>
+        <li>Нажмите <b>Continue with Google</b> или выберите регистрацию через почту.</li>
+        <li>Подтвердите адрес и следуйте подсказкам.</li>
+      </ol>
+      <div class="warning"><strong>Если Claude попросил номер</strong>Используйте только номер, к которому у вас есть постоянный доступ. Не используйте чужие или поддельные документы.</div>
+      <p><b>Официальные ссылки Anthropic:</b></p>
+      <div class="link-list">
+        <a class="link-button" href="https://support.claude.com/en/articles/8114491-get-started-with-claude" target="_blank" rel="noopener">Начало работы с Claude <span>↗</span></a>
+        <a class="link-button" href="https://support.claude.com/en/articles/8287232-verify-your-phone-number" target="_blank" rel="noopener">Подтверждение номера <span>↗</span></a>
+      </div>
+    </div>
+
+    <details class="card">
+      <summary><b>Если Claude не пускает на регистрацию</b></summary>
+      <p style="margin-top: 12px;">Эта ссылка нужна только для проверки проблемы с доступностью. Если сервис просит номер, откройте инструкцию по подтверждению телефона.</p>
+      <div class="link-list">
+        <a class="link-button" href="https://support.claude.com/en/articles/8461763-where-can-i-access-claude" target="_blank" rel="noopener">Проверить поддерживаемые страны <span>↗</span></a>
+      </div>
+    </details>
+
+    <h2>Шаг 5. Решите, нужна ли подписка</h2>
+    <div class="card">
+      <p>Сначала попробуйте бесплатную версию. Платная подписка нужна, когда вы регулярно упираетесь в ограничения.</p>
+      <ul>
+        <li><b>Free</b> означает бесплатный тариф, обычно с ограничениями.</li>
+        <li>Платный тариф даёт больше возможностей или лимитов. Точная цена показывается на странице оформления.</li>
+      </ul>
+      <p>Если бесплатной версии хватает, остановитесь здесь. К выпуску карты переходить не нужно.</p>
+    </div>
+
+    <h2>Шаг 6. Мои реферальные ссылки на карты</h2>
+    <div class="card">
+      <p>Ниже — мои реферальные ссылки на сервисы оплаты из исходного гайда. Выберите один вариант и проверьте его текущие комиссии, лимиты, срок действия и поддержку повторных списаний.</p>
+      <div class="pay-card">
+        <h3>1. Altyn Wallet</h3>
+        <p>Проверьте стоимость выпуска, комиссию и поддержку подписок.</p>
+        <a href="https://telegram.me/Altyn_Wallet_bot?start=2CbHNzL" target="_blank" rel="noopener">Моя реферальная ссылка Altyn Wallet ↗</a>
+      </div>
+      <div class="pay-card">
+        <h3>2. WantToPay</h3>
+        <p>Проверьте тарифы для разовой оплаты и подписок.</p>
+        <a href="https://telegram.me/WantToPayBot?start=w17851188--PKAS6" target="_blank" rel="noopener">Моя реферальная ссылка WantToPay ↗</a>
+      </div>
+      <div class="pay-card">
+        <h3>3. «Плати по миру»</h3>
+        <p>Отдельный вариант для зарубежных оплат. Проверьте комиссии и автопродление.</p>
+        <a href="https://platipomiru.com/?code=E5P4PDMD" target="_blank" rel="noopener">Моя реферальная ссылка «Плати по миру» ↗</a>
+      </div>
+    </div>
+
+    <h2>Шаг 7. Выпустите и пополните карту</h2>
+    <div class="step">
+      <span class="step-num">7</span>
+      <div>
+        <p>Виртуальная карта обычно имеет номер, срок действия и секретный код CVC из трёх цифр.</p>
+        <ol>
+          <li>Откройте выбранный сервис по официальной ссылке.</li>
+          <li>Выберите тип карты и проверьте комиссии.</li>
+          <li>Пройдите проверку, если её запросили.</li>
+          <li>Пополните карту способом, который показывает сервис.</li>
+          <li>Оставьте небольшой запас на комиссию и обмен валюты.</li>
+        </ol>
+        <p>Не отправляйте пароль от почты, полный номер карты, CVC и коды подтверждения в чаты.</p>
+      </div>
+    </div>
+
+    <h2>Шаг 8. Оплатите подписку</h2>
+    <div class="card">
+      <ol>
+        <li>Подключите тот же VPN-сервер.</li>
+        <li>Откройте профиль или меню аккаунта.</li>
+        <li>Найдите раздел тарифа, например <b>Upgrade</b>, <b>Plus</b>, <b>Pro</b> или «Подписка».</li>
+        <li>Проверьте тариф, цену и валюту, затем нажмите кнопку оформления.</li>
+        <li>Введите реквизиты карты.</li>
+        <li>Если форма просит <b>billing address</b>, укажите платёжный адрес, который предоставил сервис карты. Не придумывайте его.</li>
+        <li>Если появится <b>3-D Secure</b>, подтвердите платёж в официальном окне сервиса карты.</li>
+        <li>Проверьте в настройках, что тариф активировался.</li>
+      </ol>
+      <p>Если включено автопродление, деньги снова спишутся в следующем периоде. Если это не нужно, заранее найдите отмену подписки в настройках.</p>
+    </div>
+
+    <h2>Если платёж не прошёл</h2>
+    <div class="warning">
+      <ol>
+        <li>Проверьте баланс и запас на комиссию.</li>
+        <li>Уточните поддержку международных платежей и повторных списаний.</li>
+        <li>Проверьте номер карты, срок действия, CVC и платёжный адрес.</li>
+        <li>Спросите поддержку платёжного сервиса, подходит ли тип карты для этой оплаты.</li>
+        <li>Не повторяйте оплату десятки раз подряд.</li>
+      </ol>
+      <p><b>BIN</b> — это первые цифры номера карты, по которым определяется её тип и страна выпуска. Если сервис упоминает BIN, спросите поддержку того сервиса, который выпустил карту.</p>
+    </div>
+
+    <h2>Как пользоваться после регистрации</h2>
+    <div class="card">
+      <p>Оплата сама по себе не объясняет задачу. Начинайте каждый запрос с цели, контекста, ограничений и нужного формата.</p>
+      <div class="prompt">Я готовлю пост для начинающих предпринимателей.
+Объясни, как выбрать между ChatGPT и Claude.
+Дай короткую таблицу и три практических сценария.
+Не используй технический жаргон.</div>
+      <div class="tip"><strong>Простое правило выбора</strong>Chat подходит для разговора и быстрых ответов. Work удобен для длинной цепочки действий. Codex нужен для кода, файлов и репозитория.</div>
+      <p>Если ответ слишком сложный, попросите: «Объясни проще, как человеку без опыта, и приведи один пример». Пароли, CVC и коды из SMS сервисам не передавайте. Важные ответы перепроверяйте.</p>
+    </div>
+
+    <h2>Проверьте себя</h2>
+    <div class="card">
+      <ul class="checklist">
+        <li>Я использую свою почту и включил двухфакторную защиту.</li>
+        <li>Я зарегистрировал ChatGPT и Claude на официальных сайтах.</li>
+        <li>Я проверил бесплатную версию перед оплатой.</li>
+        <li>Я выбрал одну карту и прочитал её условия.</li>
+        <li>Я знаю, поддерживает ли карта подписки и повторные списания.</li>
+        <li>Я проверил платёжный адрес и автопродление.</li>
+        <li>Я могу проверить статус подписки в настройках сервиса.</li>
+      </ul>
+    </div>
+</div>
+
+` }
+]}
+];
+
+const FINAL_QUIZ = [
+  {q:"Что лучше сделать перед оформлением платной подписки?",a:[["Сразу выпустить карту",0,"Сначала проверь, хватает ли бесплатной версии."],["Несколько дней попробовать бесплатную версию",1,"Верно. Плати, только когда понимаешь, зачем нужна подписка."],["Попросить знакомого отдать свой аккаунт",0,"Используй собственный аккаунт и свои данные."]]},
+  {q:"Что такое двухфакторная защита почты?",a:[["Дополнительный код при входе вместе с паролем",1,"Верно. Это помогает защитить почту."],["Вторая почта с тем же паролем",0,"Повтор пароля не добавляет защиту."],["Платная подписка на почту",0,"Это не связано с двухфакторной защитой."]]},
+  {q:"Если Claude попросил телефон, какой номер использовать?",a:[["Любой найденный в интернете",0,"Чужой или одноразовый номер может помешать восстановить доступ."],["Только свой номер, к которому есть постоянный доступ",1,"Верно. Используй свой номер и реальные данные."],["Номер посредника",0,"Не передавай регистрацию и документы посторонним."]]},
+  {q:"Где взять платёжный адрес, если форма его просит?",a:[["Придумать подходящий",0,"Не указывай выдуманный адрес."],["Использовать адрес, который предоставил сервис выпущенной карты",1,"Верно. Адрес должен относиться к карте."],["Скопировать любой адрес из примера",0,"Проверь данные именно своей карты."]]},
+  {q:"Что такое CVC и где его вводить?",a:[["Код карты, только в официальной форме оплаты",1,"Верно. Не отправляй CVC в сообщения и чаты."],["Пароль от почты",0,"Это разные данные."],["Код, который нужно сообщить посреднику",0,"Не передавай коды подтверждения другим людям."]]},
+  {q:"Что делать, если платёж не прошёл?",a:[["Повторять оплату много раз подряд",0,"Частые попытки могут вызвать временную блокировку."],["Проверить баланс, комиссии и обратиться в поддержку сервиса карты",1,"Верно. Сначала выясни причину и условия карты."],["Отправить CVC в чат поддержки",0,"Реквизиты карты не отправляй в обычный чат."]]},
+  {q:"Что означает автопродление подписки?",a:[["Подписка отменится сама через месяц",0,"При автопродлении списание повторяется."],["Сервис может снова списать оплату в следующем периоде",1,"Верно. Проверяй условия и отменяй подписку заранее, если она больше не нужна."],["Бесплатный пробный период",0,"Это не одно и то же."]]},
+  {q:"Какую ссылку использовать для регистрации?",a:[["Официальный сайт ChatGPT или Claude",1,"Верно. Проверяй адрес сайта и свои ссылки на оплату."],["Ссылку из случайного сообщения",0,"Не вводи пароль и данные карты на незнакомых сайтах."],["Общий аккаунт продавца",0,"Используй собственный аккаунт."]]}
+];
+const PASS_SCORE = 6;
+const SURVEY = [
+  {q:"Теперь понятнее, как зарегистрироваться и выбрать способ оплаты?",a:["Совсем непонятно","Скорее непонятно","Частично","Понятно","Очень понятно"]},
+  {q:"Сможешь проверить подписку и автопродление?",a:["Точно нет","Скорее нет","Не уверен(а)","Скорее да","Да"]}
+];
+
+const KEY="chatgpt_payment_v1";
+let store={};
+try { store=JSON.parse(localStorage.getItem(KEY))||{}; } catch(e) {}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){} }
+const ALL=MODULES.flatMap(m=>m.lessons), TOTAL=ALL.length+1;
+const $=id=>document.getElementById(id);
+let currentId=null;
+function doneCount(){ return ALL.filter(l=>store[l.id]).length+(store.testPassed?1:0); }
+function show(id){ ["home","lesson","test","survey","cert"].forEach(v=>$(v).classList.add("hidden")); const el=$(id); el.classList.remove("hidden"); el.classList.remove("view"); void el.offsetWidth; el.classList.add("view"); window.scrollTo(0,0); }
+
+function renderHome(){
+  show("home"); const dc=doneCount();
+  $("progressBar").innerHTML=Array.from({length:TOTAL},(_,i)=>`<span class="${i<dc?"done":""}"></span>`).join("");
+  $("progressLabel").innerHTML=dc===TOTAL?`курс пройден, сертификат твой ${icon("checkCircle")}`:`пройдено ${dc} из ${TOTAL}`;
+  let html="";
+  MODULES.forEach(m=>{
+    html+=`<div class="module"><div class="module-title">${m.title}</div><div class="toc">`;
+    m.lessons.forEach(l=>{html+=`<button class="lesson-item ${store[l.id]?"done":""}" data-id="${l.id}" type="button"><div class="st">${icon("check")}</div><div class="li-t">${l.title}<div class="li-sub">${l.sub}</div></div></button>`;});
+    if(m===MODULES[MODULES.length-1]) html+=`<button class="lesson-item final ${store.testPassed?"done":""}" data-id="__test" type="button"><div class="st">${store.testPassed?icon("check"):icon("star")}</div><div class="li-t">Финальный тест и сертификат<div class="li-sub">${store.testPassed?"сдан, открыть сертификат":`${FINAL_QUIZ.length} вопросов, нужно ${PASS_SCORE} верных`}</div></div></button>`;
+    html+="</div></div>";
+  });
+  $("moduleList").innerHTML=html;
+  document.querySelectorAll(".lesson-item").forEach(el=>el.addEventListener("click",()=>{const id=el.dataset.id; id==="__test"?(store.testPassed?renderCert():renderTest()):openLesson(id);}));
+}
+
+function wireCopyButtons(){
+  document.querySelectorAll("#lBody .copy-prompt").forEach(btn=>btn.addEventListener("click",async()=>{
+    const text=btn.closest(".prompt-box")?.querySelector(".ex")?.innerText?.trim(); if(!text)return;
+    let copied=false; try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);copied=true;}}catch(e){}
+    if(!copied){const area=document.createElement("textarea");area.value=text;area.setAttribute("readonly","");area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();try{copied=document.execCommand("copy");}catch(e){}area.remove();}
+    const old=btn.innerHTML;btn.innerHTML=copied?`${icon("check")}Скопировано`:"Скопируй вручную";setTimeout(()=>{btn.innerHTML=old;},1800);
+  }));
+}
+function openLesson(id){currentId=id;const idx=ALL.findIndex(l=>l.id===id),l=ALL[idx],mod=MODULES.find(m=>m.lessons.includes(l));show("lesson");$("lKicker").textContent=`${mod.title} · урок ${idx+1} из ${ALL.length}`;$("lTitle").textContent=l.title;$("lSub").textContent=l.sub;$("lBody").innerHTML=l.body;wireCopyButtons();renderLessonActions();}
+function renderLessonActions(){const btn=$("finishBtn"),next=$("nextBtn"),idx=ALL.findIndex(l=>l.id===currentId),last=idx===ALL.length-1;if(store[currentId]){btn.classList.add("done");btn.innerHTML=`${icon("check")}Урок пройден`;next.classList.remove("hidden");next.innerHTML=(last?(store.testPassed?"К сертификату":"К финальному тесту"):"Следующий урок")+icon("arrowRight","trailing");}else{btn.classList.remove("done");btn.textContent="Отметить урок пройденным";next.classList.add("hidden");}}
+$("finishBtn").addEventListener("click",()=>{if(!store[currentId]){store[currentId]=true;save();try{tg.HapticFeedback?.notificationOccurred?.("success");}catch(e){}}renderLessonActions();});
+$("nextBtn").addEventListener("click",()=>{const idx=ALL.findIndex(l=>l.id===currentId);if(idx<ALL.length-1)openLesson(ALL[idx+1].id);else store.testPassed?renderCert():renderTest();});
+
+function renderTest(){show("test");$("tScore").classList.add("hidden");const answers={};$("tQuiz").innerHTML=FINAL_QUIZ.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a[0]}</div>`).join("")}<div class="expl"></div></div>`).join("");const btn=$("testBtn");btn.disabled=true;btn.textContent="Ответь на все вопросы";
+  document.querySelectorAll("#tQuiz .q").forEach(qEl=>{const qi=+qEl.dataset.qi;qEl.querySelectorAll(".opt").forEach(optEl=>{const pick=()=>{if(qi in answers)return;const ai=+optEl.dataset.ai;answers[qi]=FINAL_QUIZ[qi].a[ai][1]===1;optEl.classList.add(answers[qi]?"right":"wrong");if(!answers[qi])qEl.querySelectorAll(".opt").forEach(o=>{if(FINAL_QUIZ[qi].a[+o.dataset.ai][1])o.classList.add("right");});const ex=qEl.querySelector(".expl");ex.textContent=FINAL_QUIZ[qi].a[ai][2];ex.classList.add("show");if(Object.keys(answers).length===FINAL_QUIZ.length){const score=Object.values(answers).filter(Boolean).length,passed=score>=PASS_SCORE;$("tScore").textContent=`Твой результат: ${score} из ${FINAL_QUIZ.length}`;$("tScore").classList.remove("hidden");btn.disabled=false;btn.innerHTML=passed?`${icon("graduation")}Получить сертификат`:"Попробовать ещё раз";btn.onclick=()=>{if(passed){store.testPassed=true;store.testScore=score;save();renderSurvey();}else renderTest();};}};optEl.addEventListener("click",pick);optEl.addEventListener("keydown",e=>{if(e.key==="Enter")pick();});});});
+}
+function renderSurvey(){show("survey");const answers={};$("sQuiz").innerHTML=SURVEY.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a}</div>`).join("")}</div>`).join("");const btn=$("surveyBtn");btn.disabled=true;btn.textContent="Ответь на оба вопроса";document.querySelectorAll("#sQuiz .q").forEach(qEl=>{const qi=+qEl.dataset.qi;qEl.querySelectorAll(".opt").forEach(optEl=>{const pick=()=>{qEl.querySelectorAll(".opt").forEach(o=>o.classList.remove("right"));optEl.classList.add("right");answers[qi]=+optEl.dataset.ai;if(Object.keys(answers).length===SURVEY.length){btn.disabled=false;btn.innerHTML=`${icon("graduation")}Получить сертификат`;btn.onclick=()=>{store.survey=answers;save();renderCert();};}};optEl.addEventListener("click",pick);optEl.addEventListener("keydown",e=>{if(e.key==="Enter")pick();});});});}
+function renderCert(){show("cert");$("certName").textContent=(u&&[u.first_name,u.last_name].filter(Boolean).join(" "))||"Студент курса";const sc=store.testScore??FINAL_QUIZ.length;$("certScore").textContent=`Верных ответов: ${sc} из ${FINAL_QUIZ.length}`;const d=new Date();$("certDate").textContent=d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"})+" · @glgidbot";}
+$("backBtn").addEventListener("click",renderHome);$("backBtn2").addEventListener("click",renderHome);$("backBtn3").addEventListener("click",renderHome);
+renderHome();
+</script>
+</body>
+</html>
