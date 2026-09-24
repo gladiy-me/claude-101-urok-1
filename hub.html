@@ -226,8 +226,8 @@
   <div class="view">
     <div class="spark" aria-hidden="true"><img src="assets/brands/claude.svg" alt=""></div>
     <div class="eyebrow">Гид по нейросетям · обучение</div>
-    <h1>Три курса. Начни с нужного</h1>
-    <p class="lede" id="hello">Здесь 3 курса: от первых шагов до агентов и выбора рабочего режима. Все бесплатные, с нуля и в своём темпе.</p>
+    <h1>Четыре курса. Начни с нужного</h1>
+    <p class="lede" id="hello">Здесь 4 курса: первые шаги, агенты, режимы ChatGPT и Claude, а также отдельная инструкция по регистрации и оплате. Все бесплатные и в своём темпе.</p>
 
     <div class="profile" id="profile"></div>
 
@@ -251,13 +251,14 @@
         <span class="map-meta" id="course-map-meta"></span>
       </div>
       <div id="course-map-list"></div>
-      <p class="map-note">Рекомендованный путь: 1 → 2 → 3. Третий курс можно открыть отдельно, если нужно быстро разобраться с режимами.</p>
+      <p class="map-note">Рекомендованный путь: 1 → 2 → 3. Курс по регистрации и оплате можно пройти отдельно в любое время.</p>
     </div>
 
     <div class="sec-title">Курсы</div>
     <div class="course" id="c1"></div>
     <div class="course" id="c2"></div>
     <div class="course" id="c3"></div>
+    <div class="course" id="c4"></div>
 
     <div class="foot"><img class="brand-icon" src="assets/brands/telegram.svg" alt=""><span>Мини-курс от <b>@glgidbot</b></span></div>
   </div>
@@ -324,9 +325,17 @@ const COURSES = [
     el: "c3", ico: "messages", title: "Chat, Work или Codex", lvl: "base", lvlText: "практика",
     url: "chat-work-codex/index.html", key: "chatgpt_modes_v1",
     guide: { purpose: "Понять, когда выбирать Chat, Work или Codex в ChatGPT и Claude.", audience: "Можно начать сразу под задачу" },
-    desc: "Как выбрать режим в ChatGPT и понять аналоги в Claude. <b>12 уроков</b>, примеры запросов и финальный тест.",
-    mods: ["Быстрый выбор", "Chat", "Work", "Codex", "Практика", "Доступ и оплата"],
-    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1","m6l2"], quizTotal: 12,
+    desc: "Как выбрать режим в ChatGPT и понять аналоги в Claude. <b>11 уроков</b>, примеры запросов и финальный тест.",
+    mods: ["Быстрый выбор", "Chat", "Work", "Codex", "Практика"],
+    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2","m3l1","m3l2","m3l3","m4l1","m4l2","m5l1"], quizTotal: 12,
+  },
+  {
+    el: "c4", ico: "book", title: "Регистрация и оплата ChatGPT и Claude", lvl: "base", lvlText: "с нуля",
+    url: "chatgpt-claude-payment/index.html", key: "chatgpt_payment_v1",
+    guide: { purpose: "Создать свои аккаунты, разобраться с подпиской и безопасно оплатить ChatGPT или Claude.", audience: "Можно пройти отдельно" },
+    desc: "Понятная инструкция для новичка: регистрация, бесплатный доступ, оплата и первый запрос. <b>1 подробный урок</b>, мои реферальные ссылки и финальный тест.",
+    mods: ["Регистрация", "Подписка", "Мои ссылки на оплату"],
+    ids: ["p1l1"], quizTotal: 8,
   },
 ];
 const TOTAL_LESSONS = COURSES.reduce((sum, c) => sum + c.ids.length, 0);
