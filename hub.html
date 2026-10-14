@@ -181,6 +181,7 @@
     display: inline-block; margin-bottom: 12px; }
   .lvl.base { background: var(--sage-soft); color: var(--sage); }
   .lvl.next { background: var(--clay-soft); color: var(--clay); }
+  .lvl.new { background: var(--clay); color: #fff; }
   .mods { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
   .mod { font: 500 11.5px/1 var(--mono); letter-spacing: .04em;
     background: var(--bubble); color: var(--muted);
@@ -198,6 +199,79 @@
   .go:active { transform: scale(.98); }
   .go:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
   .go.started { background: var(--sage-soft); color: var(--sage); }
+
+  /* ---------- кластер «Монтаж видео нейросетями» ---------- */
+  .cluster { background: var(--card); border: 2px solid var(--clay); border-radius: 20px;
+    padding: 20px 16px 14px; margin-bottom: 26px; box-shadow: var(--shadow); scroll-margin-top: 16px; }
+  .cl-eyebrow { font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    color: #fff; background: var(--clay); border-radius: 99px; padding: 5px 10px; display: inline-block; margin-bottom: 12px; }
+  .cluster h2 { font: 600 24px/1.2 var(--display); letter-spacing: -.01em; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px; }
+  .cluster h2 .ico { width: 24px; height: 24px; }
+  .cl-lede { color: var(--muted); font-size: 14.5px; margin-bottom: 12px; }
+  .cl-lede b { color: var(--ink); font-weight: 600; }
+  .cl-pick { font: 600 12px var(--body); letter-spacing: .04em; color: var(--ink); margin: 16px 2px 8px; }
+  .sub { border: 1px solid var(--line); background: var(--paper); border-radius: 14px; padding: 14px 13px 12px; margin-bottom: 9px; }
+  .sub-tag { font: 600 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--clay); margin-bottom: 7px; }
+  .sub h3 { font: 600 17px/1.25 var(--display); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .sub h3 .ico { width: 18px; height: 18px; }
+  .sub p { color: var(--muted); font-size: 13.5px; line-height: 1.45; margin-bottom: 10px; }
+  .sub p b { color: var(--ink); font-weight: 600; }
+  .sub-bot { display: flex; align-items: center; gap: 10px; }
+  .sub-bot .progress-wrap { flex: 1; min-width: 0; }
+  .sub-bot .progress { margin-bottom: 4px; }
+  .sub-bot .progress-label { margin-bottom: 0; font-size: 10.5px; }
+  .go.sm { width: auto; flex: none; padding: 10px 15px; font-size: 13.5px; border-radius: 11px; }
+  .cl-foot { font-size: 12.5px; color: var(--muted); margin-top: 6px; padding: 0 2px; }
+
+  /* ---------- компактный экран ---------- */
+  .hidden { display: none !important; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  .lede { margin-bottom: 14px; }
+  .spark { width: 26px; height: 26px; margin-bottom: 10px; }
+  .profile.strip { padding: 10px 12px; border-radius: 14px; margin-bottom: 14px; }
+  .strip-row { display: flex; align-items: center; gap: 10px; }
+  .strip-row .p-ava { width: 34px; height: 34px; border-width: 1.5px; }
+  .strip-row .p-ava img { width: 18px; height: 18px; }
+  .strip-main { flex: 1; min-width: 0; }
+  .strip-main b { font: 600 14px/1.2 var(--body); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .strip-main span { font: 500 10.5px var(--mono); color: var(--clay); letter-spacing: .06em; text-transform: uppercase; }
+  .strip-chip { flex: none; display: flex; align-items: center; gap: 4px; font: 600 12.5px var(--body);
+    background: var(--bubble); border: 0; border-radius: 99px; padding: 6px 9px; color: var(--ink); cursor: pointer; }
+  .strip-chip.hot { color: var(--clay); }
+  .strip-chip .ui-icon { width: 14px; height: 14px; }
+  .strip .xpbar { height: 4px; margin: 9px 0 0; }
+  #badges { margin: -6px 0 14px; }
+  .resume { display: block; width: 100%; text-align: left; border: 0; cursor: pointer; background: var(--ink); color: var(--paper);
+    border-radius: 16px; padding: 14px 15px; margin-bottom: 12px; font: inherit; }
+  .resume small { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .7; }
+  .resume b { display: block; font: 600 17px/1.3 var(--display); margin: 3px 0 2px; }
+  .resume span { font-size: 13px; opacity: .85; }
+  .sub.lite { background: var(--card); box-shadow: var(--shadow); margin-bottom: 10px; scroll-margin-top: 16px; }
+  .sub .lvl { margin: 0 0 0 auto; font-size: 9.5px; padding: 4px 7px; }
+  .lock-pill { flex: none; display: flex; align-items: center; gap: 5px; font: 600 12px var(--body); color: var(--muted);
+    background: var(--bubble); border-radius: 99px; padding: 8px 12px; }
+  .lock-pill .ui-icon { width: 14px; height: 14px; }
+  .cl-shots { display: flex; gap: 6px; margin: 4px 0 12px; }
+  .cl-shots img { flex: 1; min-width: 0; aspect-ratio: 4/5; object-fit: cover; object-position: top; border-radius: 9px; border: 1px solid var(--line); }
+  .cl-cta { width: 100%; margin-top: 4px; }
+  .howto { margin-top: 18px; }
+  .promo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink);
+    background: var(--clay-soft); border: 1px solid var(--clay); border-radius: 14px; padding: 10px 12px; margin-bottom: 16px; }
+  .promo .ui-icon { width: 20px; height: 20px; color: var(--clay); flex: none; }
+  .promo span { flex: 1; font-size: 13.5px; line-height: 1.35; }
+  .promo b { font-weight: 600; }
+  .promo em { font: 600 10px var(--mono); font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: var(--clay); flex: none; }
+  .sub.mini { display: flex; align-items: center; gap: 10px; padding: 11px 12px; margin-bottom: 7px; }
+  .sub.mini .ico { width: 18px; height: 18px; color: var(--clay); flex: none; }
+  .sub.mini .mini-t { flex: 1; min-width: 0; }
+  .sub.mini b { display: block; font: 600 14px/1.3 var(--body); }
+  .sub.mini small { font-size: 12px; color: var(--muted); }
+  .sub.mini .lock { width: 16px; height: 16px; color: var(--muted); flex: none; }
+  .howto summary { cursor: pointer; font: 600 13px var(--body); color: var(--muted); padding: 10px 2px; list-style: none; }
+  .howto summary::-webkit-details-marker { display: none; }
+  .howto summary::after { content: " ▾"; }
+  .howto[open] summary::after { content: " ▴"; }
 
   .foot { margin-top: 26px; text-align: center; font-size: 12.5px; color: var(--muted);
     display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -226,15 +300,32 @@
   <div class="view">
     <div class="spark" aria-hidden="true"><img src="assets/brands/claude.svg" alt=""></div>
     <div class="eyebrow">Гид по нейросетям · обучение</div>
-    <h1>Четыре курса. Начни с нужного</h1>
-    <p class="lede" id="hello">Здесь 4 курса: первые шаги, агенты, режимы ChatGPT и Claude, а также отдельная инструкция по регистрации и оплате. Все бесплатные и в своём темпе.</p>
+    <h1>Курсы по нейросетям</h1>
+    <p class="lede" id="hello">Короткие уроки с практикой. Прогресс сохраняется сам.</p>
 
+    <div id="resume"></div>
     <div class="profile" id="profile"></div>
+    <div class="badges hidden" id="badges"></div>
 
-    <div class="sec-title">Награды</div>
-    <div class="badges" id="badges"></div>
+    <a class="promo" id="promo" href="#video"></a>
 
-    <div class="intro" style="margin-top:22px">
+    <div class="sec-title">Бесплатные курсы</div>
+    <div class="sub lite" id="c1"></div>
+    <div class="sub lite" id="c2"></div>
+    <div class="sub lite" id="c3"></div>
+    <div class="sub lite" id="c4"></div>
+
+    <div class="cluster" id="video">
+      <div class="cl-head" id="video-head"></div>
+      <div class="sub" id="c5"></div>
+      <div class="sub" id="c6"></div>
+      <div class="sub" id="c7"></div>
+      <div id="video-foot"></div>
+    </div>
+
+    <details class="howto">
+    <summary>Как устроено обучение</summary>
+    <div class="intro">
       <p>Это не лекции на час. Каждый урок — <b>5–7 минут</b>: коротко читаешь, пробуешь на практике, отвечаешь на пару вопросов в конце.</p>
       <ul class="steps">
         <li><b>01</b><span>Открой урок и прочитай — без воды, по делу</span></li>
@@ -242,23 +333,9 @@
         <li><b>03</b><span>Ответь на вопросы в конце — и получи сертификат</span></li>
       </ul>
       <p>Можно не спешить: <b>прогресс сохраняется сам</b>. Закрыл, вернулся через неделю — продолжишь с того же места.</p>
-      <p><b>Не обязательно проходить всё.</b> Выбери курс под свою задачу, а оглавление ниже подскажет, с какого начать.</p>
+      <p><b>Не обязательно проходить всё.</b> Выбери курс под свою задачу. С нуля — начни с Claude 101.</p>
     </div>
-
-    <div class="course-map" aria-labelledby="course-map-title">
-      <div class="map-head">
-        <h2 class="map-title" id="course-map-title">Оглавление</h2>
-        <span class="map-meta" id="course-map-meta"></span>
-      </div>
-      <div id="course-map-list"></div>
-      <p class="map-note">Рекомендованный путь: 1 → 2 → 3. Курс по регистрации и оплате можно пройти отдельно в любое время.</p>
-    </div>
-
-    <div class="sec-title">Курсы</div>
-    <div class="course" id="c1"></div>
-    <div class="course" id="c2"></div>
-    <div class="course" id="c3"></div>
-    <div class="course" id="c4"></div>
+    </details>
 
     <div class="foot"><img class="brand-icon" src="assets/brands/telegram.svg" alt=""><span>Мини-курс от <b>@glgidbot</b></span></div>
   </div>
@@ -269,23 +346,27 @@
 const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 try {
-  if (tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme;
+  document.documentElement.dataset.theme = "light";  // всегда светлая тема: белый + оранжевый
+  try { tg.setHeaderColor("#faf8f4"); tg.setBackgroundColor("#faf8f4"); } catch (e) {}
   tg.onEvent && tg.onEvent("themeChanged", () => {
-    document.documentElement.dataset.theme = tg.colorScheme;
+    document.documentElement.dataset.theme = "light";
   });
 } catch (e) {}
 
 const u = tg.initDataUnsafe?.user;
 const FIRST = u?.first_name || "";
 if (FIRST) {
-  document.getElementById("hello").textContent =
-    FIRST + ", все курсы бесплатные, с нуля и в своём темпе. Прогресс сохраняется после каждого урока.";
+  document.getElementById("hello").textContent = FIRST + ", короткие уроки с практикой. Прогресс сохраняется сам.";
 }
 
 const ICONS = {
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   award: '<circle cx="12" cy="8" r="6"/><path d="m8.2 13-1.2 8 5-3 5 3-1.2-8"/>',
   book: '<path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v16H5.5A2.5 2.5 0 0 0 3 21.5Z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v16h5.5a2.5 2.5 0 0 1 2.5 2.5Z"/>',
+  scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
+  volume: '<path d="M11 5 6 9H2v6h4l5 4Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',
+  film: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4l2 5M14 4l2 5"/><path d="m10 13 5 2.5-5 2.5Z"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
   crown: '<path d="m3 7 4.5 4L12 5l4.5 6L21 7l-2 11H5Z"/><path d="M5 21h14"/>',
   flame: '<path d="M12 22c4 0 7-3 7-7 0-3-1.5-5.5-4-8 .1 2-1 3.2-2.2 4.1C13 7.5 11 4.5 8 2c.2 4-3 6.7-3 11 0 5 3 9 7 9Z"/>',
   medal: '<circle cx="12" cy="13" r="5"/><path d="m9 8-3-6h4l2 4 2-4h4l-3 6"/><path d="m12 16-1.5 3 1.5-.8 1.5.8Z"/>',
@@ -338,6 +419,40 @@ const COURSES = [
     ids: ["p1l1"], quizTotal: 8,
   },
 ];
+/* Пакет «Монтаж видео нейросетями». Пока VIDEO_LOCKED = true — курсы закрыты, на сайте только витрина,
+   и в XP/наградах они не учитываются. Страницы video-* не публикуются, пока закрыто. */
+const SHOP_API = "https://144-31-187-252.sslip.io";
+const VIDEO_BUY_URL = "https://web.tribute.tg/p/H2E";
+const VIDEO_PAID_KEY = "glgid_video_paid";
+let VIDEO_LOCKED = true;
+try { VIDEO_LOCKED = localStorage.getItem(VIDEO_PAID_KEY) !== "1"; } catch (e) {}
+const VIDEO_COURSES = [
+  {
+    el: "c5", group: "video", tag: "01 · Снял видео", ico: "scissors", title: "Claude монтирует твоё видео", lvl: "new", lvlText: "новый · ты снял видео",
+    url: "video-montage/index.html", key: "video_montage_v1",
+    guide: { purpose: "Ты снял видео — Claude убирает паузы и оговорки, делает субтитры и вертикаль.", audience: "Видео в Claude · 1" },
+    desc: "Снял себя на телефон — Claude убирает паузы, «э-э» и дубли, делает субтитры по словам и вертикаль 9:16. <b>6 уроков</b>, финальный тест и скилл <b>/montage</b>.",
+    mods: ["Подготовка", "Монтаж"],
+    ids: ["m1l1","m1l2","m2l1","m2l2","m2l3","m2l4"], quizTotal: 8,
+  },
+  {
+    el: "c6", group: "video", tag: "02 · Не снимал", ico: "film", title: "Видео полностью кодом", lvl: "new", lvlText: "новый · без съёмки",
+    url: "video-code/index.html", key: "video_code_v1",
+    guide: { purpose: "Камеры нет — Claude пишет сценарий, ты озвучиваешь, он рисует анимацию кодом.", audience: "Видео в Claude · 2" },
+    desc: "Без камеры: сценарий с хуком, озвучка нейросетью, анимация кодом в твоём стиле и рендер в mp4. <b>7 уроков</b>, финальный тест и скилл <b>/reel</b>.",
+    mods: ["Подготовка", "Текст и голос", "Картинка"],
+    ids: ["m1l1","m1l2","m2l1","m2l2","m2l3","m3l1","m3l2"], quizTotal: 8,
+  },
+  {
+    el: "c7", group: "video", tag: "03 · Ролик готов", ico: "volume", title: "Звук и публикация", lvl: "new", lvlText: "новый · для любого ролика",
+    url: "video-publish/index.html", key: "video_publish_v1",
+    guide: { purpose: "Ролик готов — музыка без авторских прав, громкость, 5 вариантов начала, обложка.", audience: "Видео в Claude · 3" },
+    desc: "Для любого готового ролика: музыка и эффекты без авторских прав, −14 LUFS, 5 вариантов начала, обложка и чек-лист. <b>5 уроков</b>, финальный тест и скилл <b>/publish</b>.",
+    mods: ["Звук", "Выпуск"],
+    ids: ["m1l1","m1l2","m1l3","m2l1","m2l2"], quizTotal: 8,
+  },
+];
+if (!VIDEO_LOCKED) COURSES.unshift(...VIDEO_COURSES);
 const TOTAL_LESSONS = COURSES.reduce((sum, c) => sum + c.ids.length, 0);
 const TOTAL_TESTS = COURSES.length;
 const HALF_LESSONS = Math.ceil(TOTAL_LESSONS / 2);
@@ -445,22 +560,16 @@ function renderProfile(s, g, xp) {
   const streak = streakOf(g.days);
   const done = Object.keys(g.badges).length;
 
-  document.getElementById("profile").innerHTML = `
-    <div class="p-top">
+  const el = document.getElementById("profile");
+  el.classList.add("strip");
+  el.innerHTML = `
+    <div class="strip-row">
       <div class="p-ava">${SPARK}</div>
-      <div>
-        <div class="p-name">${FIRST ? esc(FIRST) : "Ты"}</div>
-        <div class="p-rank">${icon(r.ico)}<span>${esc(r.name)}</span></div>
-      </div>
-      <div class="p-xp"><b>${xp}</b><span>XP</span></div>
+      <div class="strip-main"><b>${FIRST ? esc(FIRST) : "Ты"} · ${xp} XP</b><span>${esc(r.name)}</span></div>
+      <span class="strip-chip${streak >= 2 ? " hot" : ""}" title="дней подряд">${icon("flame")}${streak || 0}</span>
+      <button class="strip-chip" id="badgesToggle" type="button" title="награды">${icon("award")}${done}/${BADGES.length}</button>
     </div>
-    <div class="xpbar"><i style="width:${pct}%"></i></div>
-    <div class="xphint">${nx ? `до «${esc(nx.name)}» — ${left} XP` : `максимальное звание ${icon("crown")}`}</div>
-    <div class="p-stats">
-      <div class="stat${streak >= 2 ? " hot" : ""}"><b>${streak ? streak + icon("flame") : "—"}</b><span>дней подряд</span></div>
-      <div class="stat"><b>${s.lessons}/${TOTAL_LESSONS}</b><span>уроков</span></div>
-      <div class="stat"><b>${done}/${BADGES.length}</b><span>наград</span></div>
-    </div>`;
+    <div class="xpbar"><i style="width:${pct}%"></i></div>`;
 }
 
 function renderBadges(g) {
@@ -471,7 +580,72 @@ function renderBadges(g) {
   }).join("");
 }
 
+function renderSub(c, stat) {
+  if (!stat) {
+    const el = document.getElementById(c.el);
+    el.classList.add("mini");
+    el.innerHTML = `<span class="ico">${icon(c.ico)}</span>
+      <span class="mini-t"><b>${esc(c.title)}</b><small>${esc(c.tag.split("· ")[1] || "")} · ${lessonsWord(c.ids.length)}</small></span>
+      <span class="lock">${icon("lock")}</span>`;
+    return;
+  }
+  const { done, passed, total } = stat;
+  const started = done > 0, complete = done >= total && passed;
+  const bars = Array.from({ length: total }, (_, i) => `<span class="${i < done ? "done" : ""}"></span>`).join("");
+  const label = complete ? `пройден · ${done}/${total}` : started ? `пройдено ${done} из ${total}` : `${lessonsWord(total - 1)} + тест`;
+  document.getElementById(c.el).innerHTML = `
+    ${c.tag ? `<div class="sub-tag">${esc(c.tag)}</div>` : ""}
+    <h3><span class="ico">${c.brand ? brandIcon(c.ico) : icon(c.ico)}</span>${esc(c.title)}${c.group ? "" : `<span class="lvl ${c.lvl}">${esc(c.lvlText)}</span>`}</h3>
+    <p>${c.group ? c.desc : esc(c.guide.purpose)}</p>
+    <div class="sub-bot">
+      <div class="progress-wrap"><div class="progress" aria-hidden="true">${bars}</div>
+        <div class="progress-label${complete ? " complete" : ""}">${label}</div></div>
+      <button class="go sm${started && !complete ? " started" : ""}" data-url="${c.url}">${complete ? "Повторить" : started ? "Продолжить" : "Начать"}</button>
+    </div>`;
+}
+
+function renderCluster(s) {
+  if (VIDEO_LOCKED) {
+    VIDEO_COURSES.forEach(c => renderSub(c, null));
+    const lessons = VIDEO_COURSES.reduce((n, c) => n + c.ids.length, 0);
+    document.getElementById("video-head").innerHTML = `
+      <span class="cl-eyebrow">Платный пакет · 899 ₽</span>
+      <h2><span class="ico">${icon("film")}</span>Монтаж видео нейросетями</h2>
+      <p class="cl-lede">Claude монтирует, озвучивает и рисует видео за тебя — <b>без таймлайна и монтажёра</b>. Проведём за руку с нуля: от установки до публикации. 3 курса · ${lessons} уроков · 3 готовых скилла.</p>
+      <div class="cl-shots"><img src="video-assets/r_check.jpg" alt=""><img src="video-assets/hook_2_schetchik.jpg" alt=""><img src="video-assets/r_score.jpg" alt=""></div>
+      <div class="cl-pick">Что внутри:</div>`;
+    document.getElementById("promo").innerHTML = `${icon("film")}<span><b>Новое: монтаж видео нейросетями</b> — 3 курса, проведём за руку</span><em>899 ₽ ↓</em>`;
+    document.getElementById("video-foot").innerHTML = `
+      <button class="go cl-cta" type="button" data-buy="${VIDEO_BUY_URL}">Купить пакет · 899 ₽</button>
+      <p class="cl-foot">Оплата через Tribute. Доступ откроется автоматически, бот пришлёт сообщение.</p>`;
+    return;
+  }
+  document.getElementById("promo").classList.add("hidden"); const vEl = document.getElementById("video"), firstSec = document.querySelector(".sec-title"); if (vEl && firstSec) firstSec.parentNode.insertBefore(vEl, firstSec);
+  document.getElementById("video-foot").innerHTML = `<p class="cl-foot">В каждом курсе — готовый скилл для Claude Code: ставишь один раз, дальше монтаж одной командой.</p>`;
+  let done = 0, total = 0;
+  COURSES.forEach((c, i) => { if (c.group === "video") { done += s.per[i].done; total += s.per[i].total; } });
+  const bars = Array.from({ length: total }, (_, i) => `<span class="${i < done ? "done" : ""}"></span>`).join("");
+  document.getElementById("video-head").innerHTML = `
+    <span class="cl-eyebrow">Новое · 3 курса</span>
+    <h2><span class="ico">${icon("film")}</span>Монтаж видео нейросетями</h2>
+    <p class="cl-lede">Claude монтирует, озвучивает и рисует видео за тебя — <b>без таймлайна и монтажёра</b>. Для Reels, TikTok и Shorts. Проведём за руку с нуля: от установки до публикации.</p>
+    <div class="progress" aria-hidden="true">${bars}</div>
+    <div class="progress-label">${done ? `пройдено ${done} из ${total}` : `3 курса · ${total - 3} уроков · 3 теста`}</div>
+    <div class="cl-pick">С чего начать — зависит от того, что у тебя есть:</div>`;
+}
+
+function renderResume(s, g) {
+  const box = document.getElementById("resume");
+  const open = COURSES.map((c, i) => ({ c, st: s.per[i] })).filter(x => x.st.done > 0 && !(x.st.done >= x.st.total && x.st.passed));
+  if (!open.length) { box.innerHTML = ""; return; }
+  const pick = open.find(x => x.c.key === g.last) || open.sort((a, b) => b.st.done - a.st.done)[0];
+  const next = Math.min(pick.st.done + 1, pick.st.total);
+  box.innerHTML = `<button class="resume go-resume" type="button" data-url="${pick.c.url}">
+    <small>Продолжить</small><b>${esc(pick.c.title)}</b><span>шаг ${next} из ${pick.st.total} →</span></button>`;
+}
+
 function renderCourse(c, stat) {
+  return renderSub(c, stat);
   const { done, passed, total } = stat;
   const started = done > 0, complete = done >= total && passed;
   const bars = Array.from({ length: total }, (_, i) =>
@@ -494,17 +668,31 @@ function renderCourse(c, stat) {
 
 function renderCourseMap() {
   document.getElementById("course-map-meta").textContent =
-    `${COURSES.length} курса · ${TOTAL_LESSONS} уроков · ${TOTAL_TESTS} финальных теста`;
-  document.getElementById("course-map-list").innerHTML = COURSES.map((c, i) => `
+    `${COURSES.length} курсов · ${TOTAL_LESSONS} ${[1].includes(TOTAL_LESSONS % 10) && TOTAL_LESSONS % 100 !== 11 ? "урок" : [2,3,4].includes(TOTAL_LESSONS % 10) && ![12,13,14].includes(TOTAL_LESSONS % 100) ? "урока" : "уроков"} · ${TOTAL_TESTS} финальных тестов`;
+  const items = [];
+  for (const c of COURSES) {
+    if (c.group === "video") {
+      if (!items.some(x => x.el === "video")) items.push({ el: "video", title: "Монтаж видео нейросетями",
+        purpose: "3 курса: монтаж своего видео, ролик полностью кодом, звук и публикация.", audience: "Новое · можно начать сразу" });
+      continue;
+    }
+    items.push({ el: c.el, title: c.title, purpose: c.guide.purpose, audience: c.guide.audience });
+  }
+  document.getElementById("course-map-list").innerHTML = items.map((c, i) => `
     <a class="map-item" href="#${c.el}">
       <span class="map-num">${String(i + 1).padStart(2, "0")}</span>
       <span class="map-copy">
         <strong>${esc(c.title)}</strong>
-        <small>${esc(c.guide.purpose)}</small>
-        <em>${esc(c.guide.audience)}</em>
+        <small>${esc(c.purpose)}</small>
+        <em>${esc(c.audience)}</em>
       </span>
       <span class="map-arrow">${icon("arrow")}</span>
     </a>`).join("");
+}
+
+function lessonsWord(n) {
+  const w = n % 10 === 1 && n % 100 !== 11 ? "урок" : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? "урока" : "уроков";
+  return `${n} ${w}`;
 }
 
 function esc(x) {
@@ -552,14 +740,31 @@ function tick() {
   const xp = computeXp(s, g);
   renderProfile(s, g, xp);
   renderBadges(g);
-  renderCourseMap();
   COURSES.forEach((c, i) => renderCourse(c, s.per[i]));
+  renderCluster(s);
+  renderResume(s, g);
 
   fresh.forEach(b => toast(`Награда: «${b.name}»`));
   return { s, g, xp };
 }
 
 const state = tick();
+(async function checkVideoAccess() {
+  if (!tg.initData) return;
+  try {
+    const r = await fetch(SHOP_API + "/api/video/me", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData: tg.initData }) });
+    const d = await r.json();
+    if (!d.ok) return;
+    const was = !VIDEO_LOCKED;
+    let saved = false;
+    try {
+      if (d.paid) localStorage.setItem(VIDEO_PAID_KEY, "1"); else localStorage.removeItem(VIDEO_PAID_KEY);
+      saved = (localStorage.getItem(VIDEO_PAID_KEY) === "1") === !!d.paid;
+    } catch (e) {}
+    if (d.paid !== was && saved) location.reload();   // без хранилища не перезагружаем — иначе цикл
+  } catch (e) {}
+})();
 if (API) {
   restoreFromServer().then(() => syncToServer(tick()));
 }
@@ -616,9 +821,20 @@ function syncToServer({ s, g, xp }) {
 }
 
 document.addEventListener("click", e => {
-  const btn = e.target.closest(".go");
+  if (e.target.closest("#badgesToggle")) { document.getElementById("badges").classList.toggle("hidden"); return; }
+  const btn = e.target.closest(".go, .go-resume");
   if (!btn) return;
   try { tg.HapticFeedback?.selectionChanged?.(); } catch (err) {}
+  if (btn.dataset.buy) {
+    try { tg.openLink(btn.dataset.buy); } catch (err) { window.open(btn.dataset.buy, "_blank"); }
+    return;
+  }
+  if (btn.dataset.tg) {
+    try { tg.openTelegramLink(btn.dataset.tg); } catch (err) { window.open(btn.dataset.tg, "_blank"); }
+    return;
+  }
+  const c = COURSES.find(x => x.url === btn.dataset.url);
+  if (c) { const g = loadGame(); g.last = c.key; saveGame(g); }
   window.location.href = btn.dataset.url;
 });
 </script>

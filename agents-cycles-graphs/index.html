@@ -229,8 +229,9 @@
 const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 try {
-  if (tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme;
-  tg.onEvent && tg.onEvent("themeChanged", () => { document.documentElement.dataset.theme = tg.colorScheme; });
+  document.documentElement.dataset.theme = "light";  // всегда светлая тема: белый + оранжевый
+  try { tg.setHeaderColor("#faf8f4"); tg.setBackgroundColor("#faf8f4"); } catch (e) {}
+  tg.onEvent && tg.onEvent("themeChanged", () => { document.documentElement.dataset.theme = "light"; });
 } catch (e) {}
 const u = tg.initDataUnsafe?.user;
 if (u?.first_name) document.getElementById("hello").textContent = u.first_name + ", впереди 5 модулей, 10 уроков и финальный тест — от агента до готовых промтов и своей рабочей схемы.";
