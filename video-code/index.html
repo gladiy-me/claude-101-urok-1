@@ -357,7 +357,7 @@ function tipIcon(name) { return `<span class="tip-icon" aria-hidden="true">${ico
 function task(text) { return `<div class="task">${tipIcon("pencil")}<span><b>Задание.</b> ${text}</span></div>`; }
 
 function result(inner, cap) { return `<div class="result"><div class="r-label">${icon("eye")}Что получится</div>${inner}${cap ? `<div class="r-cap">${cap}</div>` : ""}</div>`; }
-function shots(list, cls = "") { return `<div class="shots ${cls}">${list.map(([src, cap]) => `<div class="shot">${src.endsWith(".mp4") ? `<video src="${src}" autoplay muted loop playsinline></video>` : `<img src="${src}" alt="" loading="lazy">`}<span>${cap}</span></div>`).join("")}</div>`; }
+function shots(list, cls = "") { return `<div class="shots ${cls}">${list.map(([src, cap]) => `<div class="shot">${src.endsWith(".mp4") ? `<video src="${src}" autoplay muted loop playsinline></video>` : `<img src="${src}" alt="">`}<span>${cap}</span></div>`).join("")}</div>`; }
 
 function step(n, title, o) {
   const row = (cls, k, v) => v ? `<div class="st-row ${cls}"><span class="st-k">${k}</span><div>${v}</div></div>` : "";
