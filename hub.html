@@ -476,7 +476,7 @@ const BADGES = [
   { id: "both",    ico: "crown", name: "Все курсы", gold: true, test: s => s.lessons >= TOTAL_LESSONS && s.tests >= TOTAL_TESTS },
 ];
 const GAME_KEY = "glgid_game_v1";
-const API = "https://glgid-api.vercel.app";
+const API = "https://144-31-187-252.sslip.io";   // прогресс между устройствами (glgid-shop); старый glgid-api на Vercel удалён
 
 function readJSON(key) {
   try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; }
