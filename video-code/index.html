@@ -264,7 +264,7 @@
   .stuck h3 { font:600 16px var(--display); margin-bottom:6px; }
   .stuck p { font-size:13.5px; color:var(--ink); margin-bottom:8px; }
   /* ---------- где мы сейчас ---------- */
-  .road { display:flex; gap:4px; margin-bottom:14px; }
+  .road { display:flex; gap:4px; margin:4px 0 14px; }
   .road span { flex:1; text-align:center; font:500 10px/1.25 var(--mono); color:var(--muted); padding:8px 2px 7px;
     border-radius:9px; background:var(--bubble); border:1px solid var(--line); }
   .road span.done { color:var(--sage); background:var(--sage-soft); border-color:transparent; }
@@ -293,6 +293,7 @@
     <div id="lBody"></div>
     <button class="finish" id="finishBtn"></button>
     <button class="finish hidden" id="nextBtn" type="button"></button>
+    <button class="finish done hidden" id="prevBtn" type="button" style="margin-top:10px">← Предыдущий урок</button>
     <div class="foot"><span>Видео полностью кодом</span></div>
   </div>
 
@@ -356,18 +357,18 @@ function icon(name, cls="") { return `<svg class="ui-icon ${cls}" viewBox="0 0 2
 function tipIcon(name) { return `<span class="tip-icon" aria-hidden="true">${icon(name)}</span>`; }
 function task(text) { return `<div class="task">${tipIcon("pencil")}<span><b>Задание.</b> ${text}</span></div>`; }
 
-function result(inner, cap) { return `<div class="result"><div class="r-label">${icon("eye")}Что получится</div>${inner}${cap ? `<div class="r-cap">${cap}</div>` : ""}</div>`; }
+function result(inner, cap) { return `<div class="result"><div class="r-label">${icon("eye")}Результат урока</div>${inner}${cap ? `<div class="r-cap">${cap}</div>` : ""}</div>`; }
 function shots(list, cls = "") { return `<div class="shots ${cls}">${list.map(([src, cap]) => `<div class="shot">${src.endsWith(".mp4") ? `<video src="${src}" autoplay muted loop playsinline></video>` : `<img src="${src}" alt="">`}<span>${cap}</span></div>`).join("")}</div>`; }
 
 function step(n, title, o) {
   const row = (cls, k, v) => v ? `<div class="st-row ${cls}"><span class="st-k">${k}</span><div>${v}</div></div>` : "";
   return `<div class="step"><div class="step-h"><span class="step-n">${n}</span><h3>${title}</h3></div>`
-    + row("st-do", "Делаешь", o.do) + row("st-see", "Что увидишь", o.see) + row("st-ok", "Проверка", o.ok)
-    + (o.help ? `<details class="st-help"><summary>Не получилось?</summary><div>${o.help}</div></details>` : "") + `</div>`;
+    + row("st-do", "Что сделать", o.do) + row("st-see", "Как это выглядит", o.see) + row("st-ok", "Получилось, если", o.ok)
+    + (o.help ? `<details class="st-help"><summary>Не получается? Нажми сюда</summary><div>${o.help}</div></details>` : "") + `</div>`;
 }
 function stuck() {
   return `<div class="stuck"><h3>Застрял на любом шаге?</h3><p>Сделай скриншот или скопируй текст ошибки и отправь Claude с этим промптом. Он объяснит и починит.</p>
-    <div class="prompt-box"><div class="ex">Я новичок и делаю урок по монтажу видео в Claude. Я на шаге: [номер и название шага]. Вот что я вижу: [вставь текст ошибки или скриншот]. Объясни простыми словами, что случилось, и исправь. Если нужно моё действие — скажи, куда нажать.</div><button class="copy-prompt" type="button">Скопировать промпт</button></div></div>`;
+    <div class="prompt-box"><div class="ex">Я новичок и прохожу урок по видео в Claude. Я на шаге: [номер и название шага]. Вот что я вижу: [вставь текст ошибки или скриншот]. Объясни простыми словами, что случилось, и исправь. Если нужно моё действие, скажи, куда нажать.</div><button class="copy-prompt" type="button">Скопировать промпт</button></div></div>`;
 }
 
 const API_BASE = "https://144-31-187-252.sslip.io", BUY_URL = "https://web.tribute.tg/p/H2E", COURSE = "video-code";
@@ -380,14 +381,14 @@ function lockedScreen(title, text, buy) {
   document.getElementById("hubBtn").addEventListener("click", () => { location.href = "../hub.html"; });
 }
 (async function load() {
-  if (!tg.initData) return lockedScreen("Открой курс в боте", "Курсы открываются внутри Telegram: @glgidbot → 🎬 Монтаж видео.", false);
+  if (!tg.initData) return lockedScreen("Открой курс в боте", "Курсы открываются внутри Telegram. С телефона или с компьютера (приложение Telegram Desktop): найди бота @glgidbot, нажми «Обучение» и выбери курс. Читать удобно с телефона, а делать видео нужно на компьютере.", false);
   try {
     const r = await fetch(API_BASE + "/api/video/content", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ initData: tg.initData, course: COURSE }) });
     const d = await r.json();
     if (!d.ok) return d.paid === false
       ? lockedScreen("Курс в платном пакете", "3 курса, 18 уроков и 3 скилла для Claude Code. После оплаты доступ откроется автоматически, а бот пришлёт сообщение.", true)
-      : lockedScreen("Не получилось открыть", "Закрой и снова открой курс из бота. Если не помогло — напиши в поддержку.", false);
+      : lockedScreen("Не получилось открыть", "Закрой и снова открой курс из бота. Если не помогло, напиши в поддержку.", false);
     const s = document.createElement("script");
     s.textContent = d.code;
     document.body.appendChild(s);
@@ -429,9 +430,10 @@ function wireCopyButtons(){
     const old=btn.innerHTML;btn.innerHTML=copied?`${icon("check")}Скопировано`:"Скопируй вручную";setTimeout(()=>{btn.innerHTML=old;},1800);
   }));
 }
-function openLesson(id){currentId=id;const idx=ALL.findIndex(l=>l.id===id),l=ALL[idx],mod=MODULES.find(m=>m.lessons.includes(l));show("lesson");$("lKicker").textContent=`${mod.title} · урок ${idx+1} из ${ALL.length}`;$("lTitle").textContent=l.title;$("lSub").textContent=l.sub;$("lBody").innerHTML=l.body;wireCopyButtons();renderLessonActions();}
-function renderLessonActions(){const btn=$("finishBtn"),next=$("nextBtn"),idx=ALL.findIndex(l=>l.id===currentId),last=idx===ALL.length-1;if(store[currentId]){btn.classList.add("done");btn.innerHTML=`${icon("check")}Урок пройден`;next.classList.remove("hidden");next.innerHTML=(last?(store.testPassed?"К сертификату":"К финальному тесту"):"Следующий урок")+icon("arrowRight","trailing");}else{btn.classList.remove("done");btn.textContent="Отметить урок пройденным";next.classList.add("hidden");}}
+function openLesson(id){currentId=id;const idx=ALL.findIndex(l=>l.id===id),l=ALL[idx],mod=MODULES.find(m=>m.lessons.includes(l));show("lesson");$("lKicker").textContent=`${mod.title} · урок ${idx+1} из ${ALL.length}`;$("lTitle").textContent=l.title;$("lSub").textContent=l.sub;$("lBody").innerHTML=l.body;document.querySelectorAll("#lesson > .road").forEach(x=>x.remove());const rd=$("lBody").querySelector(".road");if(rd)$("lKicker").before(rd);wireCopyButtons();renderLessonActions();scrollTo(0,0);}
+function renderLessonActions(){const btn=$("finishBtn"),next=$("nextBtn"),idx=ALL.findIndex(l=>l.id===currentId),last=idx===ALL.length-1;$("prevBtn").classList.toggle("hidden",idx===0);if(store[currentId]){btn.classList.add("done");btn.innerHTML=`${icon("check")}Урок пройден`;next.classList.remove("hidden");next.innerHTML=(last?(store.testPassed?"К сертификату":"К финальному тесту"):"Следующий урок")+icon("arrowRight","trailing");}else{btn.classList.remove("done");btn.textContent="Отметить урок пройденным";next.classList.add("hidden");}}
 $("finishBtn").addEventListener("click",()=>{if(!store[currentId]){store[currentId]=true;save();try{tg.HapticFeedback?.notificationOccurred?.("success");}catch(e){}}renderLessonActions();});
+$("prevBtn").addEventListener("click",()=>{const idx=ALL.findIndex(l=>l.id===currentId);if(idx>0)openLesson(ALL[idx-1].id);});
 $("nextBtn").addEventListener("click",()=>{const idx=ALL.findIndex(l=>l.id===currentId);if(idx<ALL.length-1)openLesson(ALL[idx+1].id);else store.testPassed?renderCert():renderTest();});
 
 function renderTest(){show("test");$("tScore").classList.add("hidden");const answers={};$("tQuiz").innerHTML=FINAL_QUIZ.map((q,qi)=>`<div class="q" data-qi="${qi}"><div class="qq">${qi+1}. ${q.q}</div>${q.a.map((a,ai)=>`<div class="opt" data-ai="${ai}" role="button" tabindex="0">${a[0]}</div>`).join("")}<div class="expl"></div></div>`).join("");const btn=$("testBtn");btn.disabled=true;btn.textContent="Ответь на все вопросы";
