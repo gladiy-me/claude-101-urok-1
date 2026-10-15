@@ -255,6 +255,11 @@
   .cl-shots { display: flex; gap: 6px; margin: 4px 0 12px; }
   .cl-shots img { flex: 1; min-width: 0; aspect-ratio: 4/5; object-fit: cover; object-position: top; border-radius: 9px; border: 1px solid var(--line); }
   .cl-cta { width: 100%; margin-top: 4px; }
+  .cl-soon { display: flex; align-items: center; gap: 12px; margin-top: 4px; padding: 14px 16px; border-radius: 14px;
+    background: var(--clay-soft); border: 1.5px dashed var(--clay); color: var(--ink); }
+  .cl-soon .ui-icon { width: 22px; height: 22px; color: var(--clay); flex: none; }
+  .cl-soon span { display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--muted); }
+  .cl-soon b { font: 700 16px var(--body); color: var(--ink); }
   .howto { margin-top: 18px; }
   .promo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink);
     background: var(--clay-soft); border: 1px solid var(--clay); border-radius: 14px; padding: 10px 12px; margin-bottom: 16px; }
@@ -423,6 +428,7 @@ const COURSES = [
    и в XP/наградах они не учитываются. Страницы video-* не публикуются, пока закрыто. */
 const SHOP_API = "https://144-31-187-252.sslip.io";
 const VIDEO_BUY_URL = "https://web.tribute.tg/p/H2E";
+const VIDEO_SOON = true;   // оплата ещё не подключена: вместо «Купить» — плашка «Скоро». Включить продажи — false
 const VIDEO_PAID_KEY = "glgid_video_paid";
 let VIDEO_LOCKED = true;
 try { VIDEO_LOCKED = localStorage.getItem(VIDEO_PAID_KEY) !== "1"; } catch (e) {}
@@ -609,15 +615,18 @@ function renderCluster(s) {
     VIDEO_COURSES.forEach(c => renderSub(c, null));
     const lessons = VIDEO_COURSES.reduce((n, c) => n + c.ids.length, 0);
     document.getElementById("video-head").innerHTML = `
-      <span class="cl-eyebrow">Платный пакет · 899 ₽</span>
+      <span class="cl-eyebrow">${VIDEO_SOON ? "Скоро · 899 ₽" : "Платный пакет · 899 ₽"}</span>
       <h2><span class="ico">${icon("film")}</span>Монтаж видео нейросетями</h2>
       <p class="cl-lede">Claude монтирует, озвучивает и рисует видео за тебя — <b>без таймлайна и монтажёра</b>. Проведём за руку с нуля: от установки до публикации. 3 курса · ${lessons} уроков · 3 готовых скилла.</p>
       <div class="cl-shots"><img src="video-assets/r_check.jpg" alt=""><img src="video-assets/hook_2_schetchik.jpg" alt=""><img src="video-assets/r_score.jpg" alt=""></div>
       <div class="cl-pick">Что внутри:</div>`;
-    document.getElementById("promo").innerHTML = `${icon("film")}<span><b>Новое: монтаж видео нейросетями</b> — 3 курса, проведём за руку</span><em>899 ₽ ↓</em>`;
+    document.getElementById("promo").innerHTML = `${icon("film")}<span><b>Новое: монтаж видео нейросетями</b> — 3 курса, проведём за руку</span><em>${VIDEO_SOON ? "скоро" : "899 ₽ ↓"}</em>`;
     document.getElementById("video-foot").innerHTML = `
-      <button class="go cl-cta" type="button" data-buy="${VIDEO_BUY_URL}">Купить пакет · 899 ₽</button>
-      <p class="cl-foot">Оплата через Tribute. Доступ откроется автоматически, бот пришлёт сообщение.</p>`;
+      ${VIDEO_SOON
+        ? `<div class="cl-soon">${icon("lock")}<span><b>Скоро в продаже</b>Доступ откроем в ближайшие дни</span></div>
+      <p class="cl-foot">Курсы готовы — подключаем оплату. Анонс будет в канале.</p>`
+        : `<button class="go cl-cta" type="button" data-buy="${VIDEO_BUY_URL}">Купить пакет · 899 ₽</button>
+      <p class="cl-foot">Оплата через Tribute. Доступ откроется автоматически, бот пришлёт сообщение.</p>`}`;
     return;
   }
   document.getElementById("promo").classList.add("hidden"); const vEl = document.getElementById("video"), firstSec = document.querySelector(".sec-title"); if (vEl && firstSec) firstSec.parentNode.insertBefore(vEl, firstSec);
