@@ -428,7 +428,7 @@ const COURSES = [
    и в XP/наградах они не учитываются. Страницы video-* не публикуются, пока закрыто. */
 const SHOP_API = "https://144-31-187-252.sslip.io";
 const VIDEO_BUY_URL = "https://web.tribute.tg/p/H2E";
-const VIDEO_SOON = true;   // оплата ещё не подключена: вместо «Купить» — плашка «Скоро». Включить продажи — false
+const VIDEO_SOON = false;   // оплата ещё не подключена: вместо «Купить» — плашка «Скоро». Включить продажи — false
 const VIDEO_PAID_KEY = "glgid_video_paid";
 let VIDEO_LOCKED = true;
 try { VIDEO_LOCKED = localStorage.getItem(VIDEO_PAID_KEY) !== "1"; } catch (e) {}
